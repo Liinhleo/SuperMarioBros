@@ -1,0 +1,671 @@
+# id	file_path	transparent_color_r	g	b
+[TEXTURES]
+0	textures\mario.png	255	255	255
+41	textures\raccoon_5.png	255	255	255
+56	textures\hud.png	255	0	255
+999	textures\raccoon_3.png	255	255	255
+57	textures\hud_background.png	255	255	255
+58	textures\power_state.png	175	232	226
+60	textures\WorldMapTileset.png	0	0	255
+61	textures\WorldMapTileset1.png	0	0	255
+62	map\Grass_Land_bank.png	255	255	255
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+# BIG MARIO
+#RIGHT
+#idle right
+1	216	243	230	270	0
+#walk right
+2	255	243	271	270	0
+3	295	244	311	270	0
+#jump right
+4	335	244	351	270	0
+#falling right
+5	295	244	311	270	0
+#sit right
+6	376	238	390	266	0
+#running right
+7	213	323	232	350	0
+8	253	323	272	350	0
+9	293	324	312	350	0
+#MARIO STOP RIGHT
+10	175	283	191	311	0
+# hold shell right
+11	331	323	345	350	0
+12	356	323	371	350	0
+13	381	323	396	350	0
+
+#LEFT
+#idle left
+21	176	243	190	270	0
+#walk left
+22	95	244	111	270	0
+23	135	243	151	270	0
+#jump left
+24	55	244	71	270	0
+#falling left
+25	95	244	111	270	0
+#sit left
+26	16	238	30	266	0
+#running left
+27	174	323	193	350	0
+28	134	323	153	350	0
+29	94	324	113	350	0
+#MARIO STOP LEFT
+30	215	283	231	311	0
+# hold shell left
+31	61	323	75	350	0
+32	35	323	50	350	0
+33	10	323	25	350	0
+
+# die
+999	375	209	391	225	0
+
+# SMALL mario
+#RIGHT
+# idle small right
+41	217	89	229	104	0
+#walk right
+42	256	89	271	105	0
+43	256	89	271	105	0
+#jump right
+44	335	89	351	105	0
+#running small right
+45	215	169	231	185	0
+46	255	169	271	185	0
+#Stop right
+47	216	129	230	145	0
+# hold shell right
+48	336	169	350	185	0
+49	376	169	391	185	0
+#LEFT
+#idle small left
+61	177	89	189	104	0
+#walk right
+62	135	89	150	105	0
+63	135	89	150	105	0
+#jump left
+64	55	89	71	105	0
+#running small left
+65	175	169	191	185	0
+66	135	169	151	185	0
+#stop left
+67	176	129	190	145	0
+# hold shell left
+68	56	169	70	185	0
+69	15	169	30	185	0
+
+#======MARIO RACCON======
+#RIGHT
+#idle right
+81	210	443	233	471	0
+#walk right
+82	260	443	284	471	0
+83	289	443	314	470	0
+#running right
+84	209	523	235	551	0
+85	249	523	275	551	0
+86	289	523	315	550	0
+#jump right
+87	331	443	354	470	0
+#stop right
+88	168	482	191	512	0
+#fight idle right
+89	236	443	259	471	0
+90	348	483	371	511	0
+91	8	4	38	32	999
+92	383	483	406	511	0
+#sitting right		
+93	372	438	394	466	0
+#falling and quay duoi right
+94	209	603	234	631	0
+95	249	603	274	631	0
+#flying right
+96	291	603	315	631	0
+97	331	603	355	630	0
+98	371	603	395	630	0
+# hold shell right
+99	322	523	343	551	0
+100	351	523	373	551	0
+101	381	523	404	551	0
+
+#LEFT
+#idle left
+111	8	3	36	31	41
+#walk left
+112	115	443	144	471	0
+113	85	443	115	470	0
+#running left
+114	164	523	195	551	0
+115	124	523	155	551	0
+116	84	523	115	550	0
+#jump left
+117	45	443	75	470	0
+#stop left
+118	208	482	231	512	0
+#fight idle left	
+119	8	4	38	32	999
+120	348	483	371	511	0
+121	236	443	259	471	0
+122	383	483	406	511	0
+#sitting left
+123	5	438	36	466	0
+#falling and quay duoi left
+124	165	603	195	631	0
+125	125	603	154	631	0
+#flying left
+126	84	603	115	631	0
+127	44	603	75	630	0
+128	4	603	35	630	0
+# hold shell left
+129	56	523	84	551	0
+130	26	523	55	551	0
+131	27	563	57	592	0
+
+#====FIRE MARIO=======	
+#RIGHT
+#idle right
+141	216	683	230	710	0
+#walk right
+142	255	683	271	710	0
+143	295	684	311	710	0
+#running right
+144	213	763	232	790	0
+145	253	763	272	790	0
+146	293	764	312	790	0
+#jump right
+147	335	684	351	710	0
+#stop right
+148	175	723	191	751	0
+#fight idle right
+149	386	803	400	830	0
+150	366	803	380	830	0
+#sitting right	
+151	376	678	390	706	0
+#fight while jumping right
+152	333	804	352	830	0
+153	294	803	312	830	0
+154	253	803	272	830	0
+# hold shell right
+155	331	763	345	790	0
+156	356	763	371	790	0
+157	380	764	396	790	0
+
+#LEFT
+#idle left
+161	176	683	190	710	0
+#walk left
+162	135	683	151	710	0
+163	95	684	111	710	0
+#running left
+164	174	763	193	790	0
+165	134	763	153	790	0
+166	94	764	113	790	0
+#jump left
+167	55	684	71	710	0
+#stop left
+168	215	723	231	751	0
+#fight idle left
+169	6	803	20	830	0
+170	26	803	40	830	0
+#sitting left
+171	16	678	30	706	0
+#fight while jumping left
+172	54	804	73	830	0
+173	94	803	112	830	0
+174	134	803	153	830	0
+# hold shell left
+175	61	763	75	790	0
+176	35	763	50	790	0
+177	10	764	36	790	0
+
+#===============WORLD MAP MARIO===========
+#SMALL
+181	16	9	30	25	0
+182	16	49	30	65	0
+#BIG
+183	55	6	71	27	0
+184	55	46	71	67	0
+#RACOON
+185	95	5	111	29	0
+186	95	45	111	69	0
+#FIRE
+187	175	1	191	22	0
+188	175	51	191	72	0
+
+#==============WORLD MAP OBJECTS==========
+#plant
+201	52	17	68	32	60
+202	35	17	51	32	60
+203	18	17	34	32	60
+204	1	17	17	32	60
+
+#help
+#205	18	2	34	17	60
+#206	1	50	17	66	60
+205	80	32	96	48	62
+206	160	32	176	48	62
+
+#guard
+#right
+211	103	17	119	32	60
+212	120	17	136	32	60
+213	52	17	68	32	61
+214	35	17	51	32	61
+
+
+#==========Scene da qua===================
+1100	137	16	153	32	60
+#=================HUD=====================
+#board
+1101	3	3	235	31	56
+#background
+1102	0	0	400	32	57
+#=============NUMBER======================
+# num 0
+1110	33	32	41	39	56
+# num 1
+1111	43	32	51	39	56
+# num 2
+1112	53	32	61	39	56
+# num 3
+1113	63	32	71	39	56
+# num 4
+1114	73	32	81	39	56
+# num 5
+1115	83	32	91	39	56
+# num 6
+1116	93	32	101	39	56
+# num 7
+1117	103	32	111	39	56
+# num 8
+1118	113	32	121	39	56
+# num 9
+1119	123	32	131	39	56
+
+#=============SPEED BAR===================
+# tier_0
+1120	2	2	66	9	58
+# tier_1
+1121	2	11	66	18	58
+# tier_2
+1122	2	20	66	27	58
+# tier_3
+1123	2	29	66	36	58
+# tier_4
+1124	2	38	66	45	58
+# tier_5
+1125	2	47	66	54	58
+# tier_6
+1126	2	56	66	63	58
+# tier_7
+1127	2	65	66	72	58
+#=======BLACK AND WHITE ITEM IN BOX=======
+# star
+1130	239	39	255	55	56
+# mushroom
+1131	191	39	207	55	56
+# flower
+1132	215	39	231	55	56
+# empty
+1133	167	39	183	55	56
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]
+
+# ==== MARIO =========
+#BIG
+
+#idle BIG right
+0	1	100
+#walk right big	
+1	1	100	2	100	3	100
+#jump right big
+2	4	100
+#fall right
+3	5	100
+#sit right
+4	6	100
+#runing right
+5	7	25	8	25	9	25
+#stop right
+6	10	100
+# idle hold shell right
+7	11	100
+# walk hold shell right	
+8	11	100	12	100	13	100	12	100
+# on air hold shell right
+9	13	100
+
+#idle BIG left
+20	21	100
+#walk left big
+21	21	100	22	100	23	100
+#jump left big
+22	24	100
+#fall right
+23	25	100
+# sit left
+24	26	100
+#runing left
+25	27	25	28	25	29	25
+#stop left
+26	30	100
+# idle hold shell left
+27	31	100
+# walk hold shell left
+28	31	100	32	100	33	100	32	100
+# on air hold shell left
+29	33	100
+
+#SMALL
+#idle small right
+40	41	100
+#walk right small
+41	41	100	42	100	43	100
+# jump SMALL right	
+42	44	100
+#run right
+43	45	25	46	25
+#stop right
+44	47	100
+# idle hold shell right
+45	48	100
+# walk hold shell right
+46	48	100	49	100
+# on air hold shell right
+47	49	100
+
+#idle small left
+60	61	100
+#walk left small
+61	61	100	62	100	63	100
+# jump SMALL left
+62	64	100
+#run right
+63	65	25	66	25
+#stop right
+64	67	100
+# idle hold shell right
+65	68	100
+# walk hold shell right
+66	68	100	69	100
+# on air hold shell right
+67	69	100
+
+#die
+999	999	100
+
+#====MARIO RACCON====
+#idle right
+80	81	100
+#walk right
+81	81	100	82	100	83	100	82	100
+#running right
+82	84	25	85	25	86	25
+#jump right
+83	87	100
+#stop right
+84	88	150
+#fight idle right
+85	89	80	90	80	91	80	92	80	89	80
+#sitting right
+86	93	100
+#falling right
+87	83	100
+#Quay duoi right
+88	95	50	83	50	94	50
+#flying right
+89	96	50	98	50	97	50	98	50	96	50
+# idle hold shell right
+90	99	100
+# walk hold shell right	
+91	99	100	100	100	101	100	100	100
+# on air hold shell right
+92	101	100
+
+#idle left
+100	111	100
+#walk left
+101	111	100	112	100	113	100	112	100
+#running left
+102	114	25	115	25	116	25
+#jump left
+103	117	100
+#stop left
+104	118	150
+#fight idle left
+105	119	80	120	80	121	80	122	80	119	80
+#sitting left
+106	123	100
+#falling left
+107	113	100
+#quay duoi left
+108	125	50	113	50	124	50
+#flying left
+109	126	50	128	50	127	50	128	50	126	50
+# idle hold shell left
+110	129	100
+# walk hold shell left
+111	129	100	130	100	131	100	130	100
+# on air hold shell left
+112	131	100
+
+#==============FIRE MARIO===========
+#idle right
+120	141	100
+#walking right
+121	141	100	142	100	143	100
+#running right
+122	144	25	145	25	146	25
+#jump right
+123	147	100
+#stop right
+124	148	150
+#fight right
+125	149	100	150	100	141	100
+#fight while jumping right
+126	152	100	153	100	154	100
+#sitting right
+127	151	100
+#falling right
+128	143	100
+# idle hold shell right
+129	155	100
+# walk hold shell right
+130	155	100	156	100	157	100	156	100
+# on air hold shell right
+131	157	100
+
+#idle left
+140	161	100
+#walking left
+141	161	100	162	100	163	100	162	100
+#running left
+142	164	25	165	25	166	25
+#jump left
+143	167	100
+#stop left
+144	168	150
+#fight left
+145	169	100	170	100	171	100
+#fight while jumping left
+146	174	100	173	100	172	100
+#sitting left
+147	171	100
+#falling left
+148	163	100
+# idle hold shell left
+149	175	100
+# walk hold shell left
+150	175	100	176	100	177	100	176	100
+# on air hold shell left
+151	177	100
+
+#========WORLD MAP MARIO=======================
+160	181	100	182	100
+161	183	100	184	100
+162	185	100	186	100
+163	187	100	188	100
+
+#==============WORLD MAP OBJECTS==========
+#plant
+201	201	300	202	300	203	300	204	300
+
+#help
+205	205	300	206	300
+
+#guard
+#right
+211	211	100	212	100
+#left
+213	213	100	214	100
+
+#scene
+1100	1100	100
+#===========HUD========
+1101	1101	100
+# ======== POWER STATE ========
+# tier_0
+1120	1120	100
+# tier_1
+1121	1121	100
+# tier_2
+1122	1122	100
+# tier_3
+1123	1123	100
+# tier_4
+1124	1124	100
+# tier_5
+1125	1125	100
+# tier_6
+1126	1126	100
+# tier_7
+1127	1127	150	1126	150
+
+# ====== BLACK AND WHITE ITEM IN BOX ======
+# normal star
+1130	1130	100
+# flicker star
+1131	1130	350	1133	150
+# nomal mushroom
+1132	1131	100
+# flicker mushroom
+1133	1131	350	1133	150
+# flower
+1134	1132	100
+# flicker flower
+1135	1132	350	1133	150
+
+#
+# id	ani1	ani2	ani3
+#
+[ANIMATION_SETS]
+# MARIO
+1	0	1	2	3	4	5	6	7	8	9	20	21	22	23	24	25	26	27	28	29	40	41	42	43	44	45	46	47	60	61	62	63	64	65	66	67	999	80	81	82	83	84	85	86	87	88	89	90	91	92	100	101	102	103	104	105	106	107	108	109	110	111	112	120	121	122	123	124	125	126	127	128	129	130	131	140	141	142	143	144	145	146	147	148	149	150	151	160	161	162	163
+
+#scene
+2	1100
+#=================HUD===============
+1101	1101
+#SPEED BAR
+1121	1120	1121	1122	1123	1124	1125	1126	1127
+#CARD
+#1130	1130	1131	1132	1133	1134	1135
+1130	1130	1132	1134
+
+#==============WORLD MAP OBJECTS==========
+3	201	205	211	213
+
+[OBJECTS]
+# type	x	y	ani_set_id	extra_settings per object type
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
+
+# MARIO
+#0	1380	360	1
+0	36	48	1
+
+
+#POINT
+#type	x	y	ani_set	portal	idscene	l	r	up	down
+51	32	48	2	0	0	0	1	0	0
+51	64	16	2	1	1	0	1	0	1
+51	64	48	2	0	0	1	0	1	1
+51	64	80	2	0	0	0	1	1	1
+51	64	112	2	0	0	0	0	1	1
+51	64	144	2	1	1	0	1	1	0
+51	96	16	2	0	0	1	1	0	0
+51	96	80	2	0	0	1	1	0	0
+51	96	112	2	0	0	0	1	0	0
+51	96	144	2	0	0	1	1	0	0
+51	128	16	2	1	1	1	1	0	1
+51	128	48	2	0	0	0	1	1	1
+51	128	80	2	0	0	1	0	1	0
+51	128	112	2	0	0	1	1	0	1
+51	128	144	2	1	1	1	0	1	0
+51	160	16	2	1	1	1	1	0	0
+51	160	48	2	1	2	1	1	0	0
+51	160	112	2	0	0	1	1	0	0
+51	192	16	2	0	0	1	0	0	1
+51	192	48	2	0	0	1	0	1	0
+51	192	112	2	0	0	1	0	0	0
+
+#==============WORLD MAP OBJECTS==========
+#PLANT
+52	16	16	3	1
+52	16	32	3	1
+52	16	64	3	1
+52	16	80	3	1
+52	16	96	3	1
+52	32	16	3	1
+52	32	32	3	1
+52	32	64	3	1
+52	32	80	3	1
+52	48	16	3	1
+52	48	32	3	1
+52	48	64	3	1
+52	48	80	3	1
+52	80	32	3	1
+52	80	48	3	1
+52	80	64	3	1
+52	96	32	3	1
+52	96	48	3	1
+52	96	64	3	1
+52	96	96	3	1
+52	112	32	3	1
+52	112	48	3	1
+52	112	64	3	1
+52	112	96	3	1
+52	128	96	3	1
+52	144	32	3	1
+52	144	64	3	1
+52	144	80	3	1
+52	160	32	3	1
+52	160	64	3	1
+52	160	80	3	1
+52	176	32	3	1
+52	176	64	3	1
+52	192	64	3	1
+52	208	16	3	1
+52	208	32	3	1
+52	208	48	3	1
+52	208	64	3	1
+52	224	16	3	1
+52	224	32	3	1
+52	224	48	3	1
+52	224	64	3	1
+52	224	80	3	1
+52	224	96	3	1
+52	224	112	3	1
+52	224	128	3	1
+52	224	144	3	1
+
+#help
+52	208	96	3	2
+
+#guard
+52	112	112	3	3
+
+
+[TILEMAP]
+100	map\Grass_Land_bank.png	map\Grass_Land.txt	11	16	4	11	16	16	0	0	0	0
