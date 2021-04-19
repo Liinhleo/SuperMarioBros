@@ -63,11 +63,10 @@ public:
 
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
-	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
-	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }
-	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
+	void GetPosition(float& x, float& y) { x = this->x; y = this->y; }
 
-	int GetState() { return this->state; }
+	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
+	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 
 	void RenderBoundingBox();
 
@@ -90,7 +89,9 @@ public:
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom) = 0;
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
+
 	virtual void SetState(int state) { this->state = state; }
+	int GetState() { return this->state; }
 
 
 	~CGameObject();

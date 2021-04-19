@@ -2,8 +2,6 @@
 #include "GameObject.h"
 
 
-
-
 class CMario : public CGameObject
 {
 	int level;
@@ -14,12 +12,28 @@ class CMario : public CGameObject
 	float start_y; 
 public: 
 	CMario(float x = 0.0f, float y = 0.0f);
+
+	bool isWalking = false;
+	bool isJumpHigh = false;
+	bool isJumpLow = false;
+	bool isSitting = false;
+	bool isRun = false;
+	bool isFly = false;
+	bool isStop = false;
+	bool isAttack = false;
+	bool isOnTheGround = false;
+
+
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
 	virtual void Render();
 
 	void SetState(int state);
+	int GetState() { return state; }
+
 	void SetLevel(int l) { level = l; }
-	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
+	int GetLevel();
+
+	void StartUntouchable();
 
 	void Reset();
 
