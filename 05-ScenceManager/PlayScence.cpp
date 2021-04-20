@@ -268,11 +268,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
-	case DIK_S:
+	case DIK_SPACE:
 		mario->SetState(MARIO_STATE_JUMP);
 		break;
-	case DIK_A:
+	/*case DIK_A:
 		mario->SetState(MARIO_STATE_ATTACK);
+		break;*/
 	case DIK_F1: 
 		mario->Reset();
 		break;

@@ -1,12 +1,6 @@
 #pragma once
-
-#include <Windows.h>
-#include <d3dx9.h>
-#include <vector>
 #include "define.h"
-#include "Sprites.h"
-#include "Animations.h"
-
+#include "AnimationSet.h"
 
 using namespace std;
 
