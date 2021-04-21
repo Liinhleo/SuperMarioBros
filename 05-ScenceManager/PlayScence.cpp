@@ -163,6 +163,30 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	objects.push_back(obj);
 }
 
+
+/*
+	Parse a line in section [MAPS]
+*/
+//void CPlayScene::_ParseSection_MAPS(string line)
+//{
+//	vector<string> tokens = split(line);
+//
+//	if (tokens.size() < 3) return; // skip invalid lines - an animation must at least has 1 frame and 1 frame time
+//
+//	//DebugOut(L"--> %s\n",ToWSTR(line).c_str());
+//
+//	LPMAP map = new CMap(); 
+//
+//	int id_map = atoi(tokens[0].c_str());
+//	for (int i = 1; i < tokens.size(); i += 2)	
+//	{
+//		int sprite_id = atoi(tokens[i].c_str());
+//		map->Add(sprite_id);
+//	}
+//
+//	CMaps::GetInstance()->Add(id_map, map);
+//}
+
 void CPlayScene::Load()
 {
 	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
