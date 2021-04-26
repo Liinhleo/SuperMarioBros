@@ -52,10 +52,10 @@ void CMap::LoadMap() {
 		f.close();
 		return;
 	}
-	//set size of map
-	tileMaps.resize(numRow);
-	for (int i = 0; i < numRow; i++)
-		tileMaps[i].resize(numCol);	
+	////set size of map
+	//tileMaps.resize(numRow);
+	//for (int i = 0; i < numRow; i++)
+	//	tileMaps[i].resize(numCol);	
 	 
 	//read info from file
 	for (int i = 0; i < numRow; i++) {
@@ -65,22 +65,22 @@ void CMap::LoadMap() {
 		}
 	}		
 	f.close();
+	DebugOut(L"[INFO] Done loading map resources %s\n", matrix_path);
+
 }
 
 
 void CMap::Render()
 {
-
-	CSprites* sprites = CSprites::GetInstance();
-
 	int col_begin = CGame::GetInstance()->GetCamPosX() / TILE_SIZE;
-	int col_end = col_begin + SCREEN_WIDTH / TILE_SIZE + 1;
+	int col_end = col_begin + (SCREEN_WIDTH / TILE_SIZE) + 1; // col_end + 1 => retain
 	
 	for (int i = 0; i < numRow; i++) {
-		for (int j = 0; j < col_end; j++) {
-			int x = TILE_SIZE * (j - col_begin) + CGame::GetInstance()->GetCamPosX() - (int)CGame::GetInstance()->GetCamPosX() % TILE_SIZE;
-			int y = TILE_SIZE * i ;
-			sprites->Get(tileMaps[i][j])->Draw(x, y,255);
+		for (int j = 0; j <= col_end; j++) {
+			int x = TILE_SIZE * (j - col_begin) - (int)CGame::GetInstance()->GetCamPosX() % TILE_SIZE + CGame::GetInstance()->GetCamPosX() ;
+			int y = TILE_SIZE * i;
+
+			CSprites::GetInstance()->Get(tileMaps[i][j])->Draw(x, y, 255);
 		}
 	}
 }

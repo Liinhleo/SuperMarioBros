@@ -76,7 +76,7 @@ void CPlayScene::_ParseSection_MAPS(string line)
 	
 	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap);
 
-	CMaps::GetInstance()->Add(map_id, map);
+	//CMaps::GetInstance()->Add(map_id, map);
 }
 
 

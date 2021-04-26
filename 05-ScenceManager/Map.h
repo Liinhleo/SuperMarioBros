@@ -9,8 +9,9 @@ class CMap
 	int widthMap;
 	int heightMap;
 
-	vector<vector<int>> tileMaps; // arr 2D of tile maps 
+	//vector<vector<int>> tileMaps; // arr 2D of tile maps 
 	
+	int tileMaps[300][300];
 	int numCol;
 	int numRow;
 
