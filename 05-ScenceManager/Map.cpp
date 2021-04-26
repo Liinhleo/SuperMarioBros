@@ -1,35 +1,88 @@
 #include "Map.h"
 #include "Utils.h"
-
-// ANIMATION FRAME == TILE MAP = Sprite (tile)
-CTileMap::CTileMap(LPSPRITE sprite) {
-	this->sprite = sprite;
-}
-LPSPRITE CTileMap::GetSprite() {
-	return sprite;
-}
+#include <string> 
+#include <fstream>
+#include <sstream>
+#include "Textures.h"
+#include "Game.h"
 
 // ANIMATION 
-//void CMap::Add(int spriteId)
-//{
-//	LPSPRITE sprite = CSprites::GetInstance()->Get(spriteId);
-//
-//	if (sprite == NULL)
-//	{
-//		DebugOut(L"[ERROR] Map ID %d cannot be found!\n", spriteId);
-//	}
-//
-//	LPTILEMAP tile = new CTileMap(sprite);
-//	tiles.push_back(tile);
-//}
+CMap::CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap) {
+	this->mapID = mapID;
+	this->matrix_path = matrix_path;
+	this->widthMap = widthMap;
+	this->heightMap = heightMap;
 
+	getNumRow();
+	getNumCol();
+	LoadMap();
+}
 
-void CMap::Draw(float x, float y, int alpha)
-{
-	//tiles->GetSprite()->Draw(x, y, alpha);
+int CMap::getMapID() {
+	return mapID;
+}
+int CMap::getWidthMap() {
+	return widthMap;
+}
+int CMap::getHeighthMap() {
+	return heightMap;
+}
+
+LPCWSTR CMap::getMatrixPath() {
+	return matrix_path;
+}
+
+int CMap::getNumCol() {
+	this->numCol = widthMap / TILE_SIZE;
+	return numCol;
+}
+int CMap::getNumRow() {
+	this->numRow = heightMap / TILE_SIZE;
+	return numRow;
+}
+
+void CMap::LoadMap() {
+	DebugOut(L"[INFO] Start loading matrix map from : %s \n", matrix_path);
+	CSprites* sprites = CSprites::GetInstance();
+
+	ifstream f;
+	f.open(matrix_path, ios::in);
+	if (f.fail()) {
+		DebugOut(L"[INFO] loading matrix map failed with ID=  %s \n", mapID);
+		f.close();
+		return;
+	}
+	//set size of map
+	tileMaps.resize(numRow);
+	for (int i = 0; i < numRow; i++)
+		tileMaps[i].resize(numCol);	
+
+	//read info from file
+	for (int i = 0; i < numRow; i++) {
+		for (int j = 0; j < numCol; j++){
+			f >> tileMaps[i][j];
+			sprites->Get(tileMaps[i][j]);
+		}
+	}		
+	f.close();
 }
 
 
+void CMap::Render()
+{
+	CSprites* sprites = CSprites::GetInstance();
+
+	int firstCol = (int)CGame::GetInstance()->GetCamPosX() / TILE_SIZE;
+	int lastCol = firstCol + (SCREEN_WIDTH / TILE_SIZE);
+	
+	for (int i = 0; i < numRow; i++) {
+		for (int j = 0; j < numCol; j++) {
+			float x = TILE_SIZE * (j - firstCol) + CGame::GetInstance()->GetCamPosX() - (int)CGame::GetInstance()->GetCamPosX() % TILE_SIZE;
+			float y = TILE_SIZE * i ;
+			sprites->Get(tileMaps[i][j])->Draw(x, y);
+		}
+	}
+}
 
 // =========== CMaps == CAnimations = Store all map ================ 
 
@@ -54,14 +107,14 @@ LPMAP CMaps::Get(int id)
 	return map;
 }
 
-//void CMaps::Clear()
-//{
-//	for (auto x : maps)
-//	{
-//		LPMAP map = x.second;
-//		delete map;
-//	}
-//
-//	maps.clear();
-//}
+void CMaps::Clear()
+{
+	//for (auto x : maps)
+	//{
+	//	LPMAP map = x.second;
+	//	delete map;
+	//}
+
+	maps.clear();
+}
 

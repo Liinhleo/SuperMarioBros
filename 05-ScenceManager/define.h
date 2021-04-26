@@ -5,11 +5,12 @@
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(0, 0, 0)
 
-#define SCREEN_WIDTH 320
+#define SCREEN_WIDTH 300
 #define SCREEN_HEIGHT 240
 #define MAX_FRAME_RATE 120
 
 #define ID_TEX_BBOX -100		// special texture to draw object bounding box
+#define TILE_SIZE 16			 // 16x16
 
 // ======================================= PLAY SCENE ===============================================
 #define SCENE_SECTION_UNKNOWN			-1
@@ -18,7 +19,7 @@
 #define SCENE_SECTION_ANIMATIONS		4
 #define SCENE_SECTION_ANIMATION_SETS	5
 #define SCENE_SECTION_OBJECTS			6
-//#define SCENE_SECTION_TILE_MAP		7
+#define SCENE_SECTION_TILE_MAP			7
 
 // ========================================= MARIO ==================================================
 #define MARIO_BIG_BBOX_WIDTH				14

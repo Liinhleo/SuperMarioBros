@@ -1,0 +1,8 @@
+# LIST OF MAP
+#map_id	matrix_path	width	height
+[MAPS]
+10000	map\matrix-map1-1.txt	2816	432
+20000	map\matrix-map1-4.txt	7728	1296
+30000	map\matrix_GLand.txt	256	176
+
+#40000	map\matrix_intro.txt	

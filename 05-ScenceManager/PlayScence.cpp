@@ -6,11 +6,10 @@
 #include "Textures.h"
 #include "Sprites.h"
 #include "Portal.h"
-
+#include "Map.h"
 using namespace std;
 
-CPlayScene::CPlayScene(int id, LPCWSTR filePath):
-	CScene(id, filePath)
+CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
 }
@@ -60,6 +59,27 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
 }
 
+
+/*
+	Parse a line in section [MAPS]
+*/
+void CPlayScene::_ParseSection_MAPS(string line)
+{
+	vector<string> tokens = split(line);
+
+	if (tokens.size() < 4) return; // skip invalid lines - an animation must at least has 1 frame and 1 frame time
+
+	int map_id = atoi(tokens[0].c_str());
+	wstring matrix_path = ToWSTR(tokens[1]);
+	int widthMap = atoi(tokens[2].c_str());
+	int heightMap = atoi(tokens[3].c_str());
+	
+	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap);
+
+	//CMaps::GetInstance()->Add(map_id, map);
+}
+
+
 void CPlayScene::_ParseSection_ANIMATIONS(string line)
 {
 	vector<string> tokens = split(line);
@@ -80,6 +100,8 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 
 	CAnimations::GetInstance()->Add(ani_id, ani);
 }
+
+
 
 void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 {
@@ -103,6 +125,9 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
+
+
+
 
 /*
 	Parse a line in section [OBJECTS] 
@@ -164,28 +189,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 }
 
 
-/*
-	Parse a line in section [MAPS]
-*/
-//void CPlayScene::_ParseSection_MAPS(string line)
-//{
-//	vector<string> tokens = split(line);
-//
-//	if (tokens.size() < 3) return; // skip invalid lines - an animation must at least has 1 frame and 1 frame time
-//
-//	//DebugOut(L"--> %s\n",ToWSTR(line).c_str());
-//
-//	LPMAP map = new CMap(); 
-//
-//	int id_map = atoi(tokens[0].c_str());
-//	for (int i = 1; i < tokens.size(); i += 2)	
-//	{
-//		int sprite_id = atoi(tokens[i].c_str());
-//		map->Add(sprite_id);
-//	}
-//
-//	CMaps::GetInstance()->Add(id_map, map);
-//}
 
 void CPlayScene::Load()
 {
@@ -193,7 +196,7 @@ void CPlayScene::Load()
 
 	ifstream f;
 	f.open(sceneFilePath);
-
+	
 	// current resource section flag
 	int section = SCENE_SECTION_UNKNOWN;					
 
@@ -213,6 +216,8 @@ void CPlayScene::Load()
 			section = SCENE_SECTION_ANIMATION_SETS; continue; }
 		if (line == "[OBJECTS]") { 
 			section = SCENE_SECTION_OBJECTS; continue; }
+		if (line == "[MAPS]") {
+			section = SCENE_SECTION_TILE_MAP; continue;	}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }	
 
 		//
@@ -225,6 +230,7 @@ void CPlayScene::Load()
 			case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
 			case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 			case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+			case SCENE_SECTION_TILE_MAP: _ParseSection_MAPS(line); break;
 		}
 	}
 
@@ -240,7 +246,9 @@ void CPlayScene::Update(DWORD dt)
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
-	vector<LPGAMEOBJECT> coObjects;
+	// Get Scene ID -> Get map_id --> update map with camera
+
+	vector<LPGAMEOBJECT> coObjects; //coObject == collision object
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
@@ -267,8 +275,12 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
+	map->Render();
+
+	// Get Scene ID -> Get map_id --> render map
 	for (int i = 0; i < objects.size(); i++)
 		objects[i]->Render();
+
 }
 
 /*
@@ -280,6 +292,7 @@ void CPlayScene::Unload()
 		delete objects[i];
 
 	objects.clear();
+	// maps.clear();
 	player = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
