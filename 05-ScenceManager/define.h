@@ -6,7 +6,7 @@
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(0, 0, 0)
 
 #define SCREEN_WIDTH 300
-#define SCREEN_HEIGHT 600
+#define SCREEN_HEIGHT 300
 #define MAX_FRAME_RATE 120
 
 #define ID_TEX_BBOX -100		// special texture to draw object bounding box

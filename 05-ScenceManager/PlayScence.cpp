@@ -262,15 +262,34 @@ void CPlayScene::Update(DWORD dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return; 
 
+
+#pragma region CAMERA FOLLOW PLAYER
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
-	CGame *game = CGame::GetInstance();
-	cx -= game->GetScreenWidth() / 2;
-	cy -= game->GetScreenHeight() / 2;
+	CGame* game = CGame::GetInstance();
 
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	// vi tri cam luon de mario o giua screen
+	//cx -= game->GetScreenWidth() / 2;
+	//cy -= game->GetScreenHeight() / 2;
+
+	game->cam_y = 250;
+
+	// TH mario o giua screen va screen_width < screen_map_width
+	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->getWidthMap())
+	{
+		cx = player->x - (SCREEN_WIDTH / 2);
+		game->cam_x = cx;
+	}
+	else if (player->x + SCREEN_WIDTH > map->getWidthMap()) // end map
+	{
+		// camera stop 
+		game->cam_x = map->getWidthMap() - SCREEN_WIDTH;
+	}
+
+	//CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+#pragma endregion
 }
 
 void CPlayScene::Render()
