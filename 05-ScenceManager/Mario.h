@@ -21,8 +21,16 @@ public:
 	bool isFly = false;
 	bool isStop = false;
 	bool isAttack = false;
-	bool isOnTheGround = false;
+	bool isOnTheGround = true;
+	bool isAutoWalk = false;
 
+
+	void Walk();
+	void Jump();
+
+
+	void Die();
+	
 
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
 	virtual void Render();

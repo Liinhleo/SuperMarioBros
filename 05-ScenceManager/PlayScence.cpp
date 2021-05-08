@@ -7,6 +7,7 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Map.h"
+
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
@@ -165,6 +166,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	//case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
+	case OBJECT_TYPE_GROUND: obj = new CGround(); break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
 		{	
@@ -274,7 +276,7 @@ void CPlayScene::Update(DWORD dt)
 	//cx -= game->GetScreenWidth() / 2;
 	//cy -= game->GetScreenHeight() / 2;
 
-	game->cam_y = 250;
+	game->cam_y = 200;
 
 	// TH mario o giua screen va screen_width < screen_map_width
 	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->getWidthMap())
@@ -324,8 +326,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
-	case DIK_SPACE:
-		mario->SetState(MARIO_STATE_JUMP);
+	case DIK_S:
+		mario->SetState(MARIO_STATE_JUMP_HIGH);
 		break;
 	/*case DIK_A:
 		mario->SetState(MARIO_STATE_ATTACK);
@@ -344,6 +346,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE) 
 		return;
+
+
 	if (game->IsKeyDown(DIK_RIGHT))
 	{
 		/*if (mario->isWalking)
@@ -357,7 +361,11 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
 	}
 	else if (game->IsKeyDown(DIK_DOWN))
-		mario->SetState(MARIO_STATE_SIT);
+		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
+			mario->SetState(MARIO_STATE_SIT);
+		}
+		else
+			return;
 	else
 	{
 		if (mario->isSitting)
