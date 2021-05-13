@@ -324,53 +324,136 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
 	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
-	switch (KeyCode)
-	{
-	case DIK_S:
-		mario->SetState(MARIO_STATE_JUMP_HIGH);
-		break;
-	/*case DIK_A:
-		mario->SetState(MARIO_STATE_ATTACK);
-		break;*/
-	case DIK_F1: 
-		mario->Reset();
-		break;
-	}
-}
-
-void CPlayScenceKeyHandler::KeyState(BYTE *states)
-{
-	CGame *game = CGame::GetInstance();
-	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
-
 	// disable control key when Mario die 
-	if (mario->GetState() == MARIO_STATE_DIE) 
+	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
 
-
-	if (game->IsKeyDown(DIK_RIGHT))
+	switch (KeyCode)
 	{
-		/*if (mario->isWalking)
-			mario->SetState(MARIO_STATE_STOP);*/
-		mario->SetState(MARIO_STATE_WALKING_RIGHT);
-	}
-	else if (game->IsKeyDown(DIK_LEFT))
-	{
-		/*if (mario->isWalking)
-			mario->SetState(MARIO_STATE_STOP);*/
-		mario->SetState(MARIO_STATE_WALKING_LEFT);
-	}
-	else if (game->IsKeyDown(DIK_DOWN))
+	case DIK_X:
+	case DIK_S:
+		if (mario->isOnTheGround) {
+			mario->Jump();
+		}
+		break;
+	case DIK_A:
+		if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE)
+		{
+			mario->isAttack == true;
+		}
+		else
+			return;
+		break;
+	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_SIT);
 		}
 		else
 			return;
-	else
-	{
-		if (mario->isSitting)
-			mario->SetState(MARIO_STATE_STAND_UP); // avoid Mario falling out after sitting
-		mario->SetState(MARIO_STATE_IDLE);
+		break;
+	case DIK_F1: 
+		mario->Reset();
+		break;
 
 	}
+}
+
+void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
+{
+	DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
+
+	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+	// disable control key when Mario die 
+	if (mario->GetState() == MARIO_STATE_DIE)
+		return;
+
+	// Check event after releasing key 
+
+	switch (KeyCode)
+	{
+	case DIK_X:
+	case DIK_S:
+		mario->isFalling = true;
+		break;
+	case DIK_A:
+		mario->canHolding = false;
+		mario->canSpeedUp = false;
+		break;
+	case DIK_DOWN:
+		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
+			mario->SetState(MARIO_STATE_STAND_UP);// avoid Mario falling out after sitting
+		}
+		else
+			return;
+		break;
+	case DIK_RIGHT: 
+		mario->SetState(MARIO_STATE_IDLE);
+		break;
+	case DIK_LEFT:
+		mario->SetState(MARIO_STATE_IDLE);
+		break;
+	}
+}
+
+
+void CPlayScenceKeyHandler::KeyState(BYTE* states)
+{
+	CGame* game = CGame::GetInstance();
+	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+
+	// disable control key when Mario die 
+	if (mario->GetState() == MARIO_STATE_DIE)
+		return;
+
+	if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT)) {
+		if (mario->vx < 0) {
+			mario->nx = 1;
+			mario->SetState(MARIO_STATE_STOP);
+		}
+		else
+			mario->SetState(MARIO_STATE_RUN_RIGHT);
+	}
+
+	if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
+		if (mario->vx < 0) {
+			mario->nx = -1;
+			mario->SetState(MARIO_STATE_STOP);
+		}
+		else
+			mario->SetState(MARIO_STATE_RUN_LEFT);
+	}
+	
+	if (game->IsKeyDown(DIK_RIGHT)) {
+		if (mario->vx < 0) {
+			mario->nx = 1;
+			mario->SetState(MARIO_STATE_STOP);
+		}
+		else
+			mario->SetState(MARIO_STATE_WALKING_RIGHT);
+	}
+
+	if (game->IsKeyDown(DIK_LEFT)) {
+		if (mario->vx < 0) {
+			mario->nx = -1;
+			mario->SetState(MARIO_STATE_STOP);
+		}
+		else
+			mario->SetState(MARIO_STATE_WALKING_LEFT);
+	}
+
+	else if (game->IsKeyDown(DIK_DOWN)) {
+		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
+			mario->SetState(MARIO_STATE_SIT);
+		}
+		else
+			return;
+	}
+	
+	else if (game->IsKeyDown(DIK_A)) {
+		mario->canHolding = true;
+		mario->canSpeedUp = true;
+	}
+		
+
+	
 }

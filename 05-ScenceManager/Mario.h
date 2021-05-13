@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
+#define MAX_HEIGHT 
 
 class CMario : public CGameObject
 {
@@ -14,15 +14,20 @@ public:
 	CMario(float x = 0.0f, float y = 0.0f);
 
 	bool isWalking = false;
-	bool isJumpHigh = false;
-	bool isJumpLow = false;
+	bool isJump = false;
+	bool isJumpAsFly = false;
 	bool isSitting = false;
 	bool isRun = false;
-	bool isFly = false;
 	bool isStop = false;
 	bool isAttack = false;
 	bool isOnTheGround = true;
 	bool isAutoWalk = false;
+	bool isFalling = false;
+
+	bool canSpeedUp = false;
+	bool canHolding = false;
+	bool canFly = false;
+
 
 
 	void Walk();
