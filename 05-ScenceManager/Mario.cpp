@@ -46,7 +46,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	DebugOut(L"current state: %d \n",state);
+	//DebugOut(L"current state: %d \n",state);
 
 	// Simple fall down
 	vy += MARIO_GRAVITY*dt;
@@ -183,14 +183,14 @@ void CMario::Render()
 
 	// ====================== SMALL MARIO ======================
 	if (GetLevel() == MARIO_LEVEL_SMALL) {
-		if (MARIO_STATE_DIE) {
+		if (state == MARIO_STATE_DIE) {
 			ani = MARIO_ANI_DIE;
 		}
 		if (isWalking) {
 			if (nx > 0) ani = MARIO_ANI_SMALL_WALKING_RIGHT;
 			else ani = MARIO_ANI_SMALL_WALKING_LEFT;
 		}
-		if (isStop) {
+		else if (isStop) {
 			if (nx > 0) ani = MARIO_ANI_SMALL_STOP_RIGHT;
 			else ani = MARIO_ANI_SMALL_STOP_LEFT;
 		}
@@ -199,8 +199,8 @@ void CMario::Render()
 			else ani = MARIO_ANI_SMALL_JUMP_LEFT;
 		}
 		else if (isRun) {
-			if (nx > 0) ani = MARIO_ANI_BIG_RUN_RIGHT;
-			else ani = MARIO_ANI_BIG_RUN_LEFT;
+			if (nx > 0) ani = MARIO_ANI_SMALL_RUN_RIGHT;
+			else ani = MARIO_ANI_SMALL_RUN_LEFT;
 		}
 		else {
 			if (nx > 0) ani = MARIO_ANI_SMALL_IDLE_RIGHT;
@@ -270,7 +270,7 @@ void CMario::SetState(int state)
 		break;
 
 	case MARIO_STATE_WALKING_RIGHT:
-		if (isJump || isAttack)
+		if (isAttack)
 			return;
 		else if (isSitting) {
 			nx = 1;
@@ -281,7 +281,7 @@ void CMario::SetState(int state)
 		nx = 1;
 		break;
 	case MARIO_STATE_WALKING_LEFT: 
-		if (isJump|| isAttack)
+		if (isAttack)
 			return;
 		else if (isSitting) {
 			nx = -1;
@@ -340,11 +340,23 @@ void CMario::SetState(int state)
 	case MARIO_STATE_STOP:
 		isWalking = false;
 		isRun = false;
+		isStop = true;
 		vx = 0;
 		break;
 	case MARIO_STATE_FALL:
 		isFalling = true;
 		break;
+	case MARIO_STATE_RUN_RIGHT:
+		vx = MARIO_RUN_SPEED;
+		nx = 1;
+		isRun = true;
+		break;
+	case MARIO_STATE_RUN_LEFT:
+		vx = -MARIO_RUN_SPEED;
+		nx = -1;
+		isRun = true;
+		break;
+
 	}
 }
 
