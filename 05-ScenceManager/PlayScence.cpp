@@ -164,7 +164,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	//case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
+	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
 	case OBJECT_TYPE_GROUND: obj = new CGround(); break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
@@ -325,20 +325,20 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 	switch (KeyCode)
 	{
-	case DIK_X:
-	case DIK_S:
-		if (mario->isOnTheGround) {
-			mario->Jump();
-		}
-		break;
-	case DIK_A:
-		if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE)
-		{
-			mario->isAttack == true;
-		}
-		else
-			return;
-		break;
+	//case DIK_X:
+	//	mario->JumpX();
+	//	break;
+	//case DIK_S:
+	//	mario->Jump();
+	//	break;
+	//case DIK_A:
+	//	if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE)
+	//	{
+	//		mario->isAttack == true;
+	//	}
+	//	else
+	//		return;
+	//	break;
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_SIT);
@@ -358,6 +358,8 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+	//mario->OnKeyUp(KeyCode);
+
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
@@ -366,14 +368,9 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 
 	switch (KeyCode)
 	{
-	case DIK_X:
-	case DIK_S:
-		mario->isFalling = true;
-		break;
+
 	case DIK_A:
-		mario->canHolding = false;
-		mario->canSpeedUp = false;
-		mario->isRun = false;
+		mario->SetAccelerate(mario->a = 0);
 		break;
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -390,7 +387,6 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	}
 }
 
-
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
 	//DebugOut(L"[INFO] Key State %d\n", states);
@@ -399,63 +395,43 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
 	// disable control key when Mario die 
-	if (mario->GetState() == MARIO_STATE_DIE)
-		return;
+	if (mario->GetState() == MARIO_STATE_DIE)	return;
 
+	//else if (game->IsKeyDown(DIK_S)) {
+	//}
+	
 	else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT)) {
-		if (mario->vx < 0) {
-			mario->nx = 1;
-			mario->SetState(MARIO_STATE_STOP);
-			DebugOut(L"[MESS] MARIO IS STOP RUNNING RIGHT \n");
-
-		}
-		else {
-			mario->SetState(MARIO_STATE_RUN_RIGHT);
-			DebugOut(L"[MESS] MARIO IS RUNNING RIGHT \n");
-		}			
-	}
-
-	else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
-		if (mario->vx < 0) {
-			mario->nx = -1;
-			mario->SetState(MARIO_STATE_STOP);
-			DebugOut(L"[MESS] MARIO IS STOP RUNNING LEFT \n");
-
-		}
-		else{
-			mario->SetState(MARIO_STATE_RUN_LEFT);
-			DebugOut(L"[MESS] MARIO IS RUNNING LEFT \n");
-		}
+		mario->SetAccelerate(mario->a += MARIO_SPEED_UP) ;
+		DebugOut(L"[MESS] MARIO IS SPEED RIGHT %f \n ", mario->a);
 	}
 	
-	else if (game->IsKeyDown(DIK_RIGHT)) {
-		if (mario->vx < 0) {
-			mario->nx = 1;
-			mario->SetState(MARIO_STATE_STOP);
-			DebugOut(L"[MESS] MARIO STOP RIGHT \n");
+	else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
+		mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
+		DebugOut(L"[MESS] MARIO IS SPEED left %f \n ", mario->a);
 
-		}
-		else{
-			mario->SetState(MARIO_STATE_WALKING_RIGHT);
-			DebugOut(L"[MESS] MARIO IS WALKING RIGHT \n" );
-
-		}
+		//if (mario->vx < 0) {
+		//	mario->nx = -1;
+		//	mario->SetState(MARIO_STATE_STOP);
+		//	DebugOut(L"[MESS] MARIO IS STOP RUNNING LEFT \n");
+		//}
+		//else{
+		//	//mario->SetState(MARIO_STATE_RUN_LEFT);
+		//	DebugOut(L"[MESS] MARIO IS RUNNING LEFT \n");
+		//}
+	}
+	
+	if (game->IsKeyDown(DIK_RIGHT)) {
+		mario->SetState(MARIO_STATE_WALKING_RIGHT);
+		DebugOut(L"[MESS] MARIO IS WALKING RIGHT \n" );
 	}
 
 	else if (game->IsKeyDown(DIK_LEFT)) {
-		if (mario->vx > 0) {
-			mario->nx = -1;
-			mario->SetState(MARIO_STATE_STOP);
-			DebugOut(L"[MESS] MARIO STOP LEFT \n");
-
-		}
-		else{
-			mario->SetState(MARIO_STATE_WALKING_LEFT);
-			DebugOut(L"[MESS] MARIO IS WALKING LEFT \n");
-		}
+		mario->SetState(MARIO_STATE_WALKING_LEFT);
+		DebugOut(L"[MESS] MARIO IS WALKING LEFT \n");
 	}
+	
 
-	else if (game->IsKeyDown(DIK_DOWN)) {
+	/*else if (game->IsKeyDown(DIK_DOWN)) {
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_SIT);
 		}
@@ -466,7 +442,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_A)) {
 		mario->canHolding = true;
 		mario->canSpeedUp = true;
-	}
+	}*/
 	else
 		mario->SetState(MARIO_STATE_IDLE);
 
