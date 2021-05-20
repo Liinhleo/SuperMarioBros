@@ -55,6 +55,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			SetState(MARIO_STATE_RUN);
 	}
 
+
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 	DebugOut(L"current state: %d \n",state);
@@ -62,7 +63,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	// Simple fall down
 	this->vy += MARIO_GRAVITY*dt;
 
-	// Neu mario do not walk : vx = 0;
 	DebugOut(L"current vy %f \n", vy);
 	DebugOut(L"current vx: %f \n", vx);
 
@@ -77,21 +77,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 
 	// reset untouchable timer if untouchable time has passed
-	if ( GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME) 
-	{
+	if ( GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME) {
 		this->untouchable_start = 0;
 		this->untouchable = 0;
 	}
 
 	// No collision occured, proceed normally
-	if (coEvents.size()==0)
-	{
+	if (coEvents.size()==0){
 		// khong bi can boi object nao -> thoai mai di chuyen
 		x += dx; 
 		y += dy;		// xuyen qua ground
 	}
-	else
-	{
+	else{
 		float min_tx, min_ty, nx = 0, ny;
 		float rdx = 0; 
 		float rdy = 0;
@@ -110,20 +107,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 		if (nx!=0) vx = 0;//va cham theo phuong x
 		if (ny!=0) vy = 0;//va cham theo truc y
-		
+	
 
-		for (UINT i = 0; i < coEventsResult.size(); i++)
-		{
+		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-#pragma region COLLISION WITH GROUND
-			if (dynamic_cast<CGround*>(e->obj)) { // if e->obj is Ground 
-				if (e->ny < 0) { // mario xet va cham theo phuong y (di tren ground) 
-					isOnTheGround = true;
-					DebugOut(L"brick ne");
-					vy = dy = 0;
-				}
-			}
+//#pragma region COLLISION WITH GROUND
+//			if (dynamic_cast<CGround*>(e->obj)) { // if e->obj is Ground 
+//				if (e->ny < 0) { // mario xet va cham theo phuong y (di tren ground) 
+//					isOnTheGround = true;
+//					DebugOut(L"brick ne");
+//					vy = dy = 0;
+//				}
+//			}
 			
 			//	else if (e->ny > 0) {
 			//		y += dy;
@@ -133,32 +129,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 #pragma endregion
 
 #pragma region COLLISION WITH GOOMBA
-			else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
+			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
 				// jump on top >> kill Goomba and deflect a bit 
-				if (e->ny < 0) // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-				{
-					if (goomba->GetState() != GOOMBA_STATE_DIE)
-					{
+				if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
+					if (goomba->GetState() != GOOMBA_STATE_DIE){
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
 				}
-				else if (e->nx != 0)	// xet mario va cham theo phuong x -> mario die
-				{
-					if (untouchable == 0)
-					{
-						if (goomba->GetState() != GOOMBA_STATE_DIE)
-						{
-							if (level > MARIO_LEVEL_SMALL)
-							{
-								level = MARIO_LEVEL_SMALL;
-								StartUntouchable();
-							}
-							else
-								SetState(MARIO_STATE_DIE);
+				else if (e->nx != 0) {	// xet mario va cham theo phuong x -> mario die
+					if (untouchable == 0){
+						if (goomba->GetState() != GOOMBA_STATE_DIE){
+							isDamaged();
 						}
 					}
 				}
@@ -180,7 +165,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 
 	// clean up collision events
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	for (UINT i = 0; i < coEvents.size(); i++) 
+		delete coEvents[i];
+
 }
 
 
@@ -189,6 +176,7 @@ void CMario::Render()
 	int ani = -1;
 
 	switch (level) {
+
 #pragma region SMALL MARIO
 	case MARIO_LEVEL_SMALL:
 		if (state == MARIO_STATE_DIE) {
@@ -219,50 +207,11 @@ void CMario::Render()
 		else if (vx > 0)
 			ani = MARIO_ANI_SMALL_WALKING_RIGHT;
 		else ani = MARIO_ANI_SMALL_WALKING_LEFT;
-
 		break;
 #pragma endregion
 
 #pragma region BIG MARIO
 	case MARIO_LEVEL_BIG:
-		// SITTING	
-		// JUMP
-		//switch (state){
-		//case MARIO_STATE_JUMP:
-		//	if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
-		//	else ani = MARIO_ANI_BIG_JUMP_LEFT;
-		//	break;
-		//case MARIO_STATE_SIT:
-		//	if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
-		//	else ani = MARIO_ANI_BIG_SIT_LEFT;
-		//	break;
-		//// FALLING 
-		//case MARIO_STATE_FALL:
-		//	if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
-		//	else ani = MARIO_ANI_BIG_FALLING_LEFT;
-		//	break;
-		//// STOP
-		//case MARIO_STATE_STOP:
-		//	if (nx > 0) ani = MARIO_ANI_BIG_STOP_RIGHT;
-		//	else ani = MARIO_ANI_BIG_STOP_LEFT;
-		//	break;
-		//case MARIO_STATE_RUN:
-		//	if (nx > 0) ani = MARIO_ANI_BIG_RUN_RIGHT;
-		//	else ani = MARIO_ANI_BIG_RUN_LEFT;
-		//	break;
-		//case MARIO_STATE_IDLE:
-		//	if (nx > 0) ani = MARIO_ANI_BIG_IDLE_RIGHT;
-		//	else ani = MARIO_ANI_BIG_IDLE_LEFT;
-		//	break;
-
-		//case MARIO_STATE_WALKING_RIGHT:
-		//	ani = MARIO_ANI_BIG_WALKING_RIGHT;
-		//	break;
-		//case MARIO_STATE_WALKING_LEFT:
-		//	ani = MARIO_ANI_BIG_WALKING_LEFT;
-		//	break;
-		//}
-		//break;
 		if (state == MARIO_STATE_JUMP) {
 			if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
 			else ani = MARIO_ANI_BIG_JUMP_LEFT;
@@ -419,27 +368,19 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 }
 
 
-//void CMario::isDamaged() {
-//	if (untouchable_start > 0)
-//		return;
-//	if (!level == MARIO_LEVEL_SMALL) {
-//		if (level == MARIO_LEVEL_BIG) {
-//			GetLevel() == MARIO_LEVEL_SMALL;
-//		}
-//		else if (level == MARIO_LEVEL_RACOON) {
-//			GetLevel() == MARIO_LEVEL_BIG;
-//		}
-//		StartUntouchable(); // set time untouchable
-//		state = MARIO_STATE_IDLE;
-//		vx = 0;
-//		untouchable_start = GetTickCount();
-//	}
-//	else {
-//		vy = -MARIO_DIE_DEFLECT_SPEED;
-//		isOnTheGround = false;
-//		state = MARIO_STATE_DIE;
-//	}
-//}
+void CMario::isDamaged() {
+
+	if (level != MARIO_LEVEL_SMALL) {
+		if (level == MARIO_LEVEL_BIG)
+			SetLevel(MARIO_LEVEL_SMALL);
+		else if (level == MARIO_LEVEL_RACOON)
+			SetLevel(MARIO_LEVEL_BIG);
+
+		StartUntouchable(); // set time untouchable
+	}
+	else
+		SetState(MARIO_STATE_DIE);
+}
 //
 ////void CMario::Walk() {
 ////	if (CGame::GetInstance()->IsKeyDown(DIK_RIGHT) || CGame::GetInstance()->IsKeyDown(DIK_LEFT)) {

@@ -73,6 +73,7 @@ void CMap::LoadMap() {
 
 void CMap::Render()
 {
+	int col_begin = CGame::GetInstance()->GetCamPosX() / TILE_SIZE;
 	int col_end = col_begin + (SCREEN_WIDTH / TILE_SIZE) + 1; // col_end + 1 
 	
 	CGame* game = CGame::GetInstance();

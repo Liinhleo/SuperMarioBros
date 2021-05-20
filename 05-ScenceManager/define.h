@@ -22,6 +22,7 @@
 #define SCENE_SECTION_TILE_MAP			7
 
 // ========================================= MARIO ==================================================
+// =========== BBOX ====================
 #define MARIO_BIG_BBOX_WIDTH				14
 #define MARIO_BIG_BBOX_HEIGHT				27
 
@@ -31,21 +32,21 @@
 #define MARIO_RACCOON_BBOX_WIDTH			15
 #define MARIO_RACCOON_BBOX_HEIGHT			28
 
-#define MARIO_UNTOUCHABLE_TIME				2000
+// =========== TIME ====================
+#define MARIO_UNTOUCHABLE_TIME		2000
+#define MARIO_FLYING_TIME			3000
 
-
+// =========== SPEED ====================
+// VX 
 #define MARIO_WALKING_SPEED			0.08f 
-//0.1
-#define MARIO_JUMP_SPEED_Y			0.5f
-#define MARIO_JUMP_DEFLECT_SPEED	0.2f
-#define MARIO_GRAVITY				0.002f
-
-#define MARIO_DIE_DEFLECT_SPEED		0.5f
-
-#define MARIO_MAX_SPEED				0.16f
+#define MARIO_MAX_SPEED				0.2f
 #define MARIO_SPEED_UP				0.0002f // TANG TOC CHAY
 
-
+// VY
+#define MARIO_JUMP_SPEED_Y			0.5f
+#define MARIO_JUMP_DEFLECT_SPEED	0.2f
+#define MARIO_GRAVITY				0.002f // trong luc
+#define MARIO_DIE_DEFLECT_SPEED		0.5f  // die
 
 // =========== STATE MARIO ====================
 
@@ -63,7 +64,6 @@
 #define MARIO_STATE_ATTACK			1100
 #define MARIO_STATE_STAND_UP		1200
 
-
 // =========== ANI BIG MARIO ====================
 #define MARIO_ANI_BIG_IDLE_RIGHT			0
 #define MARIO_ANI_BIG_IDLE_LEFT				1
@@ -77,13 +77,11 @@
 #define MARIO_ANI_BIG_STOP_LEFT				9
 #define MARIO_ANI_BIG_SIT_RIGHT				10
 #define MARIO_ANI_BIG_SIT_LEFT				11
-
 #define MARIO_ANI_BIG_FLY_RIGHT				12
 #define MARIO_ANI_BIG_FLY_LEFT				13
 #define MARIO_ANI_BIG_KICK_RIGHT			14
 #define MARIO_ANI_BIG_KICK_LEFT				15
 #define MARIO_ANI_BIG_THROUGH_PIPE			16
-
 #define MARIO_ANI_BIG_IDLE_HOLDING_RIGHT	17
 #define MARIO_ANI_BIG_IDLE_HOLDING_RIGHT	18
 #define MARIO_ANI_BIG_WALK_HOLDING_RIGHT	19
@@ -121,7 +119,6 @@
 #define MARIO_ANI_SMALL_ON_AIR_HOLDING_LEFT		47
 #define MARIO_ANI_SMALL_FALLING_RIGHT			48
 #define MARIO_ANI_SMALL_FALLING_LEFT			49
-
 #define MARIO_ANI_SMALL_WM_INTRO				50
 #define MARIO_ANI_DIE							51
 
@@ -172,77 +169,6 @@
 //#define MARIO_TIME_ATTACK			400
 //#define MARIO_TIME_SHOOT			300
 //#define MARIO_TIME_STOP			100
-//
-//#define MARIO_ANI_IDLE_RIGHT				0
-//#define MARIO_ANI_WALK_RIGHT				1
-//#define MARIO_ANI_JUMP_RIGHT				2
-//#define MARIO_ANI_FALL_RIGHT				3
-//#define MARIO_ANI_SIT_RIGHT					4
-//#define MARIO_ANI_RUN_RIGHT					5
-//#define MARIO_ANI_STOP_RIGHT				6
-//#define MARIO_ANI_IDLE_HOLD_RIGHT			7
-//#define MARIO_ANI_WALK_HOLD_RIGHT			8
-//#define MARIO_ANI_ON_AIR_HOLD_RIGHT			9
-//
-//#define RACCOON_ANI_IDLE_RIGHT				37
-//#define RACCOON_ANI_WALK_RIGHT				38
-//#define RACCOON_ANI_RUN_RIGHT				39
-//#define RACCOON_ANI_JUMP_RIGHT				40
-//#define RACCOON_ANI_STOP_RIGHT				41
-//#define RACCOON_ANI_FIGHT_IDLE_RIGHT		42
-//#define RACCOON_ANI_SIT_RIGHT				43
-//#define RACCOON_ANI_FALL_RIGHT				44
-//#define RACCOON_ANI_WAG_TAIL_RIGHT			45
-//#define RACCOON_ANI_FLY_RIGHT				46
-//#define RACCOON_ANI_IDLE_HOLD_RIGHT			47
-//#define RACCOON_ANI_WALK_HOLD_RIGHT			48
-//#define RACCOON_ANI_ON_AIR_HOLD_RIGHT		49
-//
-//#define RACCOON_ANI_IDLE_LEFT				50
-//#define RACCOON_ANI_WALK_LEFT				51
-//#define RACCOON_ANI_RUN_LEFT				52
-//#define RACCOON_ANI_JUMP_LEFT				53
-//#define RACCOON_ANI_STOP_LEFT				54
-//#define RACCOON_ANI_FIGHT_IDLE_LEFT			55
-//#define RACCOON_ANI_SIT_LEFT				56
-//#define RACCOON_ANI_FALL_LEFT				57
-//#define RACCOON_ANI_WAG_TAIL_LEFT			58
-//#define RACCOON_ANI_FLY_LEFT				59
-//#define RACCOON_ANI_IDLE_HOLD_LEFT			60
-//#define RACCOON_ANI_WALK_HOLD_LEFT			61
-//#define RACCOON_ANI_ON_AIR_HOLD_LEFT		62
-//
-//#define FIRE_ANI_IDLE_RIGHT					63
-//#define FIRE_ANI_WALK_RIGHT					64
-//#define FIRE_ANI_RUN_RIGHT					65
-//#define FIRE_ANI_JUMP_RIGHT					66
-//#define FIRE_ANI_STOP_RIGHT					67
-//#define FIRE_ANI_FIGHT_IDLE_RIGHT			68
-//#define FIRE_ANI_ATTACK_RIGHT				69
-//#define FIRE_ANI_SIT_RIGHT					70
-//#define FIRE_ANI_FALL_RIGHT					71
-//#define FIRE_ANI_IDLE_HOLD_RIGHT			72
-//#define FIRE_ANI_WALK_HOLD_RIGHT			73
-//#define FIRE_ANI_ON_AIR_HOLD_RIGHT			74
-//
-//#define FIRE_ANI_IDLE_LEFT					75
-//#define FIRE_ANI_WALK_LEFT					76
-//#define FIRE_ANI_RUN_LEFT					77
-//#define FIRE_ANI_JUMP_LEFT					78
-//#define FIRE_ANI_STOP_LEFT					79
-//#define FIRE_ANI_FIGHT_IDLE_LEFT			80
-//#define FIRE_ANI_ATTACK_LEFT				81
-//#define FIRE_ANI_SIT_LEFT					82
-//#define FIRE_ANI_FALL_LEFT					83
-//#define FIRE_ANI_IDLE_HOLD_LEFT				84
-//#define FIRE_ANI_WALK_HOLD_LEFT				85
-//#define FIRE_ANI_ON_AIR_HOLD_LEFT			86
-//
-//#define mario_WORLD_MAP						87
-//#define MARIO_WORLD_MAP						88
-//#define RACCOON_WORLD_MAP					89
-//#define FIRE_WORLD_MAP						90
-
 
 
 
@@ -274,8 +200,9 @@
 #define OBJECT_TYPE_BRICK	4
 
 // enemy
-#define OBJECT_TYPE_GOOMBA	2
-#define OBJECT_TYPE_KOOPAS	3
+#define OBJECT_TYPE_GOOMBA			10
+#define OBJECT_TYPE_SUPER_GOOMBA	11
+#define OBJECT_TYPE_KOOPAS			12
 
 #define OBJECT_TYPE_PORTAL	50
 
