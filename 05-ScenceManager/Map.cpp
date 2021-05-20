@@ -73,14 +73,13 @@ void CMap::LoadMap() {
 
 void CMap::Render()
 {
-	int col_begin = CGame::GetInstance()->GetCamPosX() / TILE_SIZE;
 	int col_end = col_begin + (SCREEN_WIDTH / TILE_SIZE) + 1; // col_end + 1 
 	
 	CGame* game = CGame::GetInstance();
 
 	for (int i = 0; i < numRow; i++) {
 		for (int j = 0; j <= col_end; j++) {
-			int x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + game->GetCamPosX() ;
+			int x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + (int)game->GetCamPosX() ;
 			int y = TILE_SIZE * i;
 
 			CSprites::GetInstance()->Get(tileMaps[i][j])->Draw(x, y, 255);

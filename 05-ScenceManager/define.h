@@ -34,11 +34,12 @@
 #define MARIO_UNTOUCHABLE_TIME				2000
 
 
-#define MARIO_WALKING_SPEED			0.1f 
-//0.1f
+#define MARIO_WALKING_SPEED			0.08f 
+//0.1
 #define MARIO_JUMP_SPEED_Y			0.5f
 #define MARIO_JUMP_DEFLECT_SPEED	0.2f
 #define MARIO_GRAVITY				0.002f
+
 #define MARIO_DIE_DEFLECT_SPEED		0.5f
 
 #define MARIO_MAX_SPEED				0.16f
@@ -120,9 +121,10 @@
 #define MARIO_ANI_SMALL_ON_AIR_HOLDING_LEFT		47
 #define MARIO_ANI_SMALL_FALLING_RIGHT			48
 #define MARIO_ANI_SMALL_FALLING_LEFT			49
-#define MARIO_ANI_SMALL_WM_INTRO				50
 
+#define MARIO_ANI_SMALL_WM_INTRO				50
 #define MARIO_ANI_DIE							51
+
 
 
 // =========== ANI RACOON MARIO ====================

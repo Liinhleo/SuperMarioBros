@@ -19,9 +19,6 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
 	Load scene resources from scene file (textures, sprites, animations and objects)
 	See scene1.txt, scene2.txt for detail format specification
 */
-
-
-
 void CPlayScene::_ParseSection_TEXTURES(string line)
 {
 	vector<string> tokens = split(line);
@@ -60,7 +57,6 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
 }
 
-
 /*
 	Parse a line in section [MAPS]
 */
@@ -79,7 +75,6 @@ void CPlayScene::_ParseSection_MAPS(string line)
 
 	//CMaps::GetInstance()->Add(map_id, map);
 }
-
 
 void CPlayScene::_ParseSection_ANIMATIONS(string line)
 {
@@ -101,8 +96,6 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 
 	CAnimations::GetInstance()->Add(ani_id, ani);
 }
-
-
 
 void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 {
@@ -126,9 +119,6 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
-
-
-
 
 /*
 	Parse a line in section [OBJECTS] 
@@ -189,8 +179,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
 }
-
-
 
 void CPlayScene::Load()
 {
@@ -314,6 +302,8 @@ void CPlayScene::Unload()
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 
+
+
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
@@ -325,20 +315,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 	switch (KeyCode)
 	{
-	//case DIK_X:
-	//	mario->JumpX();
-	//	break;
-	//case DIK_S:
-	//	mario->Jump();
-	//	break;
-	//case DIK_A:
-	//	if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE)
-	//	{
-	//		mario->isAttack == true;
-	//	}
-	//	else
-	//		return;
-	//	break;
+	case DIK_X:
+	case DIK_S:
+		mario->SetState(MARIO_STATE_JUMP);
+		break;
+	
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_SIT);
@@ -350,6 +331,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->Reset();
 		break;
 
+	case DIK_RIGHT:
+		mario->nx = 1;
+		break;
+	case DIK_LEFT:
+		mario->nx = -1;
+		break;
 	}
 }
 
@@ -358,20 +345,26 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
-	//mario->OnKeyUp(KeyCode);
 
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
 
 	// Check event after releasing key 
-
 	switch (KeyCode)
 	{
 
 	case DIK_A:
+		if (mario->a == 0)
+			return;
+		//mario->SetAccelerate(mario->a -= MARIO_SPEED_UP);
+		break;
+	case DIK_RIGHT:
+	case DIK_LEFT:
+		mario->SetState(MARIO_STATE_IDLE);
 		mario->SetAccelerate(mario->a = 0);
 		break;
+
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_STAND_UP);// avoid Mario falling out after sitting
@@ -379,11 +372,6 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		else
 			return;
 		break;
-	//case DIK_RIGHT: 
-	//case DIK_LEFT:
-	//	mario->SetState(MARIO_STATE_IDLE);
-	//	DebugOut(L"[MESS] NOT WALKING: \n");
-	//	break;
 	}
 }
 
@@ -395,56 +383,32 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
 	// disable control key when Mario die 
-	if (mario->GetState() == MARIO_STATE_DIE)	return;
+	if (mario->GetState() == MARIO_STATE_DIE)
+		return;
 
-	//else if (game->IsKeyDown(DIK_S)) {
-	//}
-	
-	else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT)) {
-		mario->SetAccelerate(mario->a += MARIO_SPEED_UP) ;
-		DebugOut(L"[MESS] MARIO IS SPEED RIGHT %f \n ", mario->a);
-	}
-	
-	else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
+	else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT) || game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
 		mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
-		DebugOut(L"[MESS] MARIO IS SPEED left %f \n ", mario->a);
-
-		//if (mario->vx < 0) {
-		//	mario->nx = -1;
-		//	mario->SetState(MARIO_STATE_STOP);
-		//	DebugOut(L"[MESS] MARIO IS STOP RUNNING LEFT \n");
-		//}
-		//else{
-		//	//mario->SetState(MARIO_STATE_RUN_LEFT);
-		//	DebugOut(L"[MESS] MARIO IS RUNNING LEFT \n");
-		//}
 	}
-	
-	if (game->IsKeyDown(DIK_RIGHT)) {
+
+	else if (game->IsKeyDown(DIK_RIGHT)) {
+		mario->nx = 1;
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
 		DebugOut(L"[MESS] MARIO IS WALKING RIGHT \n" );
 	}
 
 	else if (game->IsKeyDown(DIK_LEFT)) {
+		mario->nx = -1;
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
 		DebugOut(L"[MESS] MARIO IS WALKING LEFT \n");
 	}
-	
 
-	/*else if (game->IsKeyDown(DIK_DOWN)) {
+	else if (game->IsKeyDown(DIK_DOWN)) {
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_SIT);
 		}
 		else
 			return;
 	}
-	
-	else if (game->IsKeyDown(DIK_A)) {
-		mario->canHolding = true;
-		mario->canSpeedUp = true;
-	}*/
 	else
 		mario->SetState(MARIO_STATE_IDLE);
-
-	
 }
