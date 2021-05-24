@@ -330,13 +330,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_F1: 
 		mario->Reset();
 		break;
-
-	case DIK_RIGHT:
-		mario->nx = 1;
-		break;
-	case DIK_LEFT:
-		mario->nx = -1;
-		break;
 	}
 }
 
@@ -353,16 +346,13 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	// Check event after releasing key 
 	switch (KeyCode)
 	{
-
 	case DIK_A:
-		if (mario->a == 0)
-			return;
-		//mario->SetAccelerate(mario->a -= MARIO_SPEED_UP);
+		mario->SetAccelerate(0);
 		break;
+
 	case DIK_RIGHT:
 	case DIK_LEFT:
-		mario->SetAccelerate(mario->a = 0);
-		mario->vx = 0;
+		mario->SetState(MARIO_STATE_IDLE);
 		break;
 
 	case DIK_DOWN:
@@ -378,7 +368,6 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
 	//DebugOut(L"[INFO] Key State %d\n", states);
-
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
@@ -389,6 +378,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	else if (mario->state != MARIO_STATE_SIT) {
 		if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT) || game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
 			mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
+			mario->SetState(MARIO_STATE_RUN);
 		}
 
 		else if (game->IsKeyDown(DIK_RIGHT)) {

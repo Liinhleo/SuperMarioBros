@@ -40,7 +40,7 @@
 // VX 
 #define MARIO_WALKING_SPEED			0.08f 
 #define MARIO_MAX_SPEED				0.2f
-#define MARIO_SPEED_UP				0.0002f // TANG TOC CHAY
+#define MARIO_SPEED_UP				0.0003f // TANG TOC CHAY
 
 // VY
 #define MARIO_JUMP_SPEED_Y			0.5f
@@ -49,7 +49,6 @@
 #define MARIO_DIE_DEFLECT_SPEED		0.5f  // die
 
 // =========== STATE MARIO ====================
-
 #define MARIO_STATE_IDLE			0
 #define MARIO_STATE_WALKING_RIGHT	100
 #define MARIO_STATE_WALKING_LEFT	200
