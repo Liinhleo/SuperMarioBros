@@ -46,14 +46,8 @@ void CMario::StartUntouchable() {
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
-	//// Set a, vx for Mario before update
 
-	//// chuyen dong  bien doi deu 
-	//else {
-	//	vx += nx * a * dt;	// vx = vx + at -> chuyen dong nhanh dan deu
-	//}
-
-	// update vx, a
+	// update vx, a to increase speed
 	if (a == 0) {	// chuyen dong deu 
 		vx = vx;
 	}
@@ -231,11 +225,7 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
 			else ani = MARIO_ANI_BIG_FALLING_LEFT;
 		}
-		// STOP
-		else if (state == MARIO_STATE_STOP) {
-			if (nx > 0) ani = MARIO_ANI_BIG_STOP_RIGHT;
-			else ani = MARIO_ANI_BIG_STOP_LEFT;
-		}
+
 		
 		// RUN 
 		else if (state == MARIO_STATE_RUN) {
@@ -252,16 +242,31 @@ void CMario::Render()
 					ani = MARIO_ANI_BIG_WALKING_LEFT;
 			}
 		}
+
+		// STOP
+		//else if (state == MARIO_STATE_STOP) {
+		//	if (nx > 0) ani = MARIO_ANI_BIG_STOP_LEFT;
+		//	else ani = MARIO_ANI_BIG_STOP_RIGHT;
+		//}
+
+		else if (state == MARIO_STATE_WALKING_RIGHT) {
+			/*if (vx < 0)
+				ani = MARIO_ANI_BIG_STOP_RIGHT;*/
+			ani = MARIO_ANI_BIG_WALKING_RIGHT;
+		}
+
+		else if (state == MARIO_STATE_WALKING_LEFT) {
+			/*if (vx < 0)
+				ani = MARIO_ANI_BIG_STOP_LEFT;*/
+			ani = MARIO_ANI_BIG_WALKING_LEFT;
+		}
 		// IDLE
 		else if (vx == 0)
 		{
 			if (nx > 0) ani = MARIO_ANI_BIG_IDLE_RIGHT;
 			else ani = MARIO_ANI_BIG_IDLE_LEFT;
 		}
-		//WALKING
-		else if (vx > 0)
-			ani = MARIO_ANI_BIG_WALKING_RIGHT;
-		else ani = MARIO_ANI_BIG_WALKING_LEFT;
+
 		break;	
 
 #pragma endregion
@@ -325,6 +330,10 @@ void CMario::SetState(int state)
 	case MARIO_STATE_DIE:
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
+
+	//case MARIO_STATE_STOP:
+	//	vx = 0;
+	//	break;
 	case MARIO_STATE_IDLE:
 		vx = 0;
 		break;

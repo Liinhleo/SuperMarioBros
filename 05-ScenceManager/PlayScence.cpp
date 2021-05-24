@@ -351,8 +351,13 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		break;
 
 	case DIK_RIGHT:
+		mario->SetSpeed(0, 0);
+		mario->nx = 1;
+		break;
+
 	case DIK_LEFT:
-		mario->SetState(MARIO_STATE_IDLE);
+		mario->SetSpeed(0,0);
+		mario->nx = -1;
 		break;
 
 	case DIK_DOWN:
@@ -375,27 +380,19 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
 
-	else if (mario->state != MARIO_STATE_SIT) {
-		if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT) || game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
-			mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
-			mario->SetState(MARIO_STATE_RUN);
-		}
-
-		else if (game->IsKeyDown(DIK_RIGHT)) {
-			if (mario->state == MARIO_STATE_SIT)
-				return;
-			mario->SetState(MARIO_STATE_WALKING_RIGHT);
-			DebugOut(L"[MESS] MARIO IS WALKING RIGHT \n");
-		}
-
-		else if (game->IsKeyDown(DIK_LEFT)) {
-			if (mario->state == MARIO_STATE_SIT)
-				return;
-			mario->SetState(MARIO_STATE_WALKING_LEFT);
-			DebugOut(L"[MESS] MARIO IS WALKING LEFT \n");
-		}
+	if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT) || game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
+		mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
+		mario->SetState(MARIO_STATE_RUN);
 	}
 
+	else if (game->IsKeyDown(DIK_RIGHT)) { 
+		mario->SetState(MARIO_STATE_WALKING_RIGHT);
+	}
+
+	else if (game->IsKeyDown(DIK_LEFT)) {
+		mario->SetState(MARIO_STATE_WALKING_LEFT);
+	}
+	
 	else if (game->IsKeyDown(DIK_DOWN)) {
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_SIT);
