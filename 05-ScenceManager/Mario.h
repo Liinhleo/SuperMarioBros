@@ -18,7 +18,7 @@ public:
 	float a; // gia toc cua Mario
 	float gravity; // trong luc cua Mario
 
-	bool isOnTheGround = true;
+	bool isOnGround = false;
 	bool canJump = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
@@ -43,18 +43,16 @@ public:
 	void SetLevel(int l) { level = l; }
 	int GetLevel() {return level; }
 
+	void UpdateSpeed(DWORD dt);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
 	virtual void Render();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
 	void isDamaged();
+	void isJumpX();
+	void isJumpS();
 	void StartUntouchable();
 	void Reset();
-
-	// Collision
-	//void CollisonGround(vector<LPGAMEOBJECT>* coObjects);
-	//void CollisonEnemy(vector<LPGAMEOBJECT>* coObjects);
-	//void CollisonPortal(vector<LPGAMEOBJECT>* coObjects);
 
 };

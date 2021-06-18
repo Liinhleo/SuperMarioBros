@@ -2,6 +2,8 @@
 
 CKoopas::CKoopas()
 {
+	type = ObjectType::KOOPA;
+
 	SetState(KOOPAS_STATE_WALKING);
 }
 

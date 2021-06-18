@@ -239,6 +239,7 @@ void CPlayScene::Update(DWORD dt)
 	// Get Scene ID -> Get map_id --> update map with camera
 
 	vector<LPGAMEOBJECT> coObjects; //coObject == collision object
+
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
@@ -264,7 +265,7 @@ void CPlayScene::Update(DWORD dt)
 	//cx -= game->GetScreenWidth() / 2;
 	//cy -= game->GetScreenHeight() / 2;
 
-	game->cam_y = 200;
+	game->cam_y = 250;
 
 	// TH mario o giua screen va screen_width < screen_map_width
 	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->getWidthMap())
@@ -317,7 +318,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	{
 	case DIK_X:
 	case DIK_S:
-		mario->SetState(MARIO_STATE_JUMP);
+		if (mario->isOnGround == false)
+			return;
+		mario->isJumpX();
 		break;
 	
 	case DIK_DOWN:
@@ -372,7 +375,6 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
-	//DebugOut(L"[INFO] Key State %d\n", states);
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
@@ -381,15 +383,21 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		return;
 
 	if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT) || game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
+		if (mario->state == MARIO_STATE_SIT)
+			return; 
 		mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
 		mario->SetState(MARIO_STATE_RUN);
 	}
 
 	else if (game->IsKeyDown(DIK_RIGHT)) { 
+		if (mario->state == MARIO_STATE_SIT)
+			return;
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
 	}
 
 	else if (game->IsKeyDown(DIK_LEFT)) {
+		if (mario->state == MARIO_STATE_SIT)
+			return;
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
 	}
 	
@@ -399,6 +407,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else
 			return;
+	}
+	// JUMP
+	else if (game->IsKeyDown(DIK_S)) {
+		mario->isJumpS();
 	}
 	else
 		mario->SetState(MARIO_STATE_IDLE);

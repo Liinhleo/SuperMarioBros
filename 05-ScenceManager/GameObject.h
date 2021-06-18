@@ -33,6 +33,17 @@ struct CCollisionEvent
 	}
 };
 
+enum ObjectType {
+	GROUND,
+	BRICK,
+	GOOMBA,
+	SUPER_GOOMBA,
+	KOOPA,
+	SUPER_KOOPA,
+	ITEM,
+	PLANTS,
+	PORTAL,
+};
 
 class CGameObject
 {
@@ -50,9 +61,10 @@ public:
 	int nx;	 
 
 	int state;
+	ObjectType type;
 
 	DWORD dt; 
-
+	
 	LPANIMATION_SET animation_set;
 
 public: 

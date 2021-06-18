@@ -1,6 +1,8 @@
 #include "Goomba.h"
 CGoomba::CGoomba()
 {
+	type = ObjectType::GOOMBA;
+
 	SetState(GOOMBA_STATE_WALKING);
 }
 

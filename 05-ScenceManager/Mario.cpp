@@ -8,6 +8,7 @@
 #include "Goomba.h"
 #include "Portal.h"
 #include "Ground.h"
+#include "Brick.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -24,6 +25,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->y = y;
 
 	this->a = 0;
+
 }
 
 /*
@@ -44,9 +46,7 @@ void CMario::StartUntouchable() {
 	this->untouchable_start = GetTickCount();
 }
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
-{
-
+void CMario::UpdateSpeed(DWORD dt) {
 	// update vx, a to increase speed
 	if (a == 0) {	// chuyen dong deu 
 		vx = vx;
@@ -55,18 +55,31 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		this->vx += nx * a * dt;
 		if (abs(vx) >= MARIO_MAX_SPEED)
 			vx = nx * MARIO_MAX_SPEED;
-
 	}
+}
+
+void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+{
+
+	UpdateSpeed(dt);
+
+	// Simple fall down
+	this->vy += MARIO_GRAVITY * dt;
 
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 	DebugOut(L"current state: %d \n",state);
 
-	// Simple fall down
-	this->vy += MARIO_GRAVITY*dt;
 
-	DebugOut(L"current vy %f \n", vy);
-	DebugOut(L"current vx: %f \n", vx);
+	//if (!isOnGround) { // nhay cao qua thi rot
+	//	this->vy += MARIO_GRAVITY * dt;
+	//	SetState(MARIO_STATE_FALL);
+	// 
+	//}
+
+
+	//DebugOut(L"current vy %f \n", vy);
+	//DebugOut(L"current vx: %f \n", vx);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -98,6 +111,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
+		
 		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
 		//if (rdx != 0 && rdx!=dx)
 		//	x += nx*abs(rdx); 
@@ -115,20 +129,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
 //#pragma region COLLISION WITH GROUND
-//			if (dynamic_cast<CGround*>(e->obj)) { // if e->obj is Ground 
-//				if (e->ny < 0) { // mario xet va cham theo phuong y (di tren ground) 
-//					isOnTheGround = true;
-//					DebugOut(L"brick ne");
-//					vy = dy = 0;
-//				}
-//			}
-			
-			//	else if (e->ny > 0) {
-			//		y += dy;
-			//		isFalling = true;
-			//	}
+			if (dynamic_cast<CGround*>(e->obj)|| dynamic_cast<CBrick*>(e->obj)) { // if e->obj is Ground 
+				if (e->ny < 0) { // mario xet va cham theo phuong y (di tren ground) 
+					isOnGround = true;
+					DebugOut(L"on ground");
+				}
+			}
+			//if (e->ny < 0) { // xet va cham voi phuong y (di tren ground)
+			//	isOnGround = true;
 			//}
-#pragma endregion
 
 #pragma region COLLISION WITH GOOMBA
 			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
@@ -212,7 +221,7 @@ void CMario::Render()
 
 #pragma region BIG MARIO
 	case MARIO_LEVEL_BIG:
-		if (state == MARIO_STATE_JUMP) {
+		if (!isOnGround) {
 			if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
 			else ani = MARIO_ANI_BIG_JUMP_LEFT;
 		}
@@ -220,11 +229,11 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
 			else ani = MARIO_ANI_BIG_SIT_LEFT;
 		}
-		// FALLING 
-		else if (state == MARIO_STATE_FALL) {
-			if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
-			else ani = MARIO_ANI_BIG_FALLING_LEFT;
-		}
+		//// FALLING 
+		//else if (state == MARIO_STATE_FALL) {
+		//	if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
+		//	else ani = MARIO_ANI_BIG_FALLING_LEFT;
+		//}
 
 		
 		// RUN 
@@ -263,8 +272,14 @@ void CMario::Render()
 		// IDLE
 		else if (vx == 0)
 		{
-			if (nx > 0) ani = MARIO_ANI_BIG_IDLE_RIGHT;
-			else ani = MARIO_ANI_BIG_IDLE_LEFT;
+			if (!isOnGround) {
+				if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
+				else ani = MARIO_ANI_BIG_FALLING_LEFT;
+			}
+			else {
+				if (nx > 0) ani = MARIO_ANI_BIG_IDLE_RIGHT;
+				else ani = MARIO_ANI_BIG_IDLE_LEFT;
+			}
 		}
 
 		break;	
@@ -330,10 +345,6 @@ void CMario::SetState(int state)
 	case MARIO_STATE_DIE:
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
-
-	//case MARIO_STATE_STOP:
-	//	vx = 0;
-	//	break;
 	case MARIO_STATE_IDLE:
 		vx = 0;
 		break;
@@ -346,9 +357,11 @@ void CMario::SetState(int state)
 		vx = -MARIO_WALKING_SPEED;
 		nx = -1;
 		break;
+
 	case MARIO_STATE_JUMP:
-		vy = -MARIO_JUMP_SPEED_Y;
+		isOnGround = false;
 		break;
+
 	case MARIO_STATE_SIT:
 		if (state == MARIO_STATE_SIT) //dang ngoi -> return -> tranh tang y -> mario rot
 			return;
@@ -404,6 +417,17 @@ void CMario::isDamaged() {
 	else
 		SetState(MARIO_STATE_DIE);
 }
+
+void CMario::isJumpX() {
+	vy = -MARIO_JUMP_SPEED_Y * 0.75;
+	SetState(MARIO_STATE_JUMP);
+}
+
+void CMario::isJumpS() {
+	vy = -MARIO_JUMP_SPEED_Y *0.5;
+	SetState(MARIO_STATE_JUMP);
+}
+
 //
 ////void CMario::Walk() {
 ////	if (CGame::GetInstance()->IsKeyDown(DIK_RIGHT) || CGame::GetInstance()->IsKeyDown(DIK_LEFT)) {
@@ -435,7 +459,7 @@ void CMario::isDamaged() {
 //	if (isJump) // han che nhay lien tuc
 //		return;
 //	isJump = true;
-//	isOnTheGround = false;
+//	isOnGround = false;
 //	vy = -MARIO_JUMP_SPEED_Y * 0.75;
 //	y = y - 5;
 //}
