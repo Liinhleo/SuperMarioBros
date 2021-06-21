@@ -3,8 +3,6 @@
 #include "Brick.h"
 #include "Ground.h"
 
-#define MAX_HEIGHT 
-
 class CMario : public CGameObject
 {
 	int level;
@@ -13,13 +11,13 @@ class CMario : public CGameObject
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
-
 public: 
+	float jumpStartY;
 	float a; // gia toc cua Mario
-	float gravity; // trong luc cua Mario
+	float g; // gia toc trong truong cua Mario
 
 	bool isOnGround = false;
-	bool canJump = false;
+	bool isJumpHigh = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
 
@@ -27,13 +25,13 @@ public:
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 
-	// Gia toc
+	// Gia toc theo phuong x
 	void SetAccelerate(float a) { this->a = a; }
 	void GetAccelerate(float& a) { a = this->a; }
 
-	// Trong luc
-	void SetGravity(float gravity) { this->gravity = gravity; }
-	void GetGravity(float& gravity) { gravity = this->gravity; }
+	// Gia toc trong truong theo phuong y
+	void SetGravity(float gravity) { this->g = gravity; }
+	void GetGravity(float& gravity) { gravity = this->g; }
 
 	// Trang thai
 	void SetState(int state);
@@ -44,14 +42,13 @@ public:
 	int GetLevel() {return level; }
 
 	void UpdateSpeed(DWORD dt);
+	void UpdateHeight(DWORD dt);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
 	virtual void Render();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
 	void isDamaged();
-	void isJumpX();
-	void isJumpS();
 	void StartUntouchable();
 	void Reset();
 

@@ -24,7 +24,9 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->x = x;
 	this->y = y;
 
+	this->jumpStartY = 0;
 	this->a = 0;
+	this->g = MARIO_GRAVITY; // gravity ban dau (+)
 
 }
 
@@ -58,28 +60,38 @@ void CMario::UpdateSpeed(DWORD dt) {
 	}
 }
 
+void CMario::UpdateHeight(DWORD dt) {
+	float curHeight = 0;
+	curHeight = this->y - this->jumpStartY;
+	DebugOut(L" MARIO:  y: %f jumpStartY: %f, curHeight: %f \n", y, jumpStartY, curHeight);
+
+	if (state== MARIO_STATE_JUMP) {
+		this->vy -= g * dt; // jump higher
+
+		if (abs(this->vy) == 0.25) {
+			this->vy == -0.25;
+			SetState(MARIO_STATE_FALL);
+		}
+	}
+}
+
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
 
+
 	UpdateSpeed(dt);
 
-	// Simple fall down
-	this->vy += MARIO_GRAVITY * dt;
+	this->vy += g * dt;// Simple fall down
+	UpdateHeight(dt);
+
+	DebugOut(L"current vy: %d \n", vy);
+	DebugOut(L"current dy: %d \n", dy);
 
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	DebugOut(L"current state: %d \n",state);
 
 
-	//if (!isOnGround) { // nhay cao qua thi rot
-	//	this->vy += MARIO_GRAVITY * dt;
-	//	SetState(MARIO_STATE_FALL);
-	// 
-	//}
-
-
-	//DebugOut(L"current vy %f \n", vy);
-	//DebugOut(L"current vx: %f \n", vx);
+	DebugOut(L"current state: %d \n", state);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -101,7 +113,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	if (coEvents.size()==0){
 		// khong bi can boi object nao -> thoai mai di chuyen
 		x += dx; 
-		y += dy;		// xuyen qua ground
+		y += dy;
 	}
 	else{
 		float min_tx, min_ty, nx = 0, ny;
@@ -122,22 +134,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		y += min_ty*dy + ny*0.4f;
 
 		if (nx!=0) vx = 0;//va cham theo phuong x
-		if (ny!=0) vy = 0;//va cham theo truc y
+
+		//if (ny!=0) vy = 0;
+		if (ny != 0)//va cham theo truc y
+		{
+			vy = 0;
+			if (ny == -1)
+			{
+				isOnGround = true;
+				DebugOut(L"on ground");
+			}
+		}
 	
 
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-//#pragma region COLLISION WITH GROUND
-			if (dynamic_cast<CGround*>(e->obj)|| dynamic_cast<CBrick*>(e->obj)) { // if e->obj is Ground 
-				if (e->ny < 0) { // mario xet va cham theo phuong y (di tren ground) 
-					isOnGround = true;
-					DebugOut(L"on ground");
-				}
-			}
-			//if (e->ny < 0) { // xet va cham voi phuong y (di tren ground)
-			//	isOnGround = true;
-			//}
 
 #pragma region COLLISION WITH GOOMBA
 			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
@@ -183,153 +195,185 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 void CMario::Render()
 {
 	int ani = -1;
-
-	switch (level) {
-
 #pragma region SMALL MARIO
-	case MARIO_LEVEL_SMALL:
-		if (state == MARIO_STATE_DIE) {
+	if (GetLevel() == MARIO_LEVEL_SMALL) {
+		switch (state) {
+		case MARIO_STATE_DIE:
 			ani = MARIO_ANI_DIE;
-		}
-		// STOP
-		else if (state == MARIO_STATE_STOP) {
+			break;
+		case MARIO_STATE_STOP:
 			if (nx > 0) ani = MARIO_ANI_SMALL_STOP_RIGHT;
 			else ani = MARIO_ANI_SMALL_STOP_LEFT;
-		}
-		// JUMP
-		else if (state == MARIO_STATE_JUMP) {
-			if (nx > 0) ani = MARIO_ANI_SMALL_JUMP_RIGHT;
-			else ani = MARIO_ANI_SMALL_JUMP_LEFT;
-		}
-		// RUN 
-		else if (state == MARIO_STATE_RUN) {
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = MARIO_ANI_SMALL_WALKING_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = MARIO_ANI_SMALL_WALKING_LEFT;
+			break;
+		case MARIO_STATE_RUN:
 			if (nx > 0) ani = MARIO_ANI_SMALL_RUN_RIGHT;
 			else ani = MARIO_ANI_SMALL_RUN_LEFT;
-		}
-		// IDLE
-		else if (vx == 0)
-		{
-			if (nx > 0) ani = MARIO_ANI_SMALL_IDLE_RIGHT;
-			else ani = MARIO_ANI_SMALL_IDLE_LEFT;
-		}
-		//WALKING
-		else if (vx > 0)
-			ani = MARIO_ANI_SMALL_WALKING_RIGHT;
-		else ani = MARIO_ANI_SMALL_WALKING_LEFT;
-		break;
-#pragma endregion
-
-#pragma region BIG MARIO
-	case MARIO_LEVEL_BIG:
-		if (!isOnGround) {
-			if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
-			else ani = MARIO_ANI_BIG_JUMP_LEFT;
-		}
-		if (state == MARIO_STATE_SIT) {
-			if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
-			else ani = MARIO_ANI_BIG_SIT_LEFT;
-		}
-		//// FALLING 
-		//else if (state == MARIO_STATE_FALL) {
-		//	if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
-		//	else ani = MARIO_ANI_BIG_FALLING_LEFT;
-		//}
-
-		
-		// RUN 
-		else if (state == MARIO_STATE_RUN) {
-			if (nx > 0){
-				if (vx >= MARIO_MAX_SPEED)	
-					ani = MARIO_ANI_BIG_RUN_RIGHT;
-				else 
-					ani = MARIO_ANI_BIG_WALKING_RIGHT;
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0) ani = MARIO_ANI_SMALL_SIT_RIGHT;
+			else ani = MARIO_ANI_SMALL_SIT_LEFT;
+			break;
+		case MARIO_STATE_FALL:
+			if (nx > 0) ani = MARIO_ANI_SMALL_FALLING_RIGHT;
+			else ani = MARIO_ANI_SMALL_FALLING_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (state == MARIO_STATE_SIT) {
+				if (nx > 0) ani = MARIO_ANI_SMALL_SIT_RIGHT;
+				else ani = MARIO_ANI_SMALL_SIT_LEFT;
 			}
 			else {
-				if (abs(vx) >= MARIO_MAX_SPEED)	
-					ani = MARIO_ANI_BIG_RUN_LEFT;
-				else 
-					ani = MARIO_ANI_BIG_WALKING_LEFT;
+				if (vy < 0) {
+					if (nx > 0) ani = MARIO_ANI_SMALL_JUMP_RIGHT;
+					else ani = MARIO_ANI_SMALL_JUMP_LEFT;
+				}
+				else {
+					if (nx > 0) ani = MARIO_ANI_SMALL_FALLING_RIGHT;
+					else ani = MARIO_ANI_SMALL_FALLING_LEFT;
+				}
 			}
-		}
-
-		// STOP
-		//else if (state == MARIO_STATE_STOP) {
-		//	if (nx > 0) ani = MARIO_ANI_BIG_STOP_LEFT;
-		//	else ani = MARIO_ANI_BIG_STOP_RIGHT;
-		//}
-
-		else if (state == MARIO_STATE_WALKING_RIGHT) {
-			/*if (vx < 0)
-				ani = MARIO_ANI_BIG_STOP_RIGHT;*/
-			ani = MARIO_ANI_BIG_WALKING_RIGHT;
-		}
-
-		else if (state == MARIO_STATE_WALKING_LEFT) {
-			/*if (vx < 0)
-				ani = MARIO_ANI_BIG_STOP_LEFT;*/
-			ani = MARIO_ANI_BIG_WALKING_LEFT;
-		}
-		// IDLE
-		else if (vx == 0)
-		{
-			if (!isOnGround) {
-				if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
-				else ani = MARIO_ANI_BIG_FALLING_LEFT;
-			}
+			break;
+		default:
+			if (!isOnGround)
+				break;
 			else {
-				if (nx > 0) ani = MARIO_ANI_BIG_IDLE_RIGHT;
-				else ani = MARIO_ANI_BIG_IDLE_LEFT;
+				if (nx > 0) {
+					if (vx > 0) ani = MARIO_ANI_BIG_WALKING_RIGHT;
+					else ani = MARIO_ANI_BIG_IDLE_RIGHT;
+				}
+				else {
+					if (vx < 0) ani = MARIO_ANI_BIG_WALKING_LEFT;
+					else ani = MARIO_ANI_BIG_IDLE_LEFT;
+				}
 			}
+			break;
 		}
-
-		break;	
-
-#pragma endregion
-
-#pragma region RACOON MARIO
-
-	// ====================== RACOON MARIO ======================
-	//default:
-	//	// SITTING
-	//	if (state == MARIO_STATE_SIT) {
-	//		if (nx > 0) ani = MARIO_ANI_RACOON_SIT_RIGHT;
-	//		else ani = MARIO_ANI_RACOON_SIT_LEFT;
-	//	}
-	//	// FALLING 
-	//	else if (state == MARIO_STATE_FALL) {
-	//		if (nx > 0) ani = MARIO_ANI_RACOON_FALLING_RIGHT;
-	//		else ani = MARIO_ANI_RACOON_FALLING_LEFT;
-	//	}
-	//	// STOP
-	//	else if (state == MARIO_STATE_STOP) {
-	//		if (nx > 0) ani = MARIO_ANI_RACOON_STOP_RIGHT;
-	//		else ani = MARIO_ANI_RACOON_STOP_LEFT;
-	//	}
-	//	// JUMP
-	//	else if (state == MARIO_STATE_JUMP) {
-	//		if (nx > 0) ani = MARIO_ANI_RACOON_JUMP_RIGHT;
-	//		else ani = MARIO_ANI_RACOON_JUMP_LEFT;
-	//	}
-	//	// RUN 
-	//	else if (state == MARIO_STATE_RUN) {
-	//		if (nx > 0) ani = MARIO_ANI_RACOON_RUN_RIGHT;
-	//		else ani = MARIO_ANI_RACOON_RUN_LEFT;
-	//	}
-	//	// IDLE
-	//	else if (vx == 0)
-	//	{
-	//		if (nx > 0) ani = MARIO_ANI_RACOON_IDLE_RIGHT;
-	//		else ani = MARIO_ANI_RACOON_IDLE_LEFT;
-	//	}
-	//	//WALKING
-	//	else if (vx > 0)
-	//		ani = MARIO_ANI_RACOON_WALKING_RIGHT;
-	//	else ani = MARIO_ANI_RACOON_WALKING_LEFT;
-	//	break;
 	}
 #pragma endregion
 
-	//DebugOut(L"current ani: %d \n", ani);
+#pragma region BIG MARIO
+	if (GetLevel() == MARIO_LEVEL_BIG) {
+		switch (state) {
+		case MARIO_STATE_STOP:
+			if (nx > 0) ani = MARIO_ANI_BIG_STOP_RIGHT;
+			else ani = MARIO_ANI_BIG_STOP_LEFT;
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = MARIO_ANI_BIG_WALKING_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = MARIO_ANI_BIG_WALKING_LEFT;
+			break;
+		case MARIO_STATE_RUN:
+			if (nx > 0) ani = MARIO_ANI_BIG_RUN_RIGHT;
+			else ani = MARIO_ANI_BIG_RUN_LEFT;
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
+			else ani = MARIO_ANI_BIG_SIT_LEFT;
+			break;
+		case MARIO_STATE_FALL:
+			if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
+			else ani = MARIO_ANI_BIG_FALLING_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (state == MARIO_STATE_SIT) {
+				if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
+				else ani = MARIO_ANI_BIG_SIT_LEFT;
+			}
+			else {
+				if (vy < 0) {
+					if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
+					else ani = MARIO_ANI_BIG_JUMP_LEFT;
+				}
+				else {
+					if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
+					else ani = MARIO_ANI_BIG_FALLING_LEFT;
+				}
+			}
+			break;
+		default:
+			if (!isOnGround)	
+				break;
+			else {
+				if (nx > 0) {
+					if (vx > 0) ani = MARIO_ANI_BIG_WALKING_RIGHT;
+					else ani = MARIO_ANI_BIG_IDLE_RIGHT;
+				}
+				else {
+					if (vx < 0) ani = MARIO_ANI_BIG_WALKING_LEFT;
+					else ani = MARIO_ANI_BIG_IDLE_LEFT;
+				}
+			}
+			break;
+		}
+	}
+#pragma endregion
+
+#pragma region RACOON MARIO
+	if (GetLevel() == MARIO_LEVEL_RACOON) {
+		switch (state) {
+		case MARIO_STATE_STOP:
+			if (nx > 0) ani = MARIO_ANI_RACOON_STOP_RIGHT;
+			else ani = MARIO_ANI_RACOON_STOP_LEFT;
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = MARIO_ANI_RACOON_WALKING_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = MARIO_ANI_RACOON_WALKING_LEFT;
+			break;
+		case MARIO_STATE_RUN:
+			if (nx > 0) ani = MARIO_ANI_RACOON_RUN_RIGHT;
+			else ani = MARIO_ANI_RACOON_RUN_LEFT;
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0) ani = MARIO_ANI_RACOON_SIT_RIGHT;
+			else ani = MARIO_ANI_RACOON_SIT_LEFT;
+			break;
+		case MARIO_STATE_FALL:
+			if (nx > 0) ani = MARIO_ANI_RACOON_FALLING_RIGHT;
+			else ani = MARIO_ANI_RACOON_FALLING_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (state == MARIO_STATE_SIT) {
+				if (nx > 0) ani = MARIO_ANI_RACOON_SIT_RIGHT;
+				else ani = MARIO_ANI_RACOON_SIT_LEFT;
+			}
+			else {
+				if (vy < 0) {
+					if (nx > 0) ani = MARIO_ANI_RACOON_JUMP_RIGHT;
+					else ani = MARIO_ANI_RACOON_JUMP_LEFT;
+				}
+				else {
+					if (nx > 0) ani = MARIO_ANI_RACOON_FALLING_RIGHT;
+					else ani = MARIO_ANI_RACOON_FALLING_LEFT;
+				}
+			}
+			break;
+		default:
+			if (!isOnGround)
+				break;
+			else {
+				if (nx > 0) {
+					if (vx > 0) ani = MARIO_ANI_RACOON_WALKING_RIGHT;
+					else ani = MARIO_ANI_RACOON_IDLE_RIGHT;
+				}
+				else {
+					if (vx < 0) ani = MARIO_ANI_RACOON_WALKING_LEFT;
+					else ani = MARIO_ANI_RACOON_IDLE_LEFT;
+				}
+			}
+				break;
+		}
+	}
+#pragma endregion
 
 	int alpha = 255;
 	if (untouchable) alpha = 128;
@@ -346,6 +390,10 @@ void CMario::SetState(int state)
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
 	case MARIO_STATE_IDLE:
+		if (!isOnGround) {
+			SetState(MARIO_STATE_FALL);
+			return;
+		}
 		vx = 0;
 		break;
 	case MARIO_STATE_WALKING_RIGHT:
@@ -360,6 +408,7 @@ void CMario::SetState(int state)
 
 	case MARIO_STATE_JUMP:
 		isOnGround = false;
+		vy = -MARIO_JUMP_SPEED_Y * 0.75;
 		break;
 
 	case MARIO_STATE_SIT:
@@ -418,17 +467,6 @@ void CMario::isDamaged() {
 		SetState(MARIO_STATE_DIE);
 }
 
-void CMario::isJumpX() {
-	vy = -MARIO_JUMP_SPEED_Y * 0.75;
-	SetState(MARIO_STATE_JUMP);
-}
-
-void CMario::isJumpS() {
-	vy = -MARIO_JUMP_SPEED_Y *0.5;
-	SetState(MARIO_STATE_JUMP);
-}
-
-//
 ////void CMario::Walk() {
 ////	if (CGame::GetInstance()->IsKeyDown(DIK_RIGHT) || CGame::GetInstance()->IsKeyDown(DIK_LEFT)) {
 ////		isWalking = true; 
@@ -453,30 +491,3 @@ void CMario::isJumpS() {
 ////	//break;
 ////
 ////}
-//
-//
-//void CMario::JumpX() {
-//	if (isJump) // han che nhay lien tuc
-//		return;
-//	isJump = true;
-//	isOnGround = false;
-//	vy = -MARIO_JUMP_SPEED_Y * 0.75;
-//	y = y - 5;
-//}
-//
-//
-// 
-//void CMario::Jump() {
-//	//// TH2: JUMP HIGHER (Nhan giu phim S)  
-//	//if (CGame::GetInstance()->IsKeyDown(DIK_S)) {
-//	//	if (isJump) // han che nhay lien tuc
-//	//		return;
-//	//	isJump = true;
-//	//	vy = -MARIO_JUMP_SPEED_Y;
-//	//	y = y - 5;
-//	//	if (vy <= 0) {
-//	//		isFalling = true;
-//	//		isJump = false;
-//	//	}
-//	//}
-//}

@@ -320,7 +320,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_S:
 		if (mario->isOnGround == false)
 			return;
-		mario->isJumpX();
+		mario->SetState(MARIO_STATE_JUMP);
 		break;
 	
 	case DIK_DOWN:
@@ -349,6 +349,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	// Check event after releasing key 
 	switch (KeyCode)
 	{
+
 	case DIK_A:
 		mario->SetAccelerate(0);
 		break;
@@ -410,7 +411,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	}
 	// JUMP
 	else if (game->IsKeyDown(DIK_S)) {
-		mario->isJumpS();
+		mario->isJumpHigh = true;
+		mario->GetPosY(mario->jumpStartY);
+		mario->SetState(MARIO_STATE_JUMP);
 	}
 	else
 		mario->SetState(MARIO_STATE_IDLE);
