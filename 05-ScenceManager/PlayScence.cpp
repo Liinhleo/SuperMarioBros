@@ -316,10 +316,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 	switch (KeyCode)
 	{
-	case DIK_X:
 	case DIK_S:
-		if (mario->isOnGround == false)
-			return;
+
+	case DIK_X:
 		mario->SetState(MARIO_STATE_JUMP);
 		break;
 	
@@ -363,6 +362,15 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		mario->SetSpeed(0,0);
 		mario->nx = -1;
 		break;
+	case DIK_S:
+		if (mario->GetState() == MARIO_STATE_JUMP) {
+			mario->SetState(MARIO_STATE_FALL);
+		}
+		else if (mario->isOnGround) {
+			mario->SetState(MARIO_STATE_IDLE);
+		}
+
+		break;
 
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -393,6 +401,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_RIGHT)) { 
 		if (mario->state == MARIO_STATE_SIT)
 			return;
+		if (mario->GetState() == MARIO_STATE_WALKING_LEFT) {
+			mario->SetState(MARIO_STATE_STOP);
+		}
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
 	}
 
@@ -411,9 +422,15 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	}
 	// JUMP
 	else if (game->IsKeyDown(DIK_S)) {
-		mario->isJumpHigh = true;
-		mario->GetPosY(mario->jumpStartY);
-		mario->SetState(MARIO_STATE_JUMP);
+		if (mario->isOnGround) {
+			mario->isJumpHigh = true;
+			mario->GetPosY(mario->jumpStartY);
+			mario->SetState(MARIO_STATE_JUMP);
+		}
+		else {
+			mario->UpdateHeight(mario->dt);
+		}
+		
 	}
 	else
 		mario->SetState(MARIO_STATE_IDLE);

@@ -55,33 +55,46 @@ void CMario::UpdateSpeed(DWORD dt) {
 	}
 	else {	// chuyen dong  bien doi deu 
 		this->vx += nx * a * dt;
-		if (abs(vx) >= MARIO_MAX_SPEED)
+		if (abs(vx) >= MARIO_MAX_SPEED) {
 			vx = nx * MARIO_MAX_SPEED;
+		}
 	}
+
+	// Stop
+	//if (nx * vx < 0) {
+	//	vx == 0;
+	//	SetState(MARIO_STATE_STOP);
+	//}
 }
 
 void CMario::UpdateHeight(DWORD dt) {
 	float curHeight = 0;
-	curHeight = this->y - this->jumpStartY;
-	DebugOut(L" MARIO:  y: %f jumpStartY: %f, curHeight: %f \n", y, jumpStartY, curHeight);
 
-	if (state== MARIO_STATE_JUMP) {
-		this->vy -= g * dt; // jump higher
 
-		if (abs(this->vy) == 0.25) {
-			this->vy == -0.25;
+	if (!isJumpHigh) { // jump low
+		this->vy = vy;
+		isOnGround = false;
+	}
+	else {
+		curHeight = this->y - this->jumpStartY;
+
+		if (abs(curHeight) < 30 && abs(curHeight) !=0) {
+			this->vy -= g * dt; // jump higher
+			isOnGround = false;
+		}
+		else if (abs(curHeight) >= 30){
+			isJumpHigh = false;
 			SetState(MARIO_STATE_FALL);
 		}
+		DebugOut(L" MARIO:  y: %f jumpStartY: %f, curHeight: %f \n", y, jumpStartY, curHeight);
+
 	}
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
-
-
 	UpdateSpeed(dt);
 
-	this->vy += g * dt;// Simple fall down
 	UpdateHeight(dt);
 
 	DebugOut(L"current vy: %d \n", vy);
@@ -89,6 +102,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
+	this->vy += g * dt;// Simple fall down
 
 
 	DebugOut(L"current state: %d \n", state);
@@ -139,13 +153,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		if (ny != 0)//va cham theo truc y
 		{
 			vy = 0;
-			if (ny == -1)
-			{
-				isOnGround = true;
-				DebugOut(L"on ground");
-			}
+			isOnGround = true;
+			DebugOut(L"on ground NY=: %d \n", ny);
+
+
+			//if (ny == -1)
+			//{
+			//	isOnGround = true;
+			//	DebugOut(L"on ground NY=: %d \n", ny);
+			//}
 		}
-	
+
 
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
@@ -212,8 +230,14 @@ void CMario::Render()
 			ani = MARIO_ANI_SMALL_WALKING_LEFT;
 			break;
 		case MARIO_STATE_RUN:
-			if (nx > 0) ani = MARIO_ANI_SMALL_RUN_RIGHT;
-			else ani = MARIO_ANI_SMALL_RUN_LEFT;
+			if (nx > 0) {
+				if (vx >= MARIO_MAX_SPEED) ani = MARIO_ANI_SMALL_RUN_RIGHT;
+				else ani = MARIO_ANI_SMALL_WALKING_RIGHT;
+			}
+			else {
+				if (abs(vx) >= MARIO_MAX_SPEED) ani = MARIO_ANI_SMALL_RUN_LEFT;
+				else ani = MARIO_ANI_SMALL_WALKING_LEFT;
+			}
 			break;
 		case MARIO_STATE_SIT:
 			if (nx > 0) ani = MARIO_ANI_SMALL_SIT_RIGHT;
@@ -244,12 +268,12 @@ void CMario::Render()
 				break;
 			else {
 				if (nx > 0) {
-					if (vx > 0) ani = MARIO_ANI_BIG_WALKING_RIGHT;
-					else ani = MARIO_ANI_BIG_IDLE_RIGHT;
+					if (vx > 0) ani = MARIO_ANI_SMALL_WALKING_RIGHT;
+					else ani = MARIO_ANI_SMALL_IDLE_RIGHT;
 				}
 				else {
-					if (vx < 0) ani = MARIO_ANI_BIG_WALKING_LEFT;
-					else ani = MARIO_ANI_BIG_IDLE_LEFT;
+					if (vx < 0) ani = MARIO_ANI_SMALL_WALKING_LEFT;
+					else ani = MARIO_ANI_SMALL_IDLE_LEFT;
 				}
 			}
 			break;
@@ -271,8 +295,14 @@ void CMario::Render()
 			ani = MARIO_ANI_BIG_WALKING_LEFT;
 			break;
 		case MARIO_STATE_RUN:
-			if (nx > 0) ani = MARIO_ANI_BIG_RUN_RIGHT;
-			else ani = MARIO_ANI_BIG_RUN_LEFT;
+			if (nx > 0) {
+				if(vx >= MARIO_MAX_SPEED) ani = MARIO_ANI_BIG_RUN_RIGHT;
+				else ani = MARIO_ANI_BIG_WALKING_RIGHT;
+			}
+			else {
+				if (abs(vx) >= MARIO_MAX_SPEED) ani = MARIO_ANI_BIG_RUN_LEFT;
+				else ani = MARIO_ANI_BIG_WALKING_LEFT;
+			}
 			break;
 		case MARIO_STATE_SIT:
 			if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
@@ -299,7 +329,7 @@ void CMario::Render()
 			}
 			break;
 		default:
-			if (!isOnGround)	
+			if (!isOnGround)
 				break;
 			else {
 				if (nx > 0) {
@@ -330,8 +360,14 @@ void CMario::Render()
 			ani = MARIO_ANI_RACOON_WALKING_LEFT;
 			break;
 		case MARIO_STATE_RUN:
-			if (nx > 0) ani = MARIO_ANI_RACOON_RUN_RIGHT;
-			else ani = MARIO_ANI_RACOON_RUN_LEFT;
+			if (nx > 0) {
+				if (vx >= MARIO_MAX_SPEED) ani = MARIO_ANI_RACOON_RUN_RIGHT;
+				else ani = MARIO_ANI_RACOON_WALKING_RIGHT;
+			}
+			else {
+				if (abs(vx) >= MARIO_MAX_SPEED) ani = MARIO_ANI_RACOON_RUN_LEFT;
+				else ani = MARIO_ANI_RACOON_WALKING_LEFT;
+			}
 			break;
 		case MARIO_STATE_SIT:
 			if (nx > 0) ani = MARIO_ANI_RACOON_SIT_RIGHT;
@@ -407,8 +443,9 @@ void CMario::SetState(int state)
 		break;
 
 	case MARIO_STATE_JUMP:
-		isOnGround = false;
-		vy = -MARIO_JUMP_SPEED_Y * 0.75;
+		if (!isOnGround && isJumpHigh)
+			return;
+		vy = -MARIO_JUMP_SPEED_Y;
 		break;
 
 	case MARIO_STATE_SIT:
@@ -424,6 +461,7 @@ void CMario::SetState(int state)
 	case MARIO_STATE_RUN:
 		vx = nx * MARIO_WALKING_SPEED;
 		break;
+
 	}
 }
 
@@ -452,7 +490,6 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 	}
 }
 
-
 void CMario::isDamaged() {
 
 	if (level != MARIO_LEVEL_SMALL) {
@@ -466,28 +503,3 @@ void CMario::isDamaged() {
 	else
 		SetState(MARIO_STATE_DIE);
 }
-
-////void CMario::Walk() {
-////	if (CGame::GetInstance()->IsKeyDown(DIK_RIGHT) || CGame::GetInstance()->IsKeyDown(DIK_LEFT)) {
-////		isWalking = true; 
-////		canSpeedUp = false;
-////		isFalling = false;
-////		if (nx > 0) {
-////			vx = MARIO_WALKING_SPEED;
-////
-////		}
-////		
-////	}
-////
-////	//if (vx < 0) {
-////	//	nx = 1;
-////	//	vx = 0;
-////	//	SetState(MARIO_STATE_STOP);
-////	//}
-////	//isFalling = false;
-////	//isWalking = true;
-////	//vx = MARIO_WALKING_SPEED;
-////	//nx = 1;
-////	//break;
-////
-////}
