@@ -116,9 +116,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="KeyEventHandler.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Framework</Filter>
     </ClInclude>

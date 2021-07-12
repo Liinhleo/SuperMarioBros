@@ -38,17 +38,24 @@
 
 // =========== SPEED ====================
 // VX 
-#define MARIO_WALKING_SPEED			0.08f 
-#define MARIO_MAX_SPEED				0.2f
-#define MARIO_SPEED_UP				0.0001f // TANG TOC CHAY
+#define MARIO_WALKING_SPEED			0.08f	
+#define MARIO_MAX_SPEED				0.16f
+#define MARIO_SPEED_UP				0.0001f // TANG TOC
+#define MARIO_SPEED_DOWN			0.0006f // GIAM TOC 
 
 // VY
-#define MARIO_JUMP_SPEED_Y			0.25f
+#define MARIO_JUMP_SPEED_Y			0.5f
 #define MARIO_JUMP_DEFLECT_SPEED	0.1f
 #define MARIO_GRAVITY				0.002f // trong luc
 
 #define MARIO_DIE_DEFLECT_SPEED		0.5f  // die
 
+//#define TIME_DEFAULT				300
+//#define TIME_FLY					3000
+//#define MARIO_TIME_ATTACK			400
+//#define MARIO_TIME_SHOOT			300
+//#define MARIO_TIME_STOP			100
+// 
 // =========== STATE MARIO ====================
 #define MARIO_STATE_IDLE			0
 #define MARIO_STATE_WALKING_RIGHT	100
@@ -63,6 +70,9 @@
 #define MARIO_STATE_STOP			1000
 #define MARIO_STATE_ATTACK			1100
 #define MARIO_STATE_STAND_UP		1200
+
+#define MARIO_STATE_JUMP_LOW		1300
+
 
 // =========== ANI BIG MARIO ====================
 #define MARIO_ANI_BIG_IDLE_RIGHT			0
@@ -90,8 +100,6 @@
 #define MARIO_ANI_BIG_ON_AIR_HOLDING_LEFT	22
 #define MARIO_ANI_BIG_FALLING_RIGHT			23
 #define MARIO_ANI_BIG_FALLING_LEFT			24
-
-
 
 // =========== ANI SMALL MARIO ====================
 #define MARIO_ANI_SMALL_IDLE_RIGHT				25
@@ -121,8 +129,6 @@
 #define MARIO_ANI_SMALL_FALLING_LEFT			49
 #define MARIO_ANI_SMALL_WM_INTRO				50
 #define MARIO_ANI_DIE							51
-
-
 
 // =========== ANI RACOON MARIO ====================
 #define MARIO_ANI_RACOON_IDLE_RIGHT				52
@@ -162,13 +168,7 @@
 #define MARIO_LEVEL_RACOON	3
 #define MARIO_LEVEL_FIRE	4
 
-//
-////mario
-//#define TIME_DEFAULT				300
-//#define TIME_FLY					3000
-//#define MARIO_TIME_ATTACK			400
-//#define MARIO_TIME_SHOOT			300
-//#define MARIO_TIME_STOP			100
+
 
 
 

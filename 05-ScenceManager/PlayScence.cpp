@@ -317,19 +317,15 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_S:
-
-	case DIK_X:
-		mario->SetState(MARIO_STATE_JUMP);
-		break;
-	
-	case DIK_DOWN:
-		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
-			mario->SetState(MARIO_STATE_SIT);
+		if (mario->isOnGround) {
+			mario->SetState(MARIO_STATE_JUMP);
 		}
-		else
-			return;
 		break;
-	case DIK_F1: 
+	case DIK_X:
+		if (mario->isOnGround)
+			mario->SetState(MARIO_STATE_JUMP_LOW);
+		break;
+	case DIK_F1:
 		mario->Reset();
 		break;
 	}
@@ -346,39 +342,16 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		return;
 
 	// Check event after releasing key 
-	switch (KeyCode)
-	{
-
-	case DIK_A:
-		mario->SetAccelerate(0);
-		break;
-
-	case DIK_RIGHT:
-		mario->SetSpeed(0, 0);
-		mario->nx = 1;
-		break;
-
-	case DIK_LEFT:
-		mario->SetSpeed(0,0);
-		mario->nx = -1;
-		break;
-	case DIK_S:
-		if (mario->GetState() == MARIO_STATE_JUMP) {
-			mario->SetState(MARIO_STATE_FALL);
-		}
-		else if (mario->isOnGround) {
-			mario->SetState(MARIO_STATE_IDLE);
-		}
-
-		break;
-
+	switch (KeyCode){
 	case DIK_DOWN:
-		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
+		if (mario->GetLevel() == MARIO_LEVEL_BIG
+		|| mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			mario->SetState(MARIO_STATE_STAND_UP);// avoid Mario falling out after sitting
 		}
 		else
 			return;
 		break;
+
 	}
 }
 
@@ -391,47 +364,86 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
 
-	if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT) || game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
-		if (mario->state == MARIO_STATE_SIT)
-			return; 
-		mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
-		mario->SetState(MARIO_STATE_RUN);
-	}
+	if (mario->isOnGround) {
+		// RUN RIGHT
+		if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT)) {
+			if (mario->state == MARIO_STATE_SIT)
+				return;
+			if (mario->vx < 0) {
+				//mario->SetAccelerate(mario->a -= MARIO_SPEED_DOWN);
+				mario->SetState(MARIO_STATE_STOP);
 
-	else if (game->IsKeyDown(DIK_RIGHT)) { 
-		if (mario->state == MARIO_STATE_SIT)
-			return;
-		if (mario->GetState() == MARIO_STATE_WALKING_LEFT) {
-			mario->SetState(MARIO_STATE_STOP);
+			}
+			else {
+				mario->SetState(MARIO_STATE_RUN);
+				mario->SetAccelerate(mario->a += MARIO_SPEED_UP);
+			}
 		}
-		mario->SetState(MARIO_STATE_WALKING_RIGHT);
-	}
 
-	else if (game->IsKeyDown(DIK_LEFT)) {
-		if (mario->state == MARIO_STATE_SIT)
-			return;
-		mario->SetState(MARIO_STATE_WALKING_LEFT);
-	}
-	
-	else if (game->IsKeyDown(DIK_DOWN)) {
-		if (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_RACOON) {
-			mario->SetState(MARIO_STATE_SIT);
+		// RUN LEFT
+		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
+			if (mario->state == MARIO_STATE_SIT)
+				return;
+
+			if (mario->vx > 0) {
+				//mario->SetAccelerate(mario->a += MARIO_SPEED_DOWN);
+				mario->SetState(MARIO_STATE_STOP);
+			}
+			else {
+				mario->SetState(MARIO_STATE_RUN);
+				mario->SetAccelerate(mario->a -= MARIO_SPEED_UP);
+			}
 		}
-		else
-			return;
-	}
-	// JUMP
-	else if (game->IsKeyDown(DIK_S)) {
-		if (mario->isOnGround) {
-			mario->isJumpHigh = true;
-			mario->GetPosY(mario->jumpStartY);
-			mario->SetState(MARIO_STATE_JUMP);
+
+		// WALK RIGHT
+		else if (game->IsKeyDown(DIK_RIGHT)) {
+			if (mario->state == MARIO_STATE_SIT)
+				return;
+			if (mario->vx < 0) {
+				mario->SetState(MARIO_STATE_STOP);
+			}
+			else {
+				mario->SetState(MARIO_STATE_WALKING_RIGHT);
+			}
 		}
+
+		// WALK LEFT
+		else if (game->IsKeyDown(DIK_LEFT)) {
+			if (mario->state == MARIO_STATE_SIT)
+				return;
+			if (mario->vx > 0) {
+				mario->SetState(MARIO_STATE_STOP);
+			}
+			else {
+				mario->SetState(MARIO_STATE_WALKING_LEFT);
+			}
+		}
+
+		// SIT
+		else if (game->IsKeyDown(DIK_DOWN)) {
+			if (mario->GetLevel() == MARIO_LEVEL_BIG
+				|| mario->GetLevel() == MARIO_LEVEL_RACOON) {
+				mario->SetState(MARIO_STATE_SIT);
+			}
+			else
+				return;
+		}
+
 		else {
-			mario->UpdateHeight(mario->dt);
+			mario->SetAccelerate(mario->a = 0);
+			mario->SetState(MARIO_STATE_IDLE);
 		}
-		
 	}
-	else
-		mario->SetState(MARIO_STATE_IDLE);
+	else {
+		if (game->IsKeyDown(DIK_RIGHT))
+		{
+			mario->nx = 1;
+		}
+		if (game->IsKeyDown(DIK_LEFT))
+		{
+			mario->nx = -1;
+		}
+	}
+
+	
 }

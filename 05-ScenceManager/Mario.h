@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "Brick.h"
 #include "Ground.h"
-
 class CMario : public CGameObject
 {
 	int level;
@@ -12,26 +11,19 @@ class CMario : public CGameObject
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
 public: 
-	float jumpStartY;
-	float a; // gia toc cua Mario
-	float g; // gia toc trong truong cua Mario
+	float a;
 
 	bool isOnGround = false;
-	bool isJumpHigh = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
-
+	
 	// Van toc
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 
-	// Gia toc theo phuong x
-	void SetAccelerate(float a) { this->a = a; }
-	void GetAccelerate(float& a) { a = this->a; }
-
-	// Gia toc trong truong theo phuong y
-	void SetGravity(float gravity) { this->g = gravity; }
-	void GetGravity(float& gravity) { gravity = this->g; }
+	// Gia toc x
+	void SetAccelerate(float accelerate) { this->a = accelerate; };
+	float GetAccelerate() { return a; }
 
 	// Trang thai
 	void SetState(int state);
@@ -42,7 +34,6 @@ public:
 	int GetLevel() {return level; }
 
 	void UpdateSpeed(DWORD dt);
-	void UpdateHeight(DWORD dt);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
 	virtual void Render();
 
