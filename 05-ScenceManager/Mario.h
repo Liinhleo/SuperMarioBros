@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "Brick.h"
 #include "Ground.h"
+#include "Timer.h"
+
 class CMario : public CGameObject
 {
 	int level;
@@ -11,9 +13,13 @@ class CMario : public CGameObject
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
 public: 
+	int ani;
 	float a;
 
+	Timer* flyTime = new Timer(TIME_FLY);
+
 	bool isOnGround = false;
+	bool isAttack = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	
@@ -41,6 +47,9 @@ public:
 
 	void isDamaged();
 	void StartUntouchable();
+
+	void StartTimeFly();
+
 	void Reset();
 
 };

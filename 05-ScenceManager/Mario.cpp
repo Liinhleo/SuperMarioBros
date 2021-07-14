@@ -12,7 +12,7 @@
 
 CMario::CMario(float x, float y) : CGameObject()
 {
-	this->level = MARIO_LEVEL_BIG;
+	this->level = MARIO_LEVEL_RACOON;
 	this->untouchable = 0;
 
 	SetState(MARIO_STATE_IDLE);
@@ -42,15 +42,17 @@ void CMario::StartUntouchable() {
 }
 
 void CMario::UpdateSpeed(DWORD dt) {
+	DebugOut(L"cur a: %f \n", a);
+
 	if (a == 0) {
 		vx = vx;
 	}
 	else {
 		vx += a * dt; // bien doi van toc
-		DebugOut(L"cur vx: %f \n", vx);
-
 		if (abs(vx) >= MARIO_MAX_SPEED) {
 			this->vx = nx *MARIO_MAX_SPEED;
+			DebugOut(L"max speed max speed %f \n", vx);
+
 		}
 	}
 }
@@ -63,6 +65,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 	CGameObject::Update(dt);
 	this->vy += MARIO_GRAVITY * dt;// Simple fall down
 
+	if (flyTime->IsTimeUp()) {
+		flyTime->Stop();
+	}
 
 	DebugOut(L"current state: %d \n", state);
 
@@ -112,7 +117,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		if (ny != 0)
 		{
 			vy = 0;
-			if (ny == -1)
+			if (ny == -1) // mario dung tren brick
 			{
 				isOnGround = true;
 				DebugOut(L"on ground NY=: %d \n", ny);
@@ -157,6 +162,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 		}
 	}
+
+	// han che lap frame attack
+	if (GetState() == MARIO_STATE_ATTACK
+		&& animation_set->at(ani)->getCurrentFrame() >= 4) {
+		isAttack = false;
+	}
+
+
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) 
 		delete coEvents[i];
@@ -165,10 +178,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 void CMario::Render()
 {
-	int ani = -1;
+	ani = -1;
 #pragma region SMALL MARIO
 	if (GetLevel() == MARIO_LEVEL_SMALL) {
 		switch (state) {
+		case MARIO_STATE_DIE:
+			ani = MARIO_ANI_DIE;
+			break;
 		case MARIO_STATE_STOP:
 			if (nx > 0) ani = MARIO_ANI_SMALL_STOP_RIGHT;
 			else ani = MARIO_ANI_SMALL_STOP_LEFT;
@@ -234,8 +250,8 @@ void CMario::Render()
 	if (GetLevel() == MARIO_LEVEL_BIG) {
 		switch (state) {
 		case MARIO_STATE_STOP:
-			if (nx > 0) ani = MARIO_ANI_BIG_STOP_RIGHT;
-			else ani = MARIO_ANI_BIG_STOP_LEFT;
+			if (nx > 0) ani = MARIO_ANI_BIG_STOP_LEFT;
+			else ani = MARIO_ANI_BIG_STOP_RIGHT;
 			break;
 		case MARIO_STATE_JUMP_LOW:
 		case MARIO_STATE_JUMP:
@@ -269,6 +285,10 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_BIG_SIT_RIGHT;
 			else ani = MARIO_ANI_BIG_SIT_LEFT;
 			break;
+		case MARIO_STATE_FLY:
+			if (nx > 0) ani = MARIO_ANI_BIG_FLY_RIGHT;
+			else ani = MARIO_ANI_BIG_FLY_LEFT;
+			break;
 		case MARIO_STATE_FALL:
 			if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
 			else ani = MARIO_ANI_BIG_FALLING_LEFT;
@@ -278,7 +298,6 @@ void CMario::Render()
 				if (nx > 0) ani = MARIO_ANI_BIG_FALLING_RIGHT;
 				else ani = MARIO_ANI_BIG_FALLING_LEFT;
 			}
-
 			else {
 				if (nx > 0) {
 					if (vx > 0) ani = MARIO_ANI_BIG_WALKING_RIGHT;
@@ -297,6 +316,10 @@ void CMario::Render()
 #pragma region RACOON MARIO
 	if (GetLevel() == MARIO_LEVEL_RACOON) {
 		switch (state) {
+		case MARIO_STATE_ATTACK:
+			if (nx > 0) ani = MARIO_ANI_RACOON_ATTACK_RIGHT;
+			else ani = MARIO_ANI_RACOON_ATTACK_LEFT;
+			break;
 		case MARIO_STATE_STOP:
 			if (nx > 0) ani = MARIO_ANI_RACOON_STOP_RIGHT;
 			else ani = MARIO_ANI_RACOON_STOP_LEFT;
@@ -318,7 +341,6 @@ void CMario::Render()
 				}
 			}
 			break;
-
 		case MARIO_STATE_RUN:
 			if (nx > 0) {
 				if (vx >= MARIO_MAX_SPEED) ani = MARIO_ANI_RACOON_RUN_RIGHT;
@@ -332,6 +354,10 @@ void CMario::Render()
 		case MARIO_STATE_SIT:
 			if (nx > 0) ani = MARIO_ANI_RACOON_SIT_RIGHT;
 			else ani = MARIO_ANI_RACOON_SIT_LEFT;
+			break;
+		case MARIO_STATE_FLY:
+			if (nx > 0) ani = MARIO_ANI_RACOON_FLY_RIGHT;
+			else ani = MARIO_ANI_RACOON_FLY_LEFT;
 			break;
 		case MARIO_STATE_FALL:
 			if (nx > 0) ani = MARIO_ANI_RACOON_FALLING_RIGHT;
@@ -414,6 +440,19 @@ void CMario::SetState(int state)
 		y = y - 10;
 		vx = 0;
 		break;
+	case MARIO_STATE_FLY:
+		isOnGround = false;
+		flyTime->Start(); // bd tinh gio bay
+		if (nx > 0)
+			vx = MARIO_WALKING_SPEED;
+		else
+			vx = -MARIO_WALKING_SPEED;
+		vy = -MARIO_JUMP_SPEED_Y * 0.75;
+		//y -= 5;
+		break;
+	case MARIO_STATE_ATTACK:
+		isAttack = true;
+		break;
 	}
 }
 
@@ -427,9 +466,19 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 		right = x + MARIO_SMALL_BBOX_WIDTH;
 		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
 		break;
+	case MARIO_LEVEL_RACOON:
+		right = x + MARIO_RACCOON_BBOX_WIDTH;
+		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
+		if (nx > 0) {
+			left = x + 7;
+			right = left + MARIO_RACCOON_BBOX_WIDTH;
+		}
+		if (state == MARIO_STATE_SIT) {
+			bottom = y + MARIO_RACCOON_BBOX_HEIGHT - 10;
+		}
+		break;
 
 	case MARIO_LEVEL_BIG:
-	case MARIO_LEVEL_RACOON:
 		if (state == MARIO_STATE_SIT) {
 			right = x + MARIO_BIG_BBOX_WIDTH;
 			bottom = y + MARIO_BIG_BBOX_HEIGHT - 10;

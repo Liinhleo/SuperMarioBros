@@ -44,17 +44,14 @@
 #define MARIO_SPEED_DOWN			0.0006f // GIAM TOC 
 
 // VY
-#define MARIO_JUMP_SPEED_Y			0.5f
+#define MARIO_JUMP_SPEED_Y			0.25f
 #define MARIO_JUMP_DEFLECT_SPEED	0.1f
-#define MARIO_GRAVITY				0.002f // trong luc
+#define MARIO_GRAVITY				0.0005f // trong luc
 
-#define MARIO_DIE_DEFLECT_SPEED		0.5f  // die
+#define MARIO_DIE_DEFLECT_SPEED		0.35f  // die
 
-//#define TIME_DEFAULT				300
-//#define TIME_FLY					3000
-//#define MARIO_TIME_ATTACK			400
-//#define MARIO_TIME_SHOOT			300
-//#define MARIO_TIME_STOP			100
+#define TIME_FLY					3000
+
 // 
 // =========== STATE MARIO ====================
 #define MARIO_STATE_IDLE			0
@@ -65,13 +62,11 @@
 #define MARIO_STATE_DIE				500
 #define MARIO_STATE_SIT				600
 #define MARIO_STATE_RUN				700
-#define MARIO_STATE_SIT				800
-#define MARIO_STATE_FLY				900
-#define MARIO_STATE_STOP			1000
-#define MARIO_STATE_ATTACK			1100
-#define MARIO_STATE_STAND_UP		1200
-
-#define MARIO_STATE_JUMP_LOW		1300
+#define MARIO_STATE_FLY				800
+#define MARIO_STATE_STOP			900
+#define MARIO_STATE_ATTACK			1000
+#define MARIO_STATE_STAND_UP		1100
+#define MARIO_STATE_JUMP_LOW		1200
 
 
 // =========== ANI BIG MARIO ====================

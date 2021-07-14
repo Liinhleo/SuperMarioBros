@@ -317,8 +317,13 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_S:
-		if (mario->isOnGround) {
-			mario->SetState(MARIO_STATE_JUMP);
+		if (mario->GetLevel() == MARIO_LEVEL_RACOON && abs(mario->vx) == MARIO_MAX_SPEED) {
+			mario->SetState(MARIO_STATE_FLY);
+		}
+		else {
+			if (mario->isOnGround) {
+				mario->SetState(MARIO_STATE_JUMP);
+			}
 		}
 		break;
 	case DIK_X:
@@ -328,6 +333,16 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_F1:
 		mario->Reset();
 		break;
+	case DIK_RIGHT:
+		mario->nx = 1;
+		break;
+	case DIK_LEFT:
+		mario->nx = -1;
+		break;
+	case DIK_A:
+		if (mario->GetLevel() == MARIO_LEVEL_RACOON) {
+			mario->SetState(MARIO_STATE_ATTACK);
+		}
 	}
 }
 
@@ -343,6 +358,14 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 
 	// Check event after releasing key 
 	switch (KeyCode){
+	case DIK_S:
+		if (!mario->flyTime->IsTimeUp()) {
+			mario->vy = -(MARIO_GRAVITY + 0.002f * 4) * mario->dt;
+		}
+		else {
+			mario->vy = 0;
+		}
+		break;
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG
 		|| mario->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -351,7 +374,6 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		else
 			return;
 		break;
-
 	}
 }
 
@@ -370,9 +392,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			if (mario->state == MARIO_STATE_SIT)
 				return;
 			if (mario->vx < 0) {
-				//mario->SetAccelerate(mario->a -= MARIO_SPEED_DOWN);
 				mario->SetState(MARIO_STATE_STOP);
-
 			}
 			else {
 				mario->SetState(MARIO_STATE_RUN);
@@ -384,7 +404,6 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT)) {
 			if (mario->state == MARIO_STATE_SIT)
 				return;
-
 			if (mario->vx > 0) {
 				//mario->SetAccelerate(mario->a += MARIO_SPEED_DOWN);
 				mario->SetState(MARIO_STATE_STOP);
@@ -399,10 +418,20 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		else if (game->IsKeyDown(DIK_RIGHT)) {
 			if (mario->state == MARIO_STATE_SIT)
 				return;
+			
+			// suy nghi them de mario co the truot 1 doan truoc khi di tiep ben trai
 			if (mario->vx < 0) {
+				mario->SetAccelerate(mario->a = 0);
 				mario->SetState(MARIO_STATE_STOP);
 			}
+
 			else {
+				if (mario->GetAccelerate() != 0) {
+					mario->SetAccelerate(mario->a -= MARIO_SPEED_DOWN);
+					if (mario->a <= 0) {
+						mario->SetAccelerate(mario->a = 0);
+					}
+				}
 				mario->SetState(MARIO_STATE_WALKING_RIGHT);
 			}
 		}
@@ -415,6 +444,12 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->SetState(MARIO_STATE_STOP);
 			}
 			else {
+				if (mario->GetAccelerate() != 0) {
+					mario->SetAccelerate(mario->a += MARIO_SPEED_DOWN);
+					if (mario->a <= 0) {
+						mario->SetAccelerate(mario->a = 0);
+					}
+				}
 				mario->SetState(MARIO_STATE_WALKING_LEFT);
 			}
 		}
@@ -428,21 +463,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			else
 				return;
 		}
-
 		else {
 			mario->SetAccelerate(mario->a = 0);
 			mario->SetState(MARIO_STATE_IDLE);
 		}
 	}
 	else {
-		if (game->IsKeyDown(DIK_RIGHT))
-		{
-			mario->nx = 1;
-		}
-		if (game->IsKeyDown(DIK_LEFT))
-		{
-			mario->nx = -1;
-		}
+		// is not on Ground -> jump / fly
 	}
 
 	
