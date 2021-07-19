@@ -71,14 +71,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 	DebugOut(L"current state: %d \n", state);
 
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
-
-	coEvents.clear();
-
-	// turn off collision when die 
-	if (state!=MARIO_STATE_DIE)
-		CalcPotentialCollisions(coObjects, coEvents);
 
 
 	// reset untouchable timer if untouchable time has passed
@@ -86,6 +78,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		this->untouchable_start = 0;
 		this->untouchable = 0;
 	}
+
+	// ====================== XU LY VA CHAM =======================
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+
+	coEvents.clear();
+
+	// turn off collision when die 
+	if (state != MARIO_STATE_DIE)
+		CalcPotentialCollisions(coObjects, coEvents);
 
 	// No collision occured, proceed normally
 	if (coEvents.size()==0){
@@ -101,41 +103,59 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		
-		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-		//if (rdx != 0 && rdx!=dx)
-		//	x += nx*abs(rdx); 
-		
-		// All object will push together
 		// block every object first!
 		x += min_tx*dx + nx*0.4f; // nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty*dy + ny*0.4f;
+		y += min_ty*dy + ny*0.15f;
 
 		if (nx!=0) vx = 0; //va cham theo phuong x
 		//if (ny!=0) vy = 0; //va cham theo truc y
 
-		if (ny != 0)
+		if (ny == -1)//va cham theo truc y
 		{
 			vy = 0;
-			if (ny == -1) // mario dung tren brick
-			{
-				isOnGround = true;
-				DebugOut(L"on ground NY=: %d \n", ny);
-			}
+			isOnGround = true;
+			DebugOut(L"on ground NY=: %d \n", ny);
+
 		}
 
 
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
-			if (dynamic_cast<CGround*>(e->obj)) // if e->obj is Goomba 
-			{
-				CGround* ground = dynamic_cast<CGround*>(e->obj);
-				if (ground->isInteract) {
-					x += dx;
-					y += dy;
-				}
 
+			if (e->ny > 0) // neu va cham theo truc y
+			{
+				// BRICK 
+				// ..
+				// ..
+				// ..
+			
+				// GROUND
+				if (e->obj->GetType() == ObjectType::GROUND) {
+					CGround* ground = dynamic_cast<CGround*>(e->obj); // if e->obj is Ground 
+					if (ground->isInteract) {
+						x += dx;
+						y += dy;
+					}
+				}
 			}
+
+			if (e->nx != 0) { //va cham theo phuong x
+				if (e->obj->GetType() == ObjectType::GROUND) {
+					CGround* ground = dynamic_cast<CGround*>(e->obj); // if e->obj is Ground 
+					if (ground->isInteract) {
+						x += dx; // duoc phep di xuyen
+					}
+					else {
+						if (state == MARIO_STATE_RUN) { // dang chay va cham tuong thi di bo
+							if (vx > 0)
+								state == MARIO_STATE_WALKING_RIGHT;
+							else
+								state = MARIO_STATE_WALKING_LEFT;
+						}
+					}
+				}
+			}
+
 #pragma region COLLISION WITH GOOMBA
 			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
@@ -143,7 +163,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 				// jump on top >> kill Goomba and deflect a bit 
 				if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-					if (goomba->GetState() != GOOMBA_STATE_DIE){
+					if (goomba->isWing && goomba->GetState() != GOOMBA_STATE_DIE) {
+						goomba->SetState(GOOMBA_STATE_WALKING);
+					}
+					if (goomba->GetState() != GOOMBA_STATE_WALKING && goomba->GetState() != GOOMBA_STATE_DIE){
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
@@ -151,7 +174,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 				else if (e->nx != 0) {	// xet mario va cham theo phuong x -> mario die
 					if (untouchable == 0){
 						if (goomba->GetState() != GOOMBA_STATE_DIE){
-							isDamaged();
+							isDamaged(); // xu ly mario bi thuong
 						}
 					}
 				}

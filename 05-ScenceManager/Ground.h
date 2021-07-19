@@ -7,7 +7,7 @@ class CGround : public CGameObject
 	int width;
 	int height;
 public:
-	bool isInteract;
+	bool isInteract; // isInteract (0: false; 1: true)  
 
 	CGround(int w, int h, bool isInteract);
 	~CGround();

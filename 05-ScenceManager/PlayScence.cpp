@@ -158,7 +158,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 	case OBJECT_TYPE_GOOMBA: 
 		{
-			obj = new CGoomba(); 
+			int goombaType = atoi(tokens[4].c_str());
+			int isWing = atoi(tokens[5].c_str());
+			obj = new CGoomba(goombaType, isWing);
 
 			// General object setup
 			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
