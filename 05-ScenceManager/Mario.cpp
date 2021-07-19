@@ -127,8 +127,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
+			if (dynamic_cast<CGround*>(e->obj)) // if e->obj is Goomba 
+			{
+				CGround* ground = dynamic_cast<CGround*>(e->obj);
+				if (ground->isInteract) {
+					x += dx;
+					y += dy;
+				}
 
-
+			}
 #pragma region COLLISION WITH GOOMBA
 			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{

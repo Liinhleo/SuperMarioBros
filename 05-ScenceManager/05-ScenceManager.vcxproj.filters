@@ -75,6 +75,9 @@
     <ClCompile Include="Brick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MarioTail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ground.h">
@@ -110,9 +113,6 @@
     <ClInclude Include="AnimationSet.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="define.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -132,6 +132,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Brick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarioTail.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

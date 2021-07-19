@@ -1,5 +1,15 @@
 #include "Ground.h"
 
+CGround::CGround(int w, int h, bool isInteract) {
+
+	type = ObjectType::GROUND;
+	this->width = w;//so luong vien
+	this->height = h;//so luong vien
+	this->isInteract = isInteract;
+}
+
+CGround::~CGround() {}
+
 void CGround::Render()
 {
 	//animation_set->at(0)->Render(x, y);
@@ -10,6 +20,6 @@ void CGround::GetBoundingBox(float &l, float &t, float &r, float &b)
 {
 	l = x;
 	t = y;
-	r = x + BRICK_BBOX_WIDTH;
-	b = y + BRICK_BBOX_HEIGHT;
+	r = l + BRICK_BBOX_WIDTH *width;
+	b = t + BRICK_BBOX_HEIGHT * height;
 }

@@ -33,17 +33,6 @@ struct CCollisionEvent
 	}
 };
 
-enum ObjectType {
-	GROUND,
-	BRICK,
-	GOOMBA,
-	SUPER_GOOMBA,
-	KOOPA,
-	SUPER_KOOPA,
-	ITEM,
-	PLANTS,
-	PORTAL,
-};
 
 class CGameObject
 {
@@ -61,7 +50,7 @@ public:
 	int nx;	 
 
 	int state;
-	ObjectType type;
+	int type;
 
 	DWORD dt; 
 	
@@ -73,6 +62,8 @@ public:
 	void GetPosX(float& x) { x = this->x; }
 	void GetPosY(float& y) { y = this->y; }
 
+	int GetType() { return this->type; }
+	void SetType(int type) { this->type = type; }
 
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }

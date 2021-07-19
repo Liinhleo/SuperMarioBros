@@ -4,10 +4,17 @@
 
 class CGround : public CGameObject
 {
+	int width;
+	int height;
 public:
-	CGround() {
-		type = ObjectType::GROUND;
-	};
+	bool isInteract;
+
+	CGround(int w, int h, bool isInteract);
+	~CGround();
+
+	int GetWidth() { return this->width;}
+	int GetHeight() { return this->height; }
+	
 	virtual void Render();
 	virtual void GetBoundingBox(float &l, float &t, float &r, float &b);
 };

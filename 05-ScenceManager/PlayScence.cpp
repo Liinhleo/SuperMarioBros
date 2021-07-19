@@ -144,26 +144,87 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	switch (object_type)
 	{
 	case OBJECT_TYPE_MARIO:
-		if (player!=NULL) 
-		{
-			DebugOut(L"[ERROR] MARIO object was created before!\n");
-			return;
-		}
-		obj = new CMario(x,y); 
-		player = (CMario*)obj;  
+		{	
+			if (player != NULL)
+			{
+				DebugOut(L"[ERROR] MARIO object was created before!\n");
+				return;
+			}
+			obj = new CMario(x, y);
+			player = (CMario*)obj;
 
-		DebugOut(L"[INFO] Player object created!\n");
+			DebugOut(L"[INFO] Player object created!\n");
+			break;
+		}
+	case OBJECT_TYPE_GOOMBA: 
+		{
+			obj = new CGoomba(); 
+
+			// General object setup
+			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			//obj->SetPosition(x, y);
+			//obj->SetAnimationSet(ani_set);
+			//objects.push_back(obj);
+		}
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
-	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
-	case OBJECT_TYPE_GROUND: obj = new CGround(); break;
-	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
+
+	case OBJECT_TYPE_KOOPAS:
+	{
+		obj = new CKoopas();
+
+		// General object setup
+		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		//obj->SetPosition(x, y);
+		//obj->SetAnimationSet(ani_set);
+		//objects.push_back(obj);
+	}
+	break;
+
+	case OBJECT_TYPE_BRICK: 
+		{
+			int typeBrick = atoi(tokens[4].c_str());
+			int typeItem = atoi(tokens[5].c_str());
+			int count = atoi(tokens[6].c_str());
+
+			obj = new CBrick(typeBrick, typeItem, count);
+
+	//		// General object setup
+	//		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+	//		//obj->SetPosition(x, y);
+	//		//obj->SetAnimationSet(ani_set);
+	//		//listStatic.push_back(obj);
+		}
+		break;
+	case OBJECT_TYPE_GROUND: 
+		{
+			// Read file
+			int w = atoi(tokens[4].c_str());
+			int h = atoi(tokens[5].c_str());
+			int i = atoi(tokens[6].c_str());
+
+			obj = new CGround(w, h, i);
+
+			// General object setup
+			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			//obj->SetPosition(x, y);
+			//obj->SetAnimationSet(ani_set);
+			//listStatic.push_back(obj);
+		}
+		break;
+
 	case OBJECT_TYPE_PORTAL:
 		{	
+			// Read file
 			float r = atof(tokens[4].c_str());
 			float b = atof(tokens[5].c_str());
 			int scene_id = atoi(tokens[6].c_str());
 			obj = new CPortal(x, y, r, b, scene_id);
+
+			// General object setup
+			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			//obj->SetPosition(x, y);
+			//obj->SetAnimationSet(ani_set);
+			//listStatic.push_back(obj);
 		}
 		break;
 	default:
@@ -281,7 +342,6 @@ void CPlayScene::Render()
 {
 	map->Render();
 
-	// Get Scene ID -> Get map_id --> render map
 	// i = 0 : Render Mario (player)
 	for (int i = 0; i < objects.size(); i++)
 		objects[i]->Render();
@@ -332,12 +392,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_F1:
 		mario->Reset();
-		break;
-	case DIK_RIGHT:
-		mario->nx = 1;
-		break;
-	case DIK_LEFT:
-		mario->nx = -1;
 		break;
 	case DIK_A:
 		if (mario->GetLevel() == MARIO_LEVEL_RACOON) {

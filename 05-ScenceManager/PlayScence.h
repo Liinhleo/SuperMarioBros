@@ -20,6 +20,8 @@ protected:
 	LPMAP map;
 	vector<LPGAMEOBJECT> objects;
 
+	vector<LPGAMEOBJECT> listStatic; // include: Ground, brick, pipe, portal
+
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);

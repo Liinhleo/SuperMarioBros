@@ -171,15 +171,36 @@
 #define BRICK_BBOX_WIDTH  16
 #define BRICK_BBOX_HEIGHT 16
 
-// ========== NEW ===========
-//#define BRICK_ANI_NORMAL		0
-//#define BRICK_ANI_BROKEN		1
-//#define BRICK_ANI_HIDDEN		2
-//#define STATE_BEING_TOSSED		0
-//#define STATE_NORMAL			1
-//#define STATE_BROKEN			2
-//#define BRICK_STATE_HIDDEN		3
-//
+// brickType
+#define BRICK_NORMAL		0 
+#define BRICK_QUESTION		1
+#define BRICK_GLASS			2
+#define BRICK_MUSIC			3
+
+// isContainItem
+#define CONTAIN_NON			0
+#define CONTAIN_ITEM		1
+#define CONTAIN_COIN		2
+#define CONTAIN_P_SWITCH	3
+
+/*  ========== STATE BRICK ========== */
+#define BRICK_STATE_ACTIVE		1
+#define BRICK_STATE_BROKEN		2  // broken -> gach cung
+#define BRICK_STATE_INACTIVE	3  // bien mat hoan toan
+
+/*  ========== ANI BRICK ==========  */
+// brick_normal 
+#define BRICK_ANI_NORMAL_ACTIVE			0
+// brick question mark
+#define BRICK_ANI_QUESTION_ACTIVE		1
+#define BRICK_ANI_QUESTION_BROKEN		2	// broken -> gach cung
+// brick glass
+#define BRICK_ANI_GLASS_ACTIVE		3
+#define BRICK_ANI_GLASS_BROKEN		4 // broken -> gach cung
+#define BRICK_ANI_GLASS_INACTIVE  	5 // effect broken and disapear
+// brick_music
+#define BRICK_ANI_MUSIC_ACTIVE		6
+
 ////BRONZE BRICK PIECE
 //#define PIECE_GRAVITY		0.0008f
 //#define PIECE_SPEED_X		0.03f
@@ -188,36 +209,50 @@
 
 
 // ========================================= OBJECT TYPE ==================================================
+
+enum ObjectType { 
+	MARIO = 0,
+	
+	//static list object
+	GROUND = 01,
+	BRICK = 02,	
+	PIPE = 03,
+	LIFT = 04,
+
+	//dynamic list object
+	GOOMBA = 05,
+	KOOPA = 06,
+	PIRANHA_PLANT = 07,
+	VENUS_FIRE_TRAP = 8,
+	NINJA = 9,
+
+	//item
+	ITEM = 10,
+	COIN = 11,
+	P_SWITCH =12,
+
+	//weapon
+	FIRE_BALL = 13,
+
+	//trans_map
+	PORTAL = 14,
+};
+
 #define OBJECT_TYPE_MARIO	0
 
 // static objects
-#define OBJECT_TYPE_GROUND	1
-#define OBJECT_TYPE_BRICK	4
+#define OBJECT_TYPE_BRICK	1
+#define OBJECT_TYPE_GROUND	2
+#define OBJECT_TYPE_PIPE	3
+#define OBJECT_TYPE_LIFT	4
+
+//item
+#define OBJECT_TYPE_COIN		5
 
 // enemy
 #define OBJECT_TYPE_GOOMBA			10
-#define OBJECT_TYPE_SUPER_GOOMBA	11
-#define OBJECT_TYPE_KOOPAS			12
+#define OBJECT_TYPE_KOOPAS			11
 
 #define OBJECT_TYPE_PORTAL	50
-
-// ========== NEW ===========
-//#define OBJECT_TYPE_GROUND			2
-//#define OBJECT_TYPE_PIPE			3
-//#define OBJECT_TYPE_COIN			4
-//
-//#define OBJECT_TYPE_LIFT			5
-//
-////enemy
-//#define OBJECT_TYPE_GOOMBA				11
-//#define OBJECT_TYPE_KOOPAS				12
-//#define OBJECT_TYPE_VENUS_FIRE_TRAP		13
-//#define OBJECT_TYPE_PIRANHA_PLANT		14
-//#define OBJECT_TYPE_BOOMERANG_BROTHER	15
-//
-//#define OBJECT_MAP_POINT			51
-//#define OBJECT_WORLD_MAP_OBJ		52
-//#define OBJECT_TYPE_LAST_ITEM		100
-//#define OBJECT_CURTAIN				101
 
 #define MAX_SCENE_LINE 1024
