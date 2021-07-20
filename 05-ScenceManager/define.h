@@ -222,8 +222,8 @@ enum ObjectType {
 	//dynamic list object
 	GOOMBA = 05,
 	KOOPA = 06,
-	PIRANHA_PLANT = 07,
-	VENUS_FIRE_TRAP = 8,
+	PIRANHA_FLOWER = 07,
+	FIRE_FLOWER = 8,
 	NINJA = 9,
 
 	//item
@@ -252,6 +252,9 @@ enum ObjectType {
 // enemy
 #define OBJECT_TYPE_GOOMBA			10
 #define OBJECT_TYPE_KOOPAS			11
+#define OBJECT_TYPE_PIRANHA_FLOWER	12
+#define OBJECT_TYPE_FIRE_FLOWER		13
+
 
 #define OBJECT_TYPE_PORTAL	50
 

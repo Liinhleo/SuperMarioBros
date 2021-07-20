@@ -1,25 +1,30 @@
 #pragma once
-#include "GameObject.h"
+#include "Enemy.h"
 #include "Timer.h"
 
 
-#define GOOMBA_BBOX_WIDTH 16
-#define GOOMBA_BBOX_HEIGHT 15
-#define GOOMBA_BBOX_HEIGHT_DIE 9
+#define GOOMBA_BBOX_WIDTH		16
+#define GOOMBA_BBOX_HEIGHT		15
+#define GOOMBA_WING_BBOX_WIDTH	20
+#define GOOMBA_WING_BBOX_HEIGHT 24
+#define GOOMBA_BBOX_HEIGHT_DIE	 9
 
 #define GOOMBA_WALKING_SPEED 0.05f;
+#define GOOMBA_JUMP_SPEED	 0.15f
 
-#define GOOMBA_STATE_FLYING 0
-#define GOOMBA_STATE_WALKING 100
-#define GOOMBA_STATE_DIE 200
+#define GOOMBA_STATE_FLYING		0		// isWing = 1
+#define GOOMBA_STATE_WALKING	100 
+#define GOOMBA_STATE_JUMP		200 // co count time de jump
 
 #define GOOMBA_YELLOW_ANI_FLY		0
 #define GOOMBA_YELLOW_ANI_WALKING	1
 #define GOOMBA_YELLOW_ANI_DIE		2
+#define GOOMBA_YELLOW_ANI_INVERSE	3
 
-#define GOOMBA_RED_ANI_FLY		3
-#define GOOMBA_RED_ANI_WALKING	4
-#define GOOMBA_RED_ANI_DIE		5
+#define GOOMBA_RED_ANI_FLY			4
+#define GOOMBA_RED_ANI_WALKING		5
+#define GOOMBA_RED_ANI_DIE			6
+#define GOOMBA_YELLOW_ANI_INVERSE	7 
 
 // TypeGoomba
 #define GOOMBA_YELLOW	1
@@ -28,13 +33,14 @@
 #define TIME_DISAPPEAR	2000
 
 
-class CGoomba : public CGameObject
+class CGoomba : public Enemy
 {
 	int goombaType;
 
 public: 
 
 	Timer* timeDisappear = new Timer(TIME_DISAPPEAR);
+	Timer* timeStartJump = new Timer(3000);
 
 	bool isWing; // 0: non -> state walk || 1: wing ->state fly
 	bool isOnGround = false;

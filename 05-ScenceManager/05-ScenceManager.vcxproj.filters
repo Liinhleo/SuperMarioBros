@@ -78,6 +78,18 @@
     <ClCompile Include="MarioTail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Plant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FireFlower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PiranhaFlower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ground.h">
@@ -141,6 +153,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="define.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FireFlower.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PiranhaFlower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

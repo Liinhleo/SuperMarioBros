@@ -10,8 +10,6 @@ class CMario : public CGameObject
 	int untouchable;
 	DWORD untouchable_start;
 
-	float start_x;			// initial position of Mario at scene
-	float start_y; 
 public: 
 	int ani;
 	float a;

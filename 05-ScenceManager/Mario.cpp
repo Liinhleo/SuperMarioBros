@@ -38,7 +38,7 @@ void CMario::Reset(){
 
 void CMario::StartUntouchable() {
 	this->untouchable = 1;
-	this->untouchable_start = GetTickCount();
+	this->untouchable_start = GetTickCount64();
 }
 
 void CMario::UpdateSpeed(DWORD dt) {
@@ -74,7 +74,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 
 	// reset untouchable timer if untouchable time has passed
-	if ( GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME) {
+	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME) {
 		this->untouchable_start = 0;
 		this->untouchable = 0;
 	}
@@ -104,8 +104,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
 		// block every object first!
-		x += min_tx*dx + nx*0.4f; // nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty*dy + ny*0.15f;
+		x += min_tx*dx + nx*0.1f; // nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty*dy + ny*0.1f;
 
 		if (nx!=0) vx = 0; //va cham theo phuong x
 		//if (ny!=0) vy = 0; //va cham theo truc y
@@ -163,17 +163,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 				// jump on top >> kill Goomba and deflect a bit 
 				if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-					if (goomba->isWing && goomba->GetState() != GOOMBA_STATE_DIE) {
+					if (goomba->isWing && goomba->GetState() != ENEMY_STATE_DAMAGE) {
 						goomba->SetState(GOOMBA_STATE_WALKING);
 					}
-					if (goomba->GetState() != GOOMBA_STATE_WALKING && goomba->GetState() != GOOMBA_STATE_DIE){
-						goomba->SetState(GOOMBA_STATE_DIE);
+					if (goomba->GetState() != GOOMBA_STATE_WALKING && goomba->GetState() != ENEMY_STATE_DAMAGE){
+						goomba->SetState(ENEMY_STATE_DAMAGE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
 				}
 				else if (e->nx != 0) {	// xet mario va cham theo phuong x -> mario die
 					if (untouchable == 0){
-						if (goomba->GetState() != GOOMBA_STATE_DIE){
+						if (goomba->GetState() != ENEMY_STATE_DAMAGE){
 							isDamaged(); // xu ly mario bi thuong
 						}
 					}

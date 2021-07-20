@@ -9,6 +9,7 @@
 #include "Goomba.h"
 #include "Koopas.h"
 #include "Map.h"
+#include "PiranhaFlower.h"
 
 /*
 * Play Scene have 1 player (MARIO) , objects (static, dynamic) and 1 MAP 

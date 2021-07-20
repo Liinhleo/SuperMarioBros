@@ -52,11 +52,6 @@ void CMap::LoadMap() {
 		f.close();
 		return;
 	}
-	////set size of map if using vector<vector<int>>
-	//tileMaps.resize(numRow);
-	//for (int i = 0; i < numRow; i++)
-	//	tileMaps[i].resize(numCol);	
-	 
 	//read info from file
 	for (int i = 0; i < numRow; i++) {
 		for (int j = 0; j < numCol; j++){

@@ -8,10 +8,10 @@ class Timer
 public:
 	Timer(int endTime) { this->endTime = endTime; startTime = 0; }
 
-	void Start() { startTime = GetTickCount(); }
+	void Start() { startTime = GetTickCount64(); }
 	void Stop() { startTime = 0; }
 
-	bool IsTimeUp() { return GetTickCount() - startTime > endTime; }
+	bool IsTimeUp() { return GetTickCount64() - startTime > endTime; }
 
 	int GetStartTime() { return startTime; }
 	int GetLimitedTime() { return endTime; }

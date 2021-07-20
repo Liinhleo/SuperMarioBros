@@ -181,7 +181,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		//objects.push_back(obj);
 	}
 	break;
+	case OBJECT_TYPE_PIRANHA_FLOWER:
+	{
+		obj = new PiranhaFlower(x,y);
 
+		// General object setup
+		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		//obj->SetPosition(x, y);
+		//obj->SetAnimationSet(ani_set);
+		//objects.push_back(obj);
+	}
+	break;
 	case OBJECT_TYPE_BRICK: 
 		{
 			int typeBrick = atoi(tokens[4].c_str());

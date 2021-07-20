@@ -49,6 +49,9 @@ public:
 
 	int nx;	 
 
+	float start_x; // initial position of Object at scene
+	float start_y; 
+
 	int state;
 	int type;
 
@@ -69,6 +72,7 @@ public:
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 
 	void RenderBoundingBox();
+	bool AABBCheck(float left_a, float top_a, float right_a, float bottom_a, float left_b, float top_b, float right_b, float bottom_b);
 
 	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
