@@ -72,6 +72,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 	DebugOut(L"current state: %d \n", state);
 
 
+	// CHUA CHECK LEVEL  OF MARIO (FIRE -> CREATE BULLET
+	if (isAttack) {
+		// Tao bullet
+		if (listBullet.size() < 2) {
+			if (nx > 0)
+				listBullet.push_back(CreateBullet(x + 6, y + 6, nx));
+			else
+				listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+		}
+		isAttack = false;
+	}
+	//update listBullet
+	for (size_t i = 0; i < listBullet.size(); i++)
+	{
+		listBullet[i]->Update(dt, coObjects);
+	}
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME) {
@@ -200,6 +216,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 	}
 
 
+
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) 
 		delete coEvents[i];
@@ -208,7 +225,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 void CMario::Render()
 {
-	ani = -1;
 #pragma region SMALL MARIO
 	if (GetLevel() == MARIO_LEVEL_SMALL) {
 		switch (state) {
@@ -417,6 +433,10 @@ void CMario::Render()
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 	animation_set->at(ani)->Render(x, y, alpha);
+
+	for (size_t i = 0; i < listBullet.size(); i++)
+		listBullet[i]->Render();
+
 	RenderBoundingBox();
 }
 

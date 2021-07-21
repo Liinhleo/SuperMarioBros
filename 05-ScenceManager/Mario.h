@@ -3,6 +3,8 @@
 #include "Brick.h"
 #include "Ground.h"
 #include "Timer.h"
+#include "Bullet.h"
+#include "MarioTail.h"
 
 class CMario : public CGameObject
 {
@@ -10,9 +12,17 @@ class CMario : public CGameObject
 	int untouchable;
 	DWORD untouchable_start;
 
+	Bullet* CreateBullet(float x, float y, int nx)
+	{
+		Bullet* bullet = new Bullet({ x, y }, nx);
+		return bullet;
+	}
+	vector< LPGAMEOBJECT> listBullet;
+
 public: 
-	int ani;
 	float a;
+
+	MarioTail* tail;
 
 	Timer* flyTime = new Timer(TIME_FLY);
 

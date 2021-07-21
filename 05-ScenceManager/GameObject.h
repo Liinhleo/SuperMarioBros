@@ -54,6 +54,7 @@ public:
 
 	int state;
 	int type;
+	int ani;
 
 	DWORD dt; 
 	

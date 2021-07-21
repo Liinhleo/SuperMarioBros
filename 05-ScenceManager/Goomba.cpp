@@ -27,7 +27,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		timeDisappear->Stop();
 		// Xu ly khong ve nua -> xu ly ben playScence
 	}
-	// CHUA XU LY BAY
+
 	if (isWing) {
 		if (timeStartJump->IsTimeUp() && timeStartJump->GetStartTime()) { // bd tinh time nhay
 			timeStartJump->Stop();
@@ -39,12 +39,17 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	}
 
 
-
+	// XU LY VA CHAM
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-	CalcPotentialCollisions(coObjects, coEvents);
+
+	// turn off collision when die 
+	if (state != ENEMY_STATE_DIE_BY_ATTACK)
+		CalcPotentialCollisions(coObjects, coEvents);
+
+	//CalcPotentialCollisions(coObjects, coEvents);
 
 	if (coEvents.size() == 0) // no collision
 	{
@@ -93,7 +98,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				}
 			}
 
-			else if (e->obj->GetType() == ObjectType::GOOMBA) {
+			else if (e->obj->GetType() == ObjectType::GOOMBA) { //dung nhau thi doi huong
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 				if (e->nx != 0)	{
 					if (this->GetGoombaType() == goomba->GetGoombaType()) {
@@ -113,25 +118,24 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 void CGoomba::Render()
 {
-	int ani = -1;
 	int GType = GetGoombaType();
 
 	switch (GType) {
 	case GOOMBA_YELLOW:
 		if (state == GOOMBA_STATE_FLYING || state == GOOMBA_STATE_JUMP) ani = GOOMBA_YELLOW_ANI_FLY;
-	
 		else if (state == ENEMY_STATE_DAMAGE) ani = GOOMBA_YELLOW_ANI_DIE; // bep di -> bien mat sau 2s 
-		else if (state == ENEMY_STATE_DIE_BY_ATTACK) ani = GOOMBA_YELLOW_ANI_WALKING; // bi lat nguoc va bay khoi screen
-
+		else if (state == ENEMY_STATE_DIE_BY_ATTACK) ani = GOOMBA_YELLOW_ANI_INVERSE; // bi lat nguoc va bay khoi screen
 		else  ani = GOOMBA_YELLOW_ANI_WALKING;
 		break;
 	case GOOMBA_RED:
 		if (state == GOOMBA_STATE_FLYING || state == GOOMBA_STATE_JUMP) ani = GOOMBA_RED_ANI_FLY;
 		else if (state == ENEMY_STATE_DAMAGE) ani = GOOMBA_RED_ANI_DIE; // bep di -> bien mat sau 2s 
-		else if (state == ENEMY_STATE_DIE_BY_ATTACK) ani = GOOMBA_YELLOW_ANI_WALKING; // bi lat nguoc va bay khoi screen
+		else if (state == ENEMY_STATE_DIE_BY_ATTACK){	// bi lat nguoc va bay khoi screen
+			if(isWing) ani = GOOMBA_RED_ANI_FLY_INVERSE;
+			else ani = GOOMBA_RED_ANI_INVERSE; 
+		}
 		else  ani = GOOMBA_RED_ANI_WALKING;
 		break;
-
 	}
 
 	animation_set->at(ani)->Render(x,y);
@@ -169,7 +173,6 @@ void CGoomba::SetState(int state)
 		case GOOMBA_STATE_JUMP:
 			isOnGround = false;
 			vy =  -GOOMBA_JUMP_SPEED;
-
 	}
 }
 
