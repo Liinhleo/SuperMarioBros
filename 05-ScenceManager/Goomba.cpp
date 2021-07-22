@@ -82,7 +82,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 			if (e->obj->GetType() == ObjectType::GROUND) {
 				CGround* ground = dynamic_cast<CGround*>(e->obj);
-				if (e->nx != 0) {
+				if (e->nx != 0) { // va cham theo phuong x voi color box
 					if (ground->isInteract){
 						x += dx; //di xuyen qua
 					}
@@ -106,8 +106,14 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 						goomba->vx = -vx;
 					}
 					else {
-						x += dx;
+						x += dx; // khac loai thi di xuyen qua nhau dc
 					}
+				}
+			}
+
+			else if (e->obj->GetType() == ObjectType::KOOPA) { //dung nhau thi doi huong
+				if (e->nx != 0) {
+					x += dx; //di xuyen qua
 				}
 			}
 		}
@@ -170,6 +176,7 @@ void CGoomba::SetState(int state)
 			isOnGround = false;
 			vy = -GOOMBA_JUMP_SPEED * 0.6;
 			vx = -GOOMBA_WALKING_SPEED;
+
 		case GOOMBA_STATE_JUMP:
 			isOnGround = false;
 			vy =  -GOOMBA_JUMP_SPEED;

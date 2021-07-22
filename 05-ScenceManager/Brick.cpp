@@ -8,7 +8,7 @@ CBrick::CBrick(int typeBrick, int typeItem, int count) {
 	this->count = count;
 	SetState(BRICK_STATE_ACTIVE);
 }
-void  CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
+void  CBrick::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects) {
 
 }
 

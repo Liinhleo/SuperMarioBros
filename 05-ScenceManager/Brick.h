@@ -6,7 +6,7 @@ class CBrick : public CGameObject
 {
 	int brickType; // 1=normal 	2=question	3=question_broken	4=bronze
 	int typeItem; // 0=non 1= superLeaf 2=coin 3=p_switch 4=green_mushroom 
-	int count; //number of coin 
+	int count; //number of item 
 
 public:
 
@@ -22,6 +22,6 @@ public:
 
 	virtual void Render();
 	virtual void SetState(int state);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 };

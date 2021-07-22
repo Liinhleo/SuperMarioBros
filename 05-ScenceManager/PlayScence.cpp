@@ -223,13 +223,31 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			//listStatic.push_back(obj);
 		}
 		break;
+	case OBJECT_TYPE_PIPE:
+	{
+		int typePipe = atoi(tokens[4].c_str());
+		int hasPortal = atoi(tokens[5].c_str());
+		float des_x = atoi(tokens[6].c_str());
+		float des_y = atoi(tokens[7].c_str());
+		int direct = atoi(tokens[8].c_str());
 
+		obj = new Pipe(typePipe, hasPortal, { des_x, des_y }, direct);
+
+		//		// General object setup
+		//		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		//		//obj->SetPosition(x, y);
+		//		//obj->SetAnimationSet(ani_set);
+		//		//listStatic.push_back(obj);
+	}
+	break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			// Read file
 			float r = atof(tokens[4].c_str());
 			float b = atof(tokens[5].c_str());
 			int scene_id = atoi(tokens[6].c_str());
+			// float des_x = atoi(tokens[7].c_str());
+			// float des_y = atoi(tokens[8].c_str());
 			obj = new CPortal(x, y, r, b, scene_id);
 
 			// General object setup

@@ -14,7 +14,7 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	
 	CGameObject::Update(dt);
 
-	this->vy += BULLET_GRAVITY * dt;// Simple fall down
+	this->vy += BULLET_GRAVITY * dt;	// Simple fall down
 	this->vx = nx * BULLET_SPEED_X; 
 
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -41,13 +41,12 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 		y += min_ty * dy + ny * 0.4f;
 		x += min_tx * dx + nx * 0.4f;
 
-		if (ny < 0) // va cham ground
+		if (ny < 0) // va cham ground theo phuong y
 		{
-			vy = -BULLET_SPEED_Y;
+			this->vy = -BULLET_SPEED_Y; // nhay tung tung len
 		}
-		//
-		// Collision logic with other objects
-		//
+
+
 		for (UINT i = 0; i < coEventsResult.size(); i++) 
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
@@ -56,17 +55,17 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 				CGround* ground = dynamic_cast<CGround*>(e->obj);
 				if (e->nx != 0){ // va cham theo phuong x
 					if (ground->isInteract) {
-						x += dx; // xuyen qua dc
+						this->x += dx; // xuyen qua dc
 					}
 
 					else
-						state = STATE_DISABLE; // va cham-> not render bullet
+						this->state = STATE_DISABLE; // va cham-> not render bullet
 				}
 			}
 
 			else if (e->obj->GetType() == ObjectType::BRICK || e->obj->GetType() == ObjectType::PIPE) {
 				if (e->nx != 0){ // va cham theo phuong x
-					state = STATE_DISABLE; // va cham-> not render bullet
+					this->state = STATE_DISABLE; // va cham-> not render bullet
 				}
 			}
 			else {
@@ -74,7 +73,8 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 						Enemy* enemy = dynamic_cast<Enemy*>(e->obj);
 						enemy->nx = this->nx;
 						enemy->attackByWeapon();
-						state = STATE_DISABLE; // va cham-> not render bullet
+
+						this->state = STATE_DISABLE; // va cham-> not render bullet
 
 						// tinh diem cho Mario 100d
 					}
@@ -87,12 +87,6 @@ void Bullet::Render() {
 	int alpha = 255;
 	animation_set->at(0)->Render(x, y, alpha);
 	//RenderBoundingBox();
-}
-
-void Bullet::SetState(int state) {
-	CGameObject::SetState(state);
-	if (state == STATE_DISABLE)
-		vx = vy = 0;
 }
 
 void Bullet::GetBoundingBox(float& left, float& top, float& right, float& bottom) {
