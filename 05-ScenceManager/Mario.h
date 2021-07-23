@@ -19,10 +19,12 @@ class CMario : public CGameObject
 	}
 	vector< LPGAMEOBJECT> listBullet;
 
+	MarioTail* tail; // mario has a tail when level = RACOON
+
 public: 
 	float a;
 
-	MarioTail* tail;
+	MarioTail* GetTail() { return tail; }
 
 	Timer* flyTime = new Timer(TIME_FLY);
 

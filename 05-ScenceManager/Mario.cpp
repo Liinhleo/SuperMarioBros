@@ -579,38 +579,40 @@ void CMario::SetState(int state)
 void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom)
 {
 	left = x;
-	top = y; 
-	
+	top = y;
 	switch (level) {
+	
 	case MARIO_LEVEL_SMALL:
 		right = x + MARIO_SMALL_BBOX_WIDTH;
 		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
 		break;
 	case MARIO_LEVEL_RACOON:
-		right = x + MARIO_RACCOON_BBOX_WIDTH;
-		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
-
-		if (nx > 0) {
-			left = x + 7;
-			right = left + MARIO_RACCOON_BBOX_WIDTH ;
+		if (state == MARIO_STATE_SIT) { // sitting
+			right = x + MARIO_RACCOON_BBOX_WIDTH;
+			bottom = y + MARIO_BIG_BBOX_HEIGHT - 10;
 		}
-		else {
-			left = x + 7;
-			right = left + MARIO_RACCOON_BBOX_WIDTH;
-		}
-		if (state == MARIO_STATE_SIT) {
-			top = y + 10;
+		else { 
+			if (nx > 0) {
+				left = x + TAIL_BBOX_WIDTH - 2;
+				right = left  + MARIO_RACCOON_BBOX_WIDTH;
+			}
+			else {
+				right = left + MARIO_RACCOON_BBOX_WIDTH;
+			}
+			bottom = y + MARIO_BIG_BBOX_HEIGHT;
 		}
 		break;
 
 	case MARIO_LEVEL_BIG:
 	case MARIO_LEVEL_FIRE:
+		left = x;
+
 		if (state == MARIO_STATE_SIT) {
-			right = x + MARIO_BIG_BBOX_WIDTH;
+			right = left + MARIO_BIG_BBOX_WIDTH;
 			bottom = y + MARIO_BIG_BBOX_HEIGHT - 10;
 		}
 		else {
-			right = x + MARIO_BIG_BBOX_WIDTH;
+			right = left + MARIO_BIG_BBOX_WIDTH;
 			bottom = y + MARIO_BIG_BBOX_HEIGHT;
 		}
 		break;
