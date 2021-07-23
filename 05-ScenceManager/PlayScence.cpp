@@ -7,6 +7,8 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Map.h"
+#include "FireFlower.h"
+#include "Pipe.h"
 
 using namespace std;
 
@@ -192,6 +194,18 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		//objects.push_back(obj);
 	}
 	break;
+
+	case OBJECT_TYPE_FIRE_FLOWER:
+	{
+		int type = atoi(tokens[4].c_str());
+		obj = new FireFlower(x, y, type);
+		// General object setup
+		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		//obj->SetPosition(x, y);
+		//obj->SetAnimationSet(ani_set);
+		//objects.push_back(obj);
+	}
+	break;
 	case OBJECT_TYPE_BRICK: 
 		{
 			int typeBrick = atoi(tokens[4].c_str());
@@ -339,6 +353,14 @@ void CPlayScene::Update(DWORD dt)
 	for (size_t i = 0; i < objects.size(); i++)
 	{
 		objects[i]->Update(dt, &coObjects);
+
+		if (objects[i]->GetType() == ObjectType::PIRANHA_FLOWER || objects[i]->GetType() == ObjectType::FIRE_FLOWER)
+		{
+			float l, t, r, b;
+			player->GetBoundingBox(l, t, r, b);
+			Plant* plant = dynamic_cast<Plant*>(objects[i]);
+			plant->Update(dt, &objects, { l,t,r,b });
+		}
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)

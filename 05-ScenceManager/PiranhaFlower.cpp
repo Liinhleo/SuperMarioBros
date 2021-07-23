@@ -1,5 +1,5 @@
 #include "PiranhaFlower.h"
-
+#include "Utils.h"
 PiranhaFlower::PiranhaFlower(float x, float y):Plant(x, y) {
 	type = ObjectType::PIRANHA_FLOWER;
 
@@ -17,13 +17,16 @@ void PiranhaFlower::GetBoundingBox(float& left, float& top, float& right, float&
 
 void PiranhaFlower::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player) {
 	Plant::Update(dt, coObjects, player);
-	// Xu ly logic sau
+	// step 1: (state = moving up)
+	if (GetState() == PLANT_STATE_MOVING_UP && y < start_y - PIRANHA_BBOX_HEIGHT) {
+		y = start_y - PIRANHA_BBOX_HEIGHT;
+		SetState(PLANT_STATE_ATTACK);
+	}
 }
 
 
 void PiranhaFlower::Render() {
-	int ani = 0;
-	animation_set->at(ani)->Render(x, y);
+	animation_set->at(0)->Render(x, y);
 }
 
 void PiranhaFlower::SetState(int state) {
