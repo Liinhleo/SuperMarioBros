@@ -19,12 +19,10 @@ class CMario : public CGameObject
 	}
 	vector< LPGAMEOBJECT> listBullet;
 
-	MarioTail* tail; // mario has a tail when level = RACOON
 
 public: 
 	float a;
-
-	MarioTail* GetTail() { return tail; }
+	MarioTail* tail; // mario has a tail when level = RACOON
 
 	Timer* flyTime = new Timer(TIME_FLY);
 
@@ -32,7 +30,8 @@ public:
 	bool isAttack = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
-	
+	~CMario() {};
+
 	// Van toc
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }

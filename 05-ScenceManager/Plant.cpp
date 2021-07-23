@@ -74,5 +74,5 @@ void Plant::GetZoneAtive(float& l, float& t, float& r, float& b){ // mario dung 
 bool Plant::CheckPlayerInZone(D3DXVECTOR4 player){ // ktra mario co nam trong vung hoat dong cua cay hay k 
 	float l_plant, t_plant, r_plant, b_plant; 
 	GetZoneAtive(l_plant, t_plant, r_plant, b_plant); 
-	return AABBCheck(l_plant, t_plant, r_plant, b_plant, player.x, player.y, player.z, player.w);
+	return CheckAABB(l_plant, t_plant, r_plant, b_plant, player.x, player.y, player.z, player.w);
 }

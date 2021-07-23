@@ -9,19 +9,23 @@
 
 #define TAIL_BBOX_HEIGHT		6
 #define TAIL_BBOX_WIDTH			9
-#define DISTANCE_XTAIL_MARIO	14 // kc tu vi tri x cua tail
+#define DISTANCE_XTAIL_MARIO	7 // kc tu vi tri x cua tail
 
 
 class MarioTail : public CGameObject
 {
-	//bool isTail = false;
-
-	MarioTail();
+	float *xMario, *yMario;
+	int *nxMario;
+public:
+	MarioTail(float& x, float& y, int& nx);
 	~MarioTail() {};
 
-	void SetState(int state);
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	bool isCollision(float obj_left, float obj_top, float obj_right, float obj_bottom);
+	
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void Render();
+	void SetState(int state);
+
 };
 

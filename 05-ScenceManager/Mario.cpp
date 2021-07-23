@@ -24,7 +24,10 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->y = y;
 
 	this->a = 0;
+
+	tail = new MarioTail(x, y, nx);
 }
+
 
 /*
 	Reset Mario status to the beginning state of a scene
@@ -70,7 +73,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 	}
 
 	DebugOut(L"current state: %d \n", state);
-
 	if (isAttack) {
 		if (level == MARIO_LEVEL_FIRE) {
 			// Tao bullet
@@ -81,8 +83,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 					listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
 			}
 		}
+		if (level == MARIO_LEVEL_RACOON) {
+			tail->SetState(TAIL_STATE_HIT);
+			tail->SetPosition(x, y);
+			tail->nx;
+			tail->Update(dt, coObjects);
+		}
 		isAttack = false;
 	}
+
 	//update listBullet
 	for (size_t i = 0; i < listBullet.size(); i++)
 	{
@@ -131,7 +140,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 			vy = 0;
 			isOnGround = true;
 			DebugOut(L"on ground NY=: %d \n", ny);
-
 		}
 
 
@@ -210,7 +218,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 	}
 
 	// han che lap frame attack
-	if (GetState() == MARIO_STATE_ATTACK
+	if (level == MARIO_LEVEL_RACOON && isAttack 
 		&& animation_set->at(ani)->getCurrentFrame() >= 4) {
 		isAttack = false;
 	}
@@ -507,7 +515,9 @@ void CMario::Render()
 	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
 	
-	RenderBoundingBox();
+	if (tail) tail->Render();
+
+	//RenderBoundingBox();
 }
 
 void CMario::SetState(int state)
