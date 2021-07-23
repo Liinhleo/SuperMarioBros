@@ -424,9 +424,31 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->Reset();
 		break;
 	case DIK_A:
-		if (mario->GetLevel() == MARIO_LEVEL_RACOON) {
+		if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE) {
 			mario->SetState(MARIO_STATE_ATTACK);
 		}
+		break;
+
+		// HACK KEY
+	case DIK_1:
+		mario->SetLevel(MARIO_LEVEL_SMALL);
+		mario->Reset();
+		break;
+
+	case DIK_2:
+		mario->SetLevel(MARIO_LEVEL_BIG);
+		mario->Reset();
+		break;
+
+	case DIK_3:
+		mario->SetLevel(MARIO_LEVEL_RACOON);
+		mario->Reset();
+		break;
+
+	case DIK_4:
+		mario->SetLevel(MARIO_LEVEL_FIRE);
+		mario->Reset();
+		break;
 	}
 }
 
@@ -452,7 +474,8 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		break;
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG
-		|| mario->GetLevel() == MARIO_LEVEL_RACOON) {
+		|| mario->GetLevel() == MARIO_LEVEL_RACOON 
+		|| mario->GetLevel() == MARIO_LEVEL_FIRE) {
 			mario->SetState(MARIO_STATE_STAND_UP);// avoid Mario falling out after sitting
 		}
 		else
@@ -541,7 +564,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		// SIT
 		else if (game->IsKeyDown(DIK_DOWN)) {
 			if (mario->GetLevel() == MARIO_LEVEL_BIG
-				|| mario->GetLevel() == MARIO_LEVEL_RACOON) {
+				|| mario->GetLevel() == MARIO_LEVEL_RACOON
+				|| mario->GetLevel() == MARIO_LEVEL_FIRE) {
 				mario->SetState(MARIO_STATE_SIT);
 			}
 			else

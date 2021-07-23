@@ -31,8 +31,8 @@ CMario::CMario(float x, float y) : CGameObject()
 */
 void CMario::Reset(){
 	SetState(MARIO_STATE_IDLE);
-	GetLevel();
-	SetPosition(start_x, start_y);
+	GetLevel(); 
+	SetPosition(x, y - MARIO_RACCOON_BBOX_WIDTH); //tang y tranh mario rot
 	SetSpeed(0, 0);
 }
 
@@ -71,15 +71,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 
 	DebugOut(L"current state: %d \n", state);
 
-
-	// CHUA CHECK LEVEL  OF MARIO (FIRE -> CREATE BULLET
 	if (isAttack) {
-		// Tao bullet
-		if (listBullet.size() < 2) {
-			if (nx > 0)
-				listBullet.push_back(CreateBullet(x + 6, y + 6, nx));
-			else
-				listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+		if (level == MARIO_LEVEL_FIRE) {
+			// Tao bullet
+			if (listBullet.size() < 2) {
+				if (nx > 0)
+					listBullet.push_back(CreateBullet(x + 6, y + 6, nx));
+				else
+					listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+			}
 		}
 		isAttack = false;
 	}
@@ -214,7 +214,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		&& animation_set->at(ani)->getCurrentFrame() >= 4) {
 		isAttack = false;
 	}
-
 
 
 	// clean up collision events
@@ -430,13 +429,84 @@ void CMario::Render()
 	}
 #pragma endregion
 
+#pragma region FIRE MARIO
+	if (GetLevel() == MARIO_LEVEL_FIRE) {
+		switch (state) {
+		case MARIO_STATE_ATTACK:
+			if (nx > 0) ani = MARIO_ANI_FIRE_ATTACK_RIGHT;
+			else ani = MARIO_ANI_FIRE_ATTACK_LEFT;
+			break;
+		case MARIO_STATE_STOP:
+			if (nx > 0) ani = MARIO_ANI_FIRE_STOP_RIGHT;
+			else ani = MARIO_ANI_FIRE_STOP_LEFT;
+			break;
+		case MARIO_STATE_JUMP_LOW:
+		case MARIO_STATE_JUMP:
+			if (state == MARIO_STATE_SIT) {
+				if (nx > 0) ani = MARIO_ANI_FIRE_SIT_RIGHT;
+				else ani = MARIO_ANI_FIRE_SIT_LEFT;
+			}
+			else {
+				if (vy < 0) {
+					if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_RIGHT;
+					else ani = MARIO_ANI_FIRE_JUMP_LEFT;
+				}
+				else {
+					if (nx > 0) ani = MARIO_ANI_FIRE_FALLING_RIGHT;
+					else ani = MARIO_ANI_FIRE_FALLING_LEFT;
+				}
+			}
+			break;
+		case MARIO_STATE_RUN:
+			if (nx > 0) {
+				if (vx >= MARIO_MAX_SPEED) ani = MARIO_ANI_FIRE_RUN_RIGHT;
+				else ani = MARIO_ANI_FIRE_WALKING_RIGHT;
+			}
+			else {
+				if (abs(vx) >= MARIO_MAX_SPEED) ani = MARIO_ANI_FIRE_RUN_LEFT;
+				else ani = MARIO_ANI_FIRE_WALKING_LEFT;
+			}
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0) ani = MARIO_ANI_FIRE_SIT_RIGHT;
+			else ani = MARIO_ANI_FIRE_SIT_LEFT;
+			break;
+		case MARIO_STATE_FLY:
+			if (nx > 0) ani = MARIO_ANI_FIRE_FLY_RIGHT;
+			else ani = MARIO_ANI_FIRE_FLY_LEFT;
+			break;
+		case MARIO_STATE_FALL:
+			if (nx > 0) ani = MARIO_ANI_FIRE_FALLING_RIGHT;
+			else ani = MARIO_ANI_FIRE_FALLING_LEFT;
+			break;
+		default:
+			if (!isOnGround) {
+				if (nx > 0) ani = MARIO_ANI_FIRE_FALLING_RIGHT;
+				else ani = MARIO_ANI_FIRE_FALLING_LEFT;
+			}
+
+			else {
+				if (nx > 0) {
+					if (vx > 0) ani = MARIO_ANI_FIRE_WALKING_RIGHT;
+					else ani = MARIO_ANI_FIRE_IDLE_RIGHT;
+				}
+				else {
+					if (vx < 0) ani = MARIO_ANI_FIRE_WALKING_LEFT;
+					else ani = MARIO_ANI_FIRE_IDLE_LEFT;
+				}
+			}
+			break;
+		}
+	}
+#pragma endregion
+
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 	animation_set->at(ani)->Render(x, y, alpha);
 
 	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
-
+	
 	RenderBoundingBox();
 }
 
@@ -519,16 +589,22 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 	case MARIO_LEVEL_RACOON:
 		right = x + MARIO_RACCOON_BBOX_WIDTH;
 		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
+
 		if (nx > 0) {
+			left = x + 7;
+			right = left + MARIO_RACCOON_BBOX_WIDTH ;
+		}
+		else {
 			left = x + 7;
 			right = left + MARIO_RACCOON_BBOX_WIDTH;
 		}
 		if (state == MARIO_STATE_SIT) {
-			bottom = y + MARIO_RACCOON_BBOX_HEIGHT - 10;
+			top = y + 10;
 		}
 		break;
 
 	case MARIO_LEVEL_BIG:
+	case MARIO_LEVEL_FIRE:
 		if (state == MARIO_STATE_SIT) {
 			right = x + MARIO_BIG_BBOX_WIDTH;
 			bottom = y + MARIO_BIG_BBOX_HEIGHT - 10;
@@ -548,7 +624,10 @@ void CMario::isDamaged() {
 			SetLevel(MARIO_LEVEL_SMALL);
 		else if (level == MARIO_LEVEL_RACOON)
 			SetLevel(MARIO_LEVEL_BIG);
+		else if (level == MARIO_LEVEL_FIRE)
+			SetLevel(MARIO_LEVEL_RACOON);
 
+		Reset();
 		StartUntouchable(); // set time untouchable
 	}
 	else
