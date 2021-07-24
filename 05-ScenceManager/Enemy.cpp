@@ -20,7 +20,8 @@ void Enemy::attackOnTop() {
 }
 
 void Enemy::attackByWeapon() {
-	if (this->GetType()== ObjectType::PIRANHA_FLOWER|| this->GetType()== ObjectType::FIRE_FLOWER)
+	if (this->GetType()== ObjectType::PIRANHA_FLOWER
+		|| this->GetType()== ObjectType::FIRE_FLOWER)
 		SetState(ENEMY_STATE_DESTROY);
 	else
 		SetState(ENEMY_STATE_DIE_BY_ATTACK);

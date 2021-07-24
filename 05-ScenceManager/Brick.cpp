@@ -1,26 +1,59 @@
 #include "Brick.h"
+#include "Utils.h"
 
-CBrick::CBrick(int typeBrick, int typeItem, int count) {
+CBrick::CBrick(float x, float y, int typeBrick, int typeItem, int count) {
 	
-	brickType = type;
+	brickType = typeBrick;
 	this->type = ObjectType::BRICK;
+	
+	this->x = x;
+	this->y = y;
+	this->start_x = x;
+	this->start_y = y;
+	GetPosition(this->start_x, this->start_y);
+
 	this->typeItem = typeItem;
 	this->count = count;
+
 	SetState(BRICK_STATE_ACTIVE);
 }
-void  CBrick::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects) {
+void  CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
+	CGameObject::Update(dt);
+	DebugOut(L"type Brick %d \n", brickType);
+	DebugOut(L"staet Brick %d \n", state);
+	DebugOut(L"x Brick %f \n", x);
+	DebugOut(L"y Brick %f \n", y);
 
+	if (y < (start_y - 5.0f) && vy < 0)
+	{
+		vy = -vy;
+	}
+	if (y > start_y)
+	{
+		y = start_y;
+		SetState(BRICK_STATE_ACTIVE);
+	}
+	y += dy;
 }
+
 
 void CBrick::SetState(int state) {
 	CGameObject::SetState(state);
 	switch (state) {
+	case BRICK_STATE_BOUNDING:
+		if ((typeItem == CONTAIN_ITEM || typeItem == 4) && count == 1)
+			isFallingItem = true;
+		vy = -0.2f;
+		DebugOut(L"CONTAIN: %d \n", count);
+		break;
+
+	case BRICK_STATE_HIDDEN:
+		break;
+
 	case BRICK_STATE_BROKEN:
+		isBroken = true;
 		break;
-	case BRICK_STATE_INACTIVE:
-		isExplore = true;
-		// xu ly logic sau
-		break;
+
 	case BRICK_STATE_ACTIVE:
 		vy = 0;
 		break;
@@ -30,24 +63,13 @@ void CBrick::SetState(int state) {
 
 void CBrick::Render()
 {
-	int ani = -1;
-	int Btype = GetBrickType();
-	switch (Btype){
-		case BRICK_NORMAL:
-			ani = BRICK_ANI_NORMAL_ACTIVE;
-			break;
-		case BRICK_MUSIC:
-			ani = BRICK_ANI_MUSIC_ACTIVE;
-			break;
-		case BRICK_QUESTION:
-			if (state == BRICK_STATE_BROKEN) ani = BRICK_ANI_QUESTION_BROKEN;
-			else ani = BRICK_ANI_QUESTION_ACTIVE;
-			break;
-		case BRICK_GLASS:
-			if (state == BRICK_STATE_BROKEN) ani = BRICK_ANI_GLASS_ACTIVE;
-			else ani = BRICK_ANI_GLASS_BROKEN;
-			break;
-
+	if (GetBrickType() == BRICK_BROKEN || isBroken)
+		ani = BRICK_ANI_BROKEN;
+	else {
+		if (state == BRICK_STATE_HIDDEN)
+			ani = BRICK_ANI_HIDDEN;
+		else
+			ani = BRICK_ANI_ACTIVE;
 	}
 	animation_set->at(ani)->Render(x, y);
 	RenderBoundingBox();

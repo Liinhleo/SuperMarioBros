@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "Enemy.h"
 #include "Timer.h"
 
 #define PLANT_STATE_HIDDEN			0
@@ -12,7 +12,7 @@
 
 #define PLANT_SPEED_Y  0.05f
 
-class Plant : public CGameObject
+class Plant : public Enemy
 {
 public:
 
