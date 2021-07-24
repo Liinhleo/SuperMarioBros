@@ -16,7 +16,10 @@ class CMap
 	int numRow;
 
 public:
-	CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap);
+
+	float startHiddenMap_x, endHidden_x; // hidden map
+
+	CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap, float startHiddenMap_x, float endHidden_x);
 	//CMap();
 
 	int getMapID();

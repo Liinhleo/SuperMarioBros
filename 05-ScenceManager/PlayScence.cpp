@@ -9,6 +9,8 @@
 #include "Map.h"
 #include "FireFlower.h"
 #include "Pipe.h"
+#include "SuperLeaf.h"
+#include "SuperMushroom.h"
 
 using namespace std;
 
@@ -72,8 +74,10 @@ void CPlayScene::_ParseSection_MAPS(string line)
 	wstring matrix_path = ToWSTR(tokens[1]);
 	int widthMap = atoi(tokens[2].c_str());
 	int heightMap = atoi(tokens[3].c_str());
+	float hidden_start = strtof(tokens[4].c_str(), NULL);
+	float hidden_end = strtof(tokens[5].c_str(), NULL);
 	
-	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap);
+	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap, hidden_start, hidden_end);
 
 	//CMaps::GetInstance()->Add(map_id, map);
 }
@@ -212,13 +216,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			int typeItem = atoi(tokens[5].c_str());
 			int count = atoi(tokens[6].c_str());
 
-			obj = new CBrick(typeBrick, typeItem, count);
+			obj = new CBrick(x,y,typeBrick, typeItem, count);
 
 	//		// General object setup
 	//		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 	//		//obj->SetPosition(x, y);
 	//		//obj->SetAnimationSet(ani_set);
-	//		//listStatic.push_back(obj);
+	//		//objects.push_back(obj);
 		}
 		break;
 	case OBJECT_TYPE_GROUND: 
@@ -234,7 +238,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			//obj->SetPosition(x, y);
 			//obj->SetAnimationSet(ani_set);
-			//listStatic.push_back(obj);
+			//objects.push_back(obj);
 		}
 		break;
 	case OBJECT_TYPE_PIPE:
@@ -247,11 +251,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		obj = new Pipe(typePipe, hasPortal, { des_x, des_y }, direct);
 
-		//		// General object setup
-		//		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-		//		//obj->SetPosition(x, y);
-		//		//obj->SetAnimationSet(ani_set);
-		//		//listStatic.push_back(obj);
+		// General object setup
+		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		//obj->SetPosition(x, y);
+		//obj->SetAnimationSet(ani_set);
+		//objects.push_back(obj);
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
@@ -268,7 +272,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			//obj->SetPosition(x, y);
 			//obj->SetAnimationSet(ani_set);
-			//listStatic.push_back(obj);
+			//objects.push_back(obj);
 		}
 		break;
 	default:
@@ -282,7 +286,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
 	obj->SetAnimationSet(ani_set);
-	objects.push_back(obj);
+	listObjects.push_back(obj);
+
+	cam = Camera::GetInstance();
+
 }
 
 void CPlayScene::Load()
@@ -341,52 +348,152 @@ void CPlayScene::Update(DWORD dt)
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
-	// Get Scene ID -> Get map_id --> update map with camera
+	/// PUSH ITEM VAO BRICK 
+	for (size_t i = 0; i < listObjects.size(); i++)	{
 
-	vector<LPGAMEOBJECT> coObjects; //coObject == collision object
+		if (listObjects[i]->GetType() == ObjectType::BRICK)	{
+			CBrick* brick = dynamic_cast<CBrick*>(listObjects[i]);
+			
+			if (brick->isFallingItem) {
+				//CREATE ITEM FOLLOW MARIO LEVEL
+				Item* item;
+				if (brick->typeItem == CONTAIN_GREEN_MUSHROOM) {
+					item = new SuperMushroom({ brick->x, brick->y - BRICK_BBOX_HEIGHT }, ITEM_GREEN_MUSHROOM);
+				}
+				else {
+					if (player->GetLevel() >= MARIO_LEVEL_BIG)
+						item = new SuperLeaf({ brick->x, brick->y - BRICK_BBOX_HEIGHT });
+					else
+						item = new SuperMushroom({ brick->x, brick->y - BRICK_BBOX_HEIGHT }, ITEM_RED_MUSHROOM);
+				}
+				if (item != NULL) {
+					listItems.push_back(item);
+				}
+				brick->isFallingItem = false;
+			}
 
-	for (size_t i = 1; i < objects.size(); i++)
-	{
-		coObjects.push_back(objects[i]);
-	}
-
-	for (size_t i = 0; i < objects.size(); i++)
-	{
-		objects[i]->Update(dt, &coObjects);
-
-		if (objects[i]->GetType() == ObjectType::PIRANHA_FLOWER || objects[i]->GetType() == ObjectType::FIRE_FLOWER)
-		{
-			float l, t, r, b;
-			player->GetBoundingBox(l, t, r, b);
-			Plant* plant = dynamic_cast<Plant*>(objects[i]);
-			plant->Update(dt, &objects, { l,t,r,b });
+			//push glass brick vao listitem (de xet TH gach -> coin)
+			if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN)
+				listItems.push_back(brick);
 		}
 	}
 
+	// XU LY COIN -> BRICK &&  BRICK -> COIN (GLASS_BRICK)
+	// xoa glass brick ra khoi list object sau khi bi hidden
+	for (size_t i = 0; i < listObjects.size(); i++)	{
+		if (listObjects[i]->GetType() == ObjectType::BRICK) {
+			CBrick* brick = dynamic_cast<CBrick*>(listObjects[i]);
+			
+			if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN) {
+				listObjects.erase(listObjects.begin() + i); // xoa bat dau tai vi tri thu i
+				i--;
+			}
+		}
+	}
+
+	// Them vao brick vao object list (TH coin -> gach) 
+	for (size_t i = 0; i < listItems.size(); i++) {
+		if (listItems[i]->GetType() == ObjectType::BRICK) {
+			CBrick* brick = dynamic_cast<CBrick*>(listItems[i]);
+
+			if (brick->GetState() != BRICK_STATE_HIDDEN) {
+				listObjects.push_back(brick);
+			}
+		}
+	}
+
+	//xoa ra khoi list Item
+	for (size_t i = 0; i < listItems.size(); i++) {
+		if (listItems[i]->GetType() == ObjectType::BRICK) {
+			CBrick* brick = dynamic_cast<CBrick*>(listItems[i]);
+			if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() != BRICK_STATE_HIDDEN) {
+				listItems.erase(listItems.begin() + i);
+				i--;
+			}
+		}
+	}
+
+	// Update listItems 
+	for (size_t i = 0; i < listItems.size(); i++) {
+		listItems[i]->Update(dt, &listObjects);
+	}
+
+	// Update list Object 
+	for (size_t i = 0; i < listObjects.size(); i++)
+	{
+		if (listObjects[i]->GetType() == ObjectType::PIRANHA_FLOWER
+			|| listObjects[i]->GetType() == ObjectType::FIRE_FLOWER) {
+
+			float l, t, r, b;
+			player->GetBoundingBox(l, t, r, b);
+			Plant* plant = dynamic_cast<Plant*>(listObjects[i]);
+			plant->Update(dt, &listObjects, { l,t,r,b });
+		}
+		else {
+			listObjects[i]->Update(dt, &listObjects);
+		}
+	}
+
+	// mario
+	player->Update(dt, &listObjects, &listItems);
+
+	// Update cac thuoc tinh cua mario
+	//xoa bullet
+	for (size_t i = 0; i < player->listBullet.size(); i++) {
+		if (player->listBullet[i]->GetState() == STATE_DISABLE) {
+
+			player->listBullet.erase(player->listBullet.begin() + i);
+			i--;
+		}
+	}
+
+	// XOA cac object / item sau khi bien mat
+	// xoa obj co state = STATE_DESTROYED
+	for (size_t i = 0; i < listObjects.size(); i++) {
+		if (listObjects[i]->GetState() == ENEMY_STATE_DESTROY) {
+
+			listObjects.erase(listObjects.begin() + i);
+			i--;
+		}
+	}
+
+	for (size_t i = 0; i < listItems.size(); i++) {
+		if (listItems[i]->GetState() == ITEM_STATE_DESTROY
+			 && listItems[i]->GetType() == ObjectType::ITEM) {
+
+			listItems.erase(listItems.begin() + i);
+			i--;
+		}
+	}
+	
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return; 
 
 
-#pragma region CAMERA FOLLOW PLAYER
+#pragma region CAMERA UPDATE FOLLOW PLAYER
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
-	CGame* game = CGame::GetInstance();
-
-	// vi tri cam luon de mario o giua screen
-	//cx -= game->GetScreenWidth() / 2;
-	//cy -= game->GetScreenHeight() / 2;
-
-	game->cam_y = 250;
-
-	// TH mario o giua screen va screen_width < screen_map_width
-	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->getWidthMap())
-	{
-		cx = player->x - (SCREEN_WIDTH / 2);
-		game->cam_x = cx;
+	// lock cam when player die
+	if (player->GetState() == MARIO_STATE_DIE)
+		cam->SetLockUpdate();
+	if (cam->IsLockUpdate() == true && player->GetState() != MARIO_STATE_DIE)
+		cam->SetUnLockUpdate();
+	
+	// Mario in main map
+	if (!player->isInHiddenMap)	{
+		// startHiddenMap_x = endMainMap_x 
+		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->startHiddenMap_x - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
 	}
-	//CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+
+	// Mario in hidden map
+	else { 
+		cam->Update(dt, { cx,cy }, { map->startHiddenMap_x,0 }, { float(map->endHidden_x - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
+		
+		if (player->x < map->startHiddenMap_x)
+			player->SetPosition(map->startHiddenMap_x, cy);
+	}
 #pragma endregion
 }
 
@@ -395,9 +502,11 @@ void CPlayScene::Render()
 	map->Render();
 
 	// i = 0 : Render Mario (player)
-	for (int i = 0; i < objects.size(); i++)
-		objects[i]->Render();
+	for (int i = 0; i < listObjects.size(); i++)
+		listObjects[i]->Render();
 
+	for (int i = 0; i < listItems.size(); i++)
+		listItems[i]->Render();
 }
 
 /*
@@ -405,10 +514,10 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
-		delete objects[i];
+	for (int i = 0; i < listObjects.size(); i++)
+		delete listObjects[i];
 
-	objects.clear();
+	listObjects.clear();
 	// maps.clear();
 	player = NULL;
 

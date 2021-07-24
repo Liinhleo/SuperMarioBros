@@ -12,6 +12,9 @@ class CMario : public CGameObject
 	int untouchable;
 	DWORD untouchable_start;
 
+public: 
+
+
 	Bullet* CreateBullet(float x, float y, int nx)
 	{
 		Bullet* bullet = new Bullet({ x, y }, nx);
@@ -20,7 +23,6 @@ class CMario : public CGameObject
 	vector< LPGAMEOBJECT> listBullet;
 
 
-public: 
 	float a;
 	MarioTail* tail; // mario has a tail when level = RACOON
 
@@ -28,6 +30,8 @@ public:
 
 	bool isOnGround = false;
 	bool isAttack = false;
+	bool isInHiddenMap = false;
+	bool isFlying = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	~CMario() {};
@@ -49,7 +53,7 @@ public:
 	int GetLevel() {return level; }
 
 	void UpdateSpeed(DWORD dt);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> * coObjects, vector <LPGAMEOBJECT>* coItem);
 	virtual void Render();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
@@ -60,5 +64,7 @@ public:
 	void StartTimeFly();
 
 	void Reset();
+	void CollideWithItem(vector<LPGAMEOBJECT>* Item);
+
 
 };

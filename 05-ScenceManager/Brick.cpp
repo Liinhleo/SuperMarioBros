@@ -19,10 +19,10 @@ CBrick::CBrick(float x, float y, int typeBrick, int typeItem, int count) {
 }
 void  CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	CGameObject::Update(dt);
-	DebugOut(L"type Brick %d \n", brickType);
-	DebugOut(L"staet Brick %d \n", state);
-	DebugOut(L"x Brick %f \n", x);
-	DebugOut(L"y Brick %f \n", y);
+	//DebugOut(L"type Brick %d \n", brickType);
+	//DebugOut(L"staet Brick %d \n", state);
+	//DebugOut(L"x Brick %f \n", x);
+	//DebugOut(L"y Brick %f \n", y);
 
 	if (y < (start_y - 5.0f) && vy < 0)
 	{
@@ -41,7 +41,7 @@ void CBrick::SetState(int state) {
 	CGameObject::SetState(state);
 	switch (state) {
 	case BRICK_STATE_BOUNDING:
-		if ((typeItem == CONTAIN_ITEM || typeItem == 4) && count == 1)
+		if ((typeItem == CONTAIN_ITEM_UP || typeItem == CONTAIN_GREEN_MUSHROOM) && count == 1)
 			isFallingItem = true;
 		vy = -0.2f;
 		DebugOut(L"CONTAIN: %d \n", count);
@@ -72,7 +72,7 @@ void CBrick::Render()
 			ani = BRICK_ANI_ACTIVE;
 	}
 	animation_set->at(ani)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)

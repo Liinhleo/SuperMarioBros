@@ -21,7 +21,7 @@
 
 // Type Item that brick contain 
 #define CONTAIN_NONE			0
-#define CONTAIN_ITEM			1
+#define CONTAIN_ITEM_UP			1 // superleaf && red_mushroom -> Level Up for mario
 #define CONTAIN_COIN			2
 #define CONTAIN_PSWITCH			3
 #define CONTAIN_GREEN_MUSHROOM	4

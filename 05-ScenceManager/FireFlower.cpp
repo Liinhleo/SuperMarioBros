@@ -26,8 +26,8 @@ bool FireFlower::CheckDistancePlayer(D3DXVECTOR4 player)
 void FireFlower::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player) {
 	Plant::Update(dt, coObjects, player);
 	
-	DebugOut(L"State ===== %d \n", state);
-	DebugOut(L"y ===== %f \n", y);
+	//DebugOut(L"State ===== %d \n", state);
+	//DebugOut(L"y ===== %f \n", y);
 
 	// Xet vi tri ban cua dan theo zone of Mario
 	if (player.x < start_x) {		

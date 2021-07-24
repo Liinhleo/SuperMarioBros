@@ -7,11 +7,15 @@
 #include "Game.h"
 
 // ANIMATION 
-CMap::CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap) {
+CMap::CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap, float startHiddenMap_x, float endHidden_x) {
 	this->mapID = mapID;
 	this->matrix_path = matrix_path;
 	this->widthMap = widthMap;
 	this->heightMap = heightMap;
+
+	// hidden map
+	this->startHiddenMap_x = startHiddenMap_x;
+	this->endHidden_x = endHidden_x;
 
 	getNumRow();
 	getNumCol();

@@ -9,6 +9,8 @@
 #include "Portal.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Pswitch.h"
+#include "Item.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -45,7 +47,7 @@ void CMario::StartUntouchable() {
 }
 
 void CMario::UpdateSpeed(DWORD dt) {
-	DebugOut(L"cur a: %f \n", a);
+	//DebugOut(L"cur a: %f \n", a);
 
 	if (a == 0) {
 		vx = vx;
@@ -54,13 +56,13 @@ void CMario::UpdateSpeed(DWORD dt) {
 		vx += a * dt; // bien doi van toc
 		if (abs(vx) >= MARIO_MAX_SPEED) {
 			this->vx = nx *MARIO_MAX_SPEED;
-			DebugOut(L"max speed max speed %f \n", vx);
+			//DebugOut(L"max speed max speed %f \n", vx);
 
 		}
 	}
 }
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
+void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJECT>* coItem) {
 
 	UpdateSpeed(dt);
 
@@ -72,7 +74,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		flyTime->Stop();
 	}
 
-	DebugOut(L"current state: %d \n", state);
+	//DebugOut(L"current state: %d \n", state);
 	if (isAttack) {
 		if (level == MARIO_LEVEL_FIRE) {
 			// Tao bullet
@@ -139,20 +141,51 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		{
 			vy = 0;
 			isOnGround = true;
-			DebugOut(L"on ground NY=: %d \n", ny);
+			//DebugOut(L"on ground NY=: %d \n", ny);
 		}
 
 
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (e->ny > 0) // neu va cham theo truc y
-			{
-				// BRICK 
-				// ..
-				// ..
-				// ..
-			
+			if (e->ny > 0) { // neu va cham theo truc y
+				// BRICK
+				if (e->obj->GetType() == ObjectType::BRICK) {
+					vy = 0;
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj); // if e->obj is Brick 
+					if (brick->GetBrickType()!= BRICK_BROKEN) {
+						if (brick->GetBrickType() == BRICK_GLASS 
+							|| brick->GetBrickType() == BRICK_QUESTION) {
+							if (!brick->isBroken) {
+
+								switch (brick->typeItem) {
+								case CONTAIN_NONE:
+									brick->SetState(BRICK_STATE_BOUNDING);
+
+									if (brick->GetCountItem() == 0)
+										brick->SetState(BRICK_STATE_BROKEN);
+									break;
+								case CONTAIN_ITEM_UP:
+								case CONTAIN_COIN:
+									brick->SetState(BRICK_STATE_BOUNDING);
+
+									if (brick->GetCountItem() > 0)
+										brick->count--;
+									if (brick->GetCountItem() == 0)
+										brick->SetState(BRICK_STATE_BROKEN);
+									break;
+								case CONTAIN_PSWITCH:
+									CGameObject* pswitch = new Pswitch(brick->start_x, brick->start_y - 16);
+									coObjects->push_back(pswitch);
+									brick->SetBrickType(BRICK_BROKEN);
+									brick->SetState(BRICK_STATE_BOUNDING);
+									break;
+								}
+							}
+						}
+					}
+
+				}
 				// GROUND
 				if (e->obj->GetType() == ObjectType::GROUND) {
 					CGround* ground = dynamic_cast<CGround*>(e->obj); // if e->obj is Ground 
@@ -229,6 +262,37 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects) {
 		delete coEvents[i];
 }
 
+void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
+	for (UINT i = 0; i < coItem->size(); i++) {
+		if (isAABB(coItem->at(i))) {
+			if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
+			{
+
+			}
+			if (coItem->at(i)->GetType() == ObjectType::COIN)//brick khi chuyen thanh tien
+			{
+
+			}
+			else {
+				Item* item = dynamic_cast<Item*>(coItem->at(i));
+				switch (item->GetItemType())
+				{
+				case ITEM_GREEN_MUSHROOM: 
+					if(GetLevel() == MARIO_LEVEL_SMALL)
+					break;
+				case ITEM_SUPERLEAF:
+					this->SetPosition(x, y - 1.0f);
+					this->SetLevel(MARIO_LEVEL_RACOON);
+					break;
+				case ITEM_RED_MUSHROOM:
+					this->SetPosition(x, y - 12.0f);
+					this->SetLevel(MARIO_LEVEL_BIG);
+					break;
+				}
+			}
+		}
+	}
+}
 
 void CMario::Render()
 {
@@ -571,6 +635,7 @@ void CMario::SetState(int state)
 		vx = 0;
 		break;
 	case MARIO_STATE_FLY:
+		isFlying = true;
 		isOnGround = false;
 		flyTime->Start(); // bd tinh gio bay
 		if (nx > 0)

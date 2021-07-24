@@ -18,7 +18,7 @@ class MarioTail : public CGameObject
 	int *nxMario;
 public:
 	MarioTail(float& x, float& y, int& nx);
-	~MarioTail() {};
+	~MarioTail() {}
 
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	bool isCollision(float obj_left, float obj_top, float obj_right, float obj_bottom);

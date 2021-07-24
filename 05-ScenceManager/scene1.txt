@@ -2,7 +2,7 @@
 [TEXTURES]
 0	textures\mario.png	255	255	255
 1	textures\tail.png	255	255	255
-21	textures\misc-2.png	255	224	248
+21	textures\misc-2.png	0	117	255
 10	textures\enemy.png	0	255	255
 11	textures\plant.png	255	255	255
 10000	map\tex_map1-1.png	255	255	255
@@ -617,7 +617,7 @@ GREEN_LEFT_UP
 
 #map_id	matrix_path	width	height
 [MAPS]
-10000	map\matrix-map1-1.txt	3360	432
+10000	map\matrix-map1-1.txt	3360	432	2832	3360
 
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
@@ -1050,8 +1050,8 @@ GREEN_LEFT_UP
 # PIPE
 25	610	611	612
 
-# ITEM	#red mushroom	#green_m	leaf_right	leaf_left
-30	503	504	505	506
+# ITEM	la_r	la_l	red mushroom	#green_m	
+30	505	506	503	504
 #P_SWITCH
 31	500	501
 #COIN
@@ -1082,7 +1082,7 @@ GREEN_LEFT_UP
 # FireFlower = 13, ... 
 
 # MARIO
-0	50	0	1
+0	0	0	1
 
 # PIRANHA
 12	1800	384	6
@@ -1101,12 +1101,6 @@ GREEN_LEFT_UP
 10	1030	370	3	1	0
 10	830	370	3	1	0
 10	930	370	3	2	1
-
-# BRICK 
-# hidden wall at the begin map
-2	0	336	20	1	5	0
-# hidden wall at the end map
-
 
 # --- platform (hint: I created the list using Excel!) ----
 # GROUND
@@ -1219,5 +1213,5 @@ GREEN_LEFT_UP
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
-50	300	98	0	316	150	2
+50	300	0	0	316	150	2
 

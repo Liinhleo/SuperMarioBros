@@ -1,6 +1,7 @@
 #include "SuperMushroom.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Utils.h"
 
 SuperMushroom::SuperMushroom(D3DXVECTOR2 position, int type) {
 	this->x = position.x;
@@ -8,24 +9,30 @@ SuperMushroom::SuperMushroom(D3DXVECTOR2 position, int type) {
 
 	ItemType = type;
 	this->type = ObjectType::ITEM;
+
 	vx = -ITEM_SPEED_Y;
 }
 
 void SuperMushroom::Render()
 {
-	if (ItemType == ITEM_RED_MUSHROOM)
+	if (ItemType == ITEM_RED_MUSHROOM) {
 		ani = ITEM_ANI_RED_MUSHROOM;
+
+	}
 	else
 		ani = ITEM_ANI_GREEN_MUSHROOM;
 
 	animation_set->at(ani)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void SuperMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	
 	Item::Update(dt, coObjects);
-	vy += (ITEM_GRAVITY * dt);
+	this->vy += (ITEM_GRAVITY * dt); // Simple fall down
+
+	//DebugOut(L"SuperMushroom x %f \n", x);
+	//DebugOut(L"SuperMushroom y %f \n", y);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -33,6 +40,7 @@ void SuperMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	coEvents.clear();
 	CalcPotentialCollisions(coObjects, coEvents);
 
+	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
 	{
 		x += dx;
@@ -51,10 +59,38 @@ void SuperMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 		y += min_ty * dy + ny * 0.4f;
 		x += min_tx * dx + nx * 0.4f;
 
-		if (ny != 0) // va cham voi ground thi giu lai
+		if (nx != 0) vx = 0; //va cham theo phuong x
+		if (ny != 0)//va cham theo truc y
 		{
 			vy = 0;
 		}
 		//
+		// Collision logic with other objects
+		//
+		for (UINT i = 0; i < coEventsResult.size(); i++) {
+			LPCOLLISIONEVENT e = coEventsResult[i];
+			if (e->ny > 0) {
+				if (e->obj->GetType() == ObjectType::GROUND) {
+					CGround* ground = dynamic_cast<CGround*>(e->obj);
+					if (e->nx != 0) { // va cham theo phuong x voi color box
+						if (ground->isInteract) {
+							x += dx; //di xuyen qua
+						}
+						else {
+							vx = -vx; // doi huong
+						}
+					}
+				}
+
+				else if (e->obj->GetType() == ObjectType::BRICK 
+					|| e->obj->GetType() == ObjectType::PIPE) {
+					if (e->nx != 0) {
+						vx = -vx; // doi huong
+					}
+				}
+			}
+		}
 	}
+
+	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }

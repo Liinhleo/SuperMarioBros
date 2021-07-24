@@ -117,6 +117,14 @@ bool CGameObject::CheckAABB(float left_a, float top_a, float right_a, float bott
 	return (left_a < right_b && right_a > left_b && top_a < bottom_b && bottom_a > top_b);
 }
 
+bool CGameObject::isAABB(LPGAMEOBJECT object)
+{
+	float left_a, top_a, right_a, bottom_a, left_b, top_b, right_b, bottom_b;
+	GetBoundingBox(left_b, top_b, right_b, bottom_b);
+	object->GetBoundingBox(left_a, top_a, right_a, bottom_a);
+	return CheckAABB(left_a, top_a, right_a, bottom_a, left_b, top_b, right_b, bottom_b);
+}
+
 void CGameObject::RenderBoundingBox()
 {
 	D3DXVECTOR3 p(x, y, 0);

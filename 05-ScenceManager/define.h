@@ -5,8 +5,8 @@
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(0, 0, 0)
 
-#define SCREEN_WIDTH 300
-#define SCREEN_HEIGHT 300
+#define SCREEN_WIDTH 272
+#define SCREEN_HEIGHT 256
 #define MAX_FRAME_RATE 120
 
 #define ID_TEX_BBOX -100		// special texture to draw object bounding box
@@ -196,41 +196,10 @@
 #define BRICK_BBOX_WIDTH  16
 #define BRICK_BBOX_HEIGHT 16
 
-// brickType
-#define BRICK_NORMAL		0 
-#define BRICK_QUESTION		1
-#define BRICK_GLASS			2
-#define BRICK_MUSIC			3
-
-// isContainItem
-#define CONTAIN_NON			0
-#define CONTAIN_ITEM		1
-#define CONTAIN_COIN		2
-#define CONTAIN_P_SWITCH	3
-
-/*  ========== STATE BRICK ========== */
-#define BRICK_STATE_ACTIVE		1
-#define BRICK_STATE_BROKEN		2  // broken -> gach cung
-#define BRICK_STATE_INACTIVE	3  // bien mat hoan toan
-
-/*  ========== ANI BRICK ==========  */
-// brick_normal 
-#define BRICK_ANI_NORMAL_ACTIVE			0
-// brick question mark
-#define BRICK_ANI_QUESTION_ACTIVE		1
-#define BRICK_ANI_QUESTION_BROKEN		2	// broken -> gach cung
-// brick glass
-#define BRICK_ANI_GLASS_ACTIVE		3
-#define BRICK_ANI_GLASS_BROKEN		4 // broken -> gach cung
-#define BRICK_ANI_GLASS_INACTIVE  	5 // effect broken and disapear
-// brick_music
-#define BRICK_ANI_MUSIC_ACTIVE		6
-
 ////BRONZE BRICK PIECE
 //#define PIECE_GRAVITY		0.0008f
 //#define PIECE_SPEED_X		0.03f
 //#define PIECE_SPEED_Y		0.1f
-
 
 
 // ========================================= OBJECT TYPE ==================================================

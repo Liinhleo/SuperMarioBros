@@ -10,6 +10,7 @@
 #include "Koopas.h"
 #include "Map.h"
 #include "PiranhaFlower.h"
+#include "Camera.h"
 
 /*
 * Play Scene have 1 player (MARIO) , objects (static, dynamic) and 1 MAP 
@@ -19,7 +20,12 @@ class CPlayScene: public CScene
 protected: 
 	CMario *player;					// A play scene has to have player, right? 
 	LPMAP map;
-	vector<LPGAMEOBJECT> objects;
+	LPCAMERA cam = nullptr;
+
+	vector<LPGAMEOBJECT> listObjects; // chua tat ca object except item + effect
+	vector<LPGAMEOBJECT> listItems;	  // list item
+	vector<LPGAMEOBJECT> effects;	  // list effect
+
 
 	vector<LPGAMEOBJECT> listStatic; // include: Ground, brick, pipe, portal
 
