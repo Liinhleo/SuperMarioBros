@@ -6,6 +6,10 @@
 10	textures\enemy.png	0	255	255
 11	textures\plant.png	255	255	255
 10000	map\tex_map1-1.png	255	255	255
+56	textures\hud.png	255	0	255
+57	textures\hud_background.png	255	255	255
+58	textures\power_state.png	175	232	226
+
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
@@ -507,6 +511,60 @@ GREEN_LEFT_DOWN
 GREEN_LEFT_UP
 3086	76	4	92	28	11
 3087	93	4	109	28	11
+
+#=================HUD=====================
+#board
+2101	3	3	235	31	56
+#background
+2102	0	0	400	32	57
+#=============NUMBER======================
+# num 0
+2110	33	32	41	39	56
+# num 1
+2111	43	32	51	39	56
+# num 2
+2112	53	32	61	39	56
+# num 3
+2113	63	32	71	39	56
+# num 4
+2114	73	32	81	39	56
+# num 5
+2115	83	32	91	39	56
+# num 6
+2116	93	32	101	39	56
+# num 7
+2117	103	32	111	39	56
+# num 8
+2118	113	32	121	39	56
+# num 9
+2119	123	32	131	39	56
+
+#=============SPEED BAR===================
+# speed_0
+2120	2	2	66	9	58
+# speed_1
+2121	2	11	66	18	58
+# speed_2
+2122	2	20	66	27	58
+# speed_3
+2123	2	29	66	36	58
+# speed_4
+2124	2	38	66	45	58
+# speed_5
+2125	2	47	66	54	58
+# speed_6
+2126	2	56	66	63	58
+# speed_7
+2127	2	65	66	72	58
+#=======BLACK AND WHITE ITEM IN BOX======
+# star
+2130	239	39	255	55	56
+# mushroom
+2131	191	39	207	55	56
+# flower
+2132	215	39	231	55	56
+# empty
+2133	167	39	183	55	56
 
 
 #============== MAP-1-1 ====================
@@ -1015,6 +1073,43 @@ GREEN_LEFT_DOWN
 GREEN_LEFT_UP
 748	3086	100	3087	100
 
+
+#===========HUD========	
+1101	2101	100
+# ======== POWER STATE ========
+# tier_0
+1120	2120	100
+# tier_1
+1121	2121	100
+# tier_2
+1122	2122	100
+# tier_3
+1123	2123	100
+# tier_4
+1124	2124	100
+# tier_5
+1125	2125	100
+# tier_6
+1126	2126	100
+# tier_7
+1127	2127	150	2126	150
+
+# ====== BLACK AND WHITE ITEM IN BOX ======
+# normal star
+1130	2130	100
+# flicker star
+1131	2130	350	2133	150
+# nomal mushroom
+1132	2131	100
+# flicker mushroom
+1133	2131	350	2133	150
+# flower
+1134	2132	100
+# flicker flower
+1135	2132	350	2133	150
+
+
+
 #
 # id	ani1	ani2	ani3
 #
@@ -1060,6 +1155,14 @@ GREEN_LEFT_UP
 #BULLET
 9	507	508
 
+#=================HUD===============
+1101	1101
+#SPEED BAR
+1121	1120	1121	1122	1123	1124	1125	1126	1127
+#CARD
+#1130	1130	1131	1132	1133	1134	1135
+1130	1130	1132	1134
+
 
 
 [OBJECTS]
@@ -1082,9 +1185,9 @@ GREEN_LEFT_UP
 # KoopaType: 0: red -> ani 4|| 1: green -> ani 5
 
 # type	x	y	ani_set_id	typeKoopa	isWing(0:false | 1:true)
-11	320	368	4	0	0
-11	340	368	5	1	0
-11	450	368	5	1	1
+#11	320	368	4	0	0
+#11	340	368	5	1	0
+#11	450	368	5	1	1
 
 # GOOMBA
 # type	x	y	ani_set_id	type	isWing

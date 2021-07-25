@@ -11,6 +11,10 @@
 #include "Pipe.h"
 #include "SuperLeaf.h"
 #include "SuperMushroom.h"
+#include "Koopas.h"
+#include "PiranhaFlower.h"
+#include "Goomba.h"
+
 
 using namespace std;
 
@@ -158,6 +162,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			}
 			obj = new CMario(x, y);
 			player = (CMario*)obj;
+			hud = new Hud();
 
 			DebugOut(L"[INFO] Player object created!\n");
 			break;
@@ -510,6 +515,8 @@ void CPlayScene::Render()
 
 	for (int i = 0; i < listItems.size(); i++)
 		listItems[i]->Render();
+
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
 }
 
 /*
@@ -522,7 +529,9 @@ void CPlayScene::Unload()
 
 	listObjects.clear();
 	// maps.clear();
+
 	player = NULL;
+	delete hud;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }

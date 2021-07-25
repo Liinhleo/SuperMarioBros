@@ -8,19 +8,22 @@
 
 class CMario : public CGameObject
 {
+	// HUD
+	int score;
+	int coin;
+
 	int level;
 	int untouchable;
 	DWORD untouchable_start;
 
 public: 
-
-
-	Bullet* CreateBullet(float x, float y, int nx)
-	{
+	Bullet* CreateBullet(float x, float y, int nx) {
 		Bullet* bullet = new Bullet({ x, y }, nx);
 		return bullet;
 	}
 	vector< LPGAMEOBJECT> listBullet;
+
+	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
 
 
 	float a;
@@ -32,6 +35,7 @@ public:
 	bool isAttack = false;
 	bool isInHiddenMap = false;
 	bool isFlying = false;
+
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	~CMario() {};
@@ -67,4 +71,13 @@ public:
 	void CollideWithItem(vector<LPGAMEOBJECT>* Item);
 
 
+	// HUD
+	vector<int> cards;
+	int GetCoin() { return this->coin; }
+	void SetCoin(int x) { this->coin = x; }
+	void AddCoin() { this->coin++; }
+
+	int GetScore() { return  this->score; }
+	void SetScore(int x) { this->score = x; }
+	void AddScore(int x) { this->score += x; }
 };

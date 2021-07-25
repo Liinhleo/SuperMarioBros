@@ -1,16 +1,14 @@
 #pragma once
 #include "Game.h"
-#include "Textures.h"
 #include "Scence.h"
 #include "GameObject.h"
-#include "Ground.h"
-#include "Brick.h"
 #include "Mario.h"
-#include "Goomba.h"
-#include "Koopas.h"
 #include "Map.h"
-#include "PiranhaFlower.h"
 #include "Camera.h"
+#include "Hud.h"
+
+#define PLAY_TIME			300
+#define MINISEC_PER_SEC		1000
 
 /*
 * Play Scene have 1 player (MARIO) , objects (static, dynamic) and 1 MAP 
@@ -21,6 +19,7 @@ protected:
 	CMario *player;					// A play scene has to have player, right? 
 	LPMAP map;
 	LPCAMERA cam = nullptr;
+	LPHUD hud;
 
 	vector<LPGAMEOBJECT> listObjects; // chua tat ca object except item + effect
 	vector<LPGAMEOBJECT> listItems;	  // list item

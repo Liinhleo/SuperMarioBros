@@ -136,7 +136,9 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FireFlower.cpp" />
     <ClCompile Include="FireFlowerBall.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -146,8 +148,10 @@
     <ClCompile Include="Plant.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Pswitch.cpp" />
+    <ClCompile Include="SpeedBar.cpp" />
     <ClCompile Include="SuperLeaf.cpp" />
     <ClCompile Include="SuperMushroom.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -170,8 +174,10 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FireFlower.h" />
     <ClInclude Include="FireFlowerBall.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="Hud.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Koopas.h" />
     <ClInclude Include="Map.h" />
@@ -181,8 +187,10 @@
     <ClInclude Include="Plant.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Pswitch.h" />
+    <ClInclude Include="SpeedBar.h" />
     <ClInclude Include="SuperLeaf.h" />
     <ClInclude Include="SuperMushroom.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
