@@ -16,7 +16,6 @@ CGoomba::CGoomba(int type, bool isWing){
 	}
 }
 
-
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
 	CGameObject::Update(dt, coObjects);
@@ -125,6 +124,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 void CGoomba::Render()
 {
 	int GType = GetGoombaType();
+	if (state == ENEMY_STATE_DESTROY)
+		return;
 
 	switch (GType) {
 	case GOOMBA_YELLOW:
@@ -154,6 +155,11 @@ void CGoomba::SetState(int state)
 	CGameObject::SetState(state);
 	switch (state)
 	{
+		// xu ly state bi thuong cua Goomba
+		case ENEMY_STATE_DESTROY: // bullet
+			vx = 0;
+			vy = 0;
+			break;
 		case ENEMY_STATE_DAMAGE: // jump on top and die
 			timeDisappear->Start(); // bd tinh gio disappear
 			y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
@@ -182,7 +188,6 @@ void CGoomba::SetState(int state)
 			vy =  -GOOMBA_JUMP_SPEED;
 	}
 }
-
 
 void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

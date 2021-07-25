@@ -178,7 +178,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	case OBJECT_TYPE_KOOPAS:
 	{
-		obj = new CKoopas();
+		int koopaType = atoi(tokens[4].c_str());
+		int isWing = atoi(tokens[5].c_str());
+
+		obj = new CKoopas(koopaType, isWing, x, y); 
 
 		// General object setup
 		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
@@ -288,8 +291,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	obj->SetAnimationSet(ani_set);
 	listObjects.push_back(obj);
 
+	// Khoi tao camera
 	cam = Camera::GetInstance();
-
 }
 
 void CPlayScene::Load()
