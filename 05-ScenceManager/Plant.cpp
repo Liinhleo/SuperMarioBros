@@ -12,7 +12,7 @@ void Plant::SetState(int state) {
 	CGameObject::SetState(state);
 	switch (state)
 	{
-	//case ENEMY_STATE_DESTROY: // hit by bullet
+	//case STATE_DESTROYED: // hit by bullet
 	//	break;
 	case PLANT_STATE_ATTACK:
 		vy = 0;

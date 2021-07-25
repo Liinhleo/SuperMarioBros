@@ -113,7 +113,7 @@ void CKoopas::Render()
 {
 	int KType = GetKoopaType();
 
-	if (state == ENEMY_STATE_DESTROY)
+	if (state == STATE_DESTROYED)
 		return;
 
 	if (GetKoopaType() == KOOPAS_TYPE_RED) {
@@ -186,7 +186,7 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	// xu ly state bi thuong cua Koopa
-	case ENEMY_STATE_DESTROY: // bullet
+	case STATE_DESTROYED: // bullet
 		vx = 0;
 		vy = 0;
 		break;

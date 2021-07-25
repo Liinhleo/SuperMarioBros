@@ -72,7 +72,7 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 					if (e->nx != 0 || e->ny != 0) { // va cham theo phuong x, y
 						Enemy* enemy = dynamic_cast<Enemy*>(e->obj);
 						enemy->nx = this->nx;
-						enemy->attackByWeapon();
+						enemy->damageByWeapon();
 
 						this->state = STATE_DISABLE; // va cham-> not render bullet
 

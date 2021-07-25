@@ -6,8 +6,8 @@ SuperLeaf::SuperLeaf(D3DXVECTOR2 position) {
 	this->y = position.y;
 	isFalling = false;
 
-	left = start_x - BRICK_BBOX_WIDTH;
-	right = start_x + BRICK_BBOX_WIDTH;
+	left = start_x - BRICK_BBOX_SIZE;
+	right = start_x + BRICK_BBOX_SIZE;
 
 	ItemType = ITEM_SUPERLEAF;
 	vy = -LEAF_SPEED_Y;

@@ -124,7 +124,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 void CGoomba::Render()
 {
 	int GType = GetGoombaType();
-	if (state == ENEMY_STATE_DESTROY)
+	if (state == STATE_DESTROYED)
 		return;
 
 	switch (GType) {
@@ -156,7 +156,7 @@ void CGoomba::SetState(int state)
 	switch (state)
 	{
 		// xu ly state bi thuong cua Goomba
-		case ENEMY_STATE_DESTROY: // bullet
+		case STATE_DESTROYED: // bullet
 			vx = 0;
 			vy = 0;
 			break;

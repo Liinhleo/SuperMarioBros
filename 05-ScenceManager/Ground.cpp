@@ -18,6 +18,6 @@ void CGround::Render(){
 void CGround::GetBoundingBox(float &l, float &t, float &r, float &b){
 	l = x;
 	t = y;
-	r = l + BRICK_BBOX_WIDTH *width;
-	b = t + BRICK_BBOX_HEIGHT * height;
+	r = l + BRICK_BBOX_SIZE *width;
+	b = t + BRICK_BBOX_SIZE * height;
 }

@@ -189,12 +189,8 @@
 #define MARIO_LEVEL_FIRE	4
 
 
-
-
-
 // ========================================= BRICK ==================================================
-#define BRICK_BBOX_WIDTH  16
-#define BRICK_BBOX_HEIGHT 16
+#define BRICK_BBOX_SIZE  16 // width * height = 16 x 16
 
 ////BRONZE BRICK PIECE
 //#define PIECE_GRAVITY		0.0008f

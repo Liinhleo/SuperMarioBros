@@ -8,7 +8,6 @@
 
 #define ITEM_STATE_HIDDEN	0	// hidden ben trong brick
 #define ITEM_STATE_ABLE		1	// rot ra
-#define ITEM_STATE_DESTROY	2	// 
 
 #define ITEM_SPEED_Y	0.05f
 #define ITEM_GRAVITY	0.0003f

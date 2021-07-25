@@ -26,11 +26,11 @@ void Camera::Update(DWORD dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECT
 
 	position.x = playerPos.x - width / 2 + MARIO_BIG_BBOX_WIDTH;
 
-	DebugOut(L"playerPos X ==== %f \n", playerPos.x);
+	/*DebugOut(L"playerPos X ==== %f \n", playerPos.x);
 	DebugOut(L"playerPos y ==== %f \n", playerPos.y);
 
 	DebugOut(L"position X ==== %f \n", position.x);
-	DebugOut(L"position y ==== %f \n", position.y);
+	DebugOut(L"position y ==== %f \n", position.y);*/
 
 	// Check if camera out of screen map
 	if (position.x > end.x)

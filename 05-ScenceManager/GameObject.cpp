@@ -120,8 +120,8 @@ bool CGameObject::CheckAABB(float left_a, float top_a, float right_a, float bott
 bool CGameObject::isAABB(LPGAMEOBJECT object)
 {
 	float left_a, top_a, right_a, bottom_a, left_b, top_b, right_b, bottom_b;
-	GetBoundingBox(left_b, top_b, right_b, bottom_b);
-	object->GetBoundingBox(left_a, top_a, right_a, bottom_a);
+	this->GetBoundingBox(left_a, top_a, right_a, bottom_a);
+	object->GetBoundingBox(left_b, top_b, right_b, bottom_b);
 	return CheckAABB(left_a, top_a, right_a, bottom_a, left_b, top_b, right_b, bottom_b);
 }
 

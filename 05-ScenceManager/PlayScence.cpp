@@ -366,13 +366,13 @@ void CPlayScene::Update(DWORD dt)
 				//CREATE ITEM FOLLOW MARIO LEVEL
 				Item* item;
 				if (brick->typeItem == CONTAIN_GREEN_MUSHROOM) {
-					item = new SuperMushroom({ brick->x, brick->y - BRICK_BBOX_HEIGHT }, ITEM_GREEN_MUSHROOM);
+					item = new SuperMushroom({ brick->x, brick->y - BRICK_BBOX_SIZE }, ITEM_GREEN_MUSHROOM);
 				}
 				else {
 					if (player->GetLevel() >= MARIO_LEVEL_BIG)
-						item = new SuperLeaf({ brick->x, brick->y - BRICK_BBOX_HEIGHT });
+						item = new SuperLeaf({ brick->x, brick->y - BRICK_BBOX_SIZE });
 					else
-						item = new SuperMushroom({ brick->x, brick->y - BRICK_BBOX_HEIGHT }, ITEM_RED_MUSHROOM);
+						item = new SuperMushroom({ brick->x, brick->y - BRICK_BBOX_SIZE }, ITEM_RED_MUSHROOM);
 				}
 				if (item != NULL) {
 					listItems.push_back(item);
@@ -458,7 +458,7 @@ void CPlayScene::Update(DWORD dt)
 	// XOA cac object / item sau khi bien mat
 	// xoa obj co state = STATE_DESTROYED
 	for (size_t i = 0; i < listObjects.size(); i++) {
-		if (listObjects[i]->GetState() == ENEMY_STATE_DESTROY) {
+		if (listObjects[i]->GetState() == STATE_DESTROYED) {
 
 			listObjects.erase(listObjects.begin() + i);
 			i--;
@@ -466,7 +466,7 @@ void CPlayScene::Update(DWORD dt)
 	}
 
 	for (size_t i = 0; i < listItems.size(); i++) {
-		if (listItems[i]->GetState() == ITEM_STATE_DESTROY
+		if (listItems[i]->GetState() == STATE_DESTROYED
 			 && listItems[i]->GetType() == ObjectType::ITEM) {
 
 			listItems.erase(listItems.begin() + i);

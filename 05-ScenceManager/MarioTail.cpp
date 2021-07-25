@@ -29,7 +29,7 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 				}
 				else if (coObjects->at(i)->type == ObjectType::FIRE_FLOWER 
 					|| coObjects->at(i)->type == ObjectType::PIRANHA_FLOWER) {
-					coObjects->at(i)->SetState(ENEMY_STATE_DESTROY);
+					coObjects->at(i)->SetState(STATE_DESTROYED);
 				}
 			}
 		}

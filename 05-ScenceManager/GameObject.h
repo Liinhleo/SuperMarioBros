@@ -2,6 +2,8 @@
 #include "define.h"
 #include "AnimationSet.h"
 
+#define STATE_DESTROYED		99
+
 using namespace std;
 
 
@@ -10,6 +12,7 @@ typedef CGameObject * LPGAMEOBJECT;
 
 struct CCollisionEvent;
 typedef CCollisionEvent * LPCOLLISIONEVENT;
+
 struct CCollisionEvent
 {
 	LPGAMEOBJECT obj;
@@ -89,6 +92,19 @@ public:
 		float &ny, 
 		float &rdx, 
 		float &rdy);
+
+	// check collision with only ground 
+	void FilterCollision(
+		vector<LPCOLLISIONEVENT>& coEvents,
+		vector<LPCOLLISIONEVENT>& coEventsResult,
+		float& min_tx, 
+		float& min_ty,
+		float& nx, 
+		float& ny, 
+		float& rdx, 
+		float& rdy, 
+		LPGAMEOBJECT& objx, 
+		LPGAMEOBJECT& objy);
 
 	CGameObject();
 
