@@ -14,7 +14,7 @@
 
 CMario::CMario(float x, float y) : CGameObject()
 {
-	this->level = MARIO_LEVEL_RACOON;
+	this->level = MARIO_LEVEL_SMALL;
 	this->untouchable = 0;
 
 	SetState(MARIO_STATE_IDLE);
@@ -31,21 +31,6 @@ CMario::CMario(float x, float y) : CGameObject()
 }
 
 
-/*
-	Reset Mario status to the beginning state of a scene
-*/
-void CMario::Reset(){
-	SetState(MARIO_STATE_IDLE);
-	GetLevel(); 
-	SetPosition(x, y - MARIO_RACCOON_BBOX_WIDTH); //tang y tranh mario rot
-	SetSpeed(0, 0);
-}
-
-void CMario::StartUntouchable() {
-	this->untouchable = 1;
-	this->untouchable_start = GetTickCount64();
-}
-
 void CMario::UpdateSpeed(DWORD dt) {
 	//DebugOut(L"cur a: %f \n", a);
 
@@ -57,7 +42,6 @@ void CMario::UpdateSpeed(DWORD dt) {
 		if (abs(vx) >= MARIO_MAX_SPEED) {
 			this->vx = nx *MARIO_MAX_SPEED;
 			//DebugOut(L"max speed max speed %f \n", vx);
-
 		}
 	}
 }
@@ -106,7 +90,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		this->untouchable = 0;
 	}
 
-	// ====================== XU LY VA CHAM =======================
+	// falling down
+	if (isOnGround && collideGround) {
+		float ml, mt, mr, mb, gl, gt, gr, gb;
+		collideGround->GetBoundingBox(gl, gt, gr, gb);
+		GetBoundingBox(ml, mt, mr, mb);
+		if (mr < gl || ml > gr)
+		{
+			isOnGround = false;
+			SetState(MARIO_STATE_FALL);
+		}
+	}
+	
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -205,7 +200,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 					else {
 						if (state == MARIO_STATE_RUN) { // dang chay va cham tuong thi di bo
 							if (vx > 0)
-								state == MARIO_STATE_WALKING_RIGHT;
+								state = MARIO_STATE_WALKING_RIGHT;
 							else
 								state = MARIO_STATE_WALKING_LEFT;
 						}
@@ -214,29 +209,64 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 			}
 
 #pragma region COLLISION WITH GOOMBA
-			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
-			{
-				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
-				// jump on top >> kill Goomba and deflect a bit 
-				if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-					if (goomba->isWing && goomba->GetState() != ENEMY_STATE_DAMAGE) {
-						goomba->SetState(GOOMBA_STATE_WALKING);
-					}
-					if (goomba->GetState() != GOOMBA_STATE_WALKING && goomba->GetState() != ENEMY_STATE_DAMAGE){
-						goomba->SetState(ENEMY_STATE_DAMAGE);
+			//if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
+			//{
+			//	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+
+			//	// jump on top >> kill Goomba and deflect a bit 
+			//	if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
+			//		if (goomba->isWing && goomba->GetState() != ENEMY_STATE_DAMAGE) {
+			//			goomba->SetState(GOOMBA_STATE_WALKING);
+			//		}
+			//		if (goomba->GetState() != GOOMBA_STATE_WALKING && goomba->GetState() != ENEMY_STATE_DAMAGE){
+			//			goomba->SetState(ENEMY_STATE_DAMAGE);
+			//			vy = -MARIO_JUMP_DEFLECT_SPEED;
+			//		}
+			//	}
+			//	else if (e->nx != 0) {	// xet mario va cham theo phuong x -> mario die
+			//		if (untouchable == 0){
+			//			if (goomba->GetState() != ENEMY_STATE_DAMAGE){
+			//				isDamaged(); // xu ly mario bi thuong
+			//			}
+			//		}
+			//	}
+			//} // if Goomba
+
+#pragma endregion
+
+
+#pragma region COLLISION WITH ENEMY
+			if (coObjects->at(i)->GetState() != STATE_DESTROYED
+				&& coObjects->at(i)->GetState() != ENEMY_STATE_DAMAGE
+				&& coObjects->at(i)->GetState() != ENEMY_STATE_DIE_BY_ATTACK)
+			{
+				switch (coObjects->at(i)->GetType()) {
+				case ObjectType::GOOMBA:
+					if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
+						CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
+						goomba->damageOnTop();
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
-				}
-				else if (e->nx != 0) {	// xet mario va cham theo phuong x -> mario die
-					if (untouchable == 0){
-						if (goomba->GetState() != ENEMY_STATE_DAMAGE){
-							isDamaged(); // xu ly mario bi thuong
-						}
+					else {
+						this->isDamaged(); // xu ly mario bi thuong
 					}
-				}
-			} // if Goomba
+					break;
 
+				case  ObjectType::KOOPA:
+					//if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
+					//	CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
+					//	goomba->damageOnTop();
+					//	vy = -MARIO_JUMP_DEFLECT_SPEED;
+					//}
+					//else {
+					//	this->isDamaged(); // xu ly mario bi thuong
+					//}
+					break;
+				}
+			}
+
+			
 #pragma endregion
 
 #pragma region COLLISION WITH PORTAL
@@ -711,4 +741,17 @@ void CMario::isDamaged() {
 		SetState(MARIO_STATE_DIE);
 }
 
+/*
+	Reset Mario status to the beginning state of a scene
+*/
+void CMario::Reset() {
+	SetState(MARIO_STATE_IDLE);
+	GetLevel();
+	SetPosition(x, y - MARIO_RACCOON_BBOX_WIDTH); //tang y tranh mario rot
+	SetSpeed(0, 0);
+}
 
+void CMario::StartUntouchable() {
+	this->untouchable = 1;
+	this->untouchable_start = GetTickCount64();
+}

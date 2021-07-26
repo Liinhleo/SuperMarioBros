@@ -59,13 +59,13 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 					}
 
 					else
-						this->state = STATE_DISABLE; // va cham-> not render bullet
+						this->state = STATE_DESTROYED; // va cham-> not render bullet
 				}
 			}
 
 			else if (e->obj->GetType() == ObjectType::BRICK || e->obj->GetType() == ObjectType::PIPE) {
 				if (e->nx != 0){ // va cham theo phuong x
-					this->state = STATE_DISABLE; // va cham-> not render bullet
+					this->state = STATE_DESTROYED; // va cham-> not render bullet
 				}
 			}
 			else {
@@ -74,7 +74,7 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 						enemy->nx = this->nx;
 						enemy->damageByWeapon();
 
-						this->state = STATE_DISABLE; // va cham-> not render bullet
+						this->state = STATE_DESTROYED; // va cham-> not render bullet
 
 						// tinh diem cho Mario 100d
 					}

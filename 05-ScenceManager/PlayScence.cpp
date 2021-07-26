@@ -23,10 +23,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
 	key_handler = new CPlayScenceKeyHandler(this);
 }
 
-/*
-	Load scene resources from scene file (textures, sprites, animations and objects)
-	See scene1.txt, scene2.txt for detail format specification
-*/
+#pragma region PARSE FILE
+
 void CPlayScene::_ParseSection_TEXTURES(string line)
 {
 	vector<string> tokens = split(line);
@@ -83,6 +81,11 @@ void CPlayScene::_ParseSection_MAPS(string line)
 	
 	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap, hidden_start, hidden_end);
 
+	if (map) {
+		gridMoving = new Grid(map->getWidthMap(), map->getHeighthMap());
+		gridStatic = new Grid(map->getWidthMap(), map->getHeighthMap());
+		DebugOut(L"create GRID\n");
+	}
 	//CMaps::GetInstance()->Add(map_id, map);
 }
 
@@ -160,7 +163,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 				DebugOut(L"[ERROR] MARIO object was created before!\n");
 				return;
 			}
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj = new CMario(x, y);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+
 			player = (CMario*)obj;
 			hud = new Hud();
 
@@ -171,66 +178,110 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		{
 			int goombaType = atoi(tokens[4].c_str());
 			int isWing = atoi(tokens[5].c_str());
+			int top = atoi(tokens[6].c_str());
+			int bot = atoi(tokens[7].c_str());
+			int left = atoi(tokens[8].c_str());
+			int right = atoi(tokens[9].c_str());
 			obj = new CGoomba(goombaType, isWing);
-
 			// General object setup
-			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-			//obj->SetPosition(x, y);
-			//obj->SetAnimationSet(ani_set);
-			//objects.push_back(obj);
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listMoving.push_back(obj);
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridMoving->pushObjectIntoGrid(obj, row, col);
+			}
 		}
 		break;
 
 	case OBJECT_TYPE_KOOPAS:
-	{
-		int koopaType = atoi(tokens[4].c_str());
-		int isWing = atoi(tokens[5].c_str());
+		{
+			int koopaType = atoi(tokens[4].c_str());
+			int isWing = atoi(tokens[5].c_str());
+			int top = atoi(tokens[6].c_str());
+			int bot = atoi(tokens[7].c_str());
+			int left = atoi(tokens[8].c_str());
+			int right = atoi(tokens[9].c_str());
+			obj = new CKoopas(koopaType, isWing, x, y); 
+			// General object setup
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listMoving.push_back(obj);
 
-		obj = new CKoopas(koopaType, isWing, x, y); 
-
-		// General object setup
-		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-		//obj->SetPosition(x, y);
-		//obj->SetAnimationSet(ani_set);
-		//objects.push_back(obj);
-	}
-	break;
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridMoving->pushObjectIntoGrid(obj, row, col);
+			}
+		}
+		break;
 	case OBJECT_TYPE_PIRANHA_FLOWER:
-	{
-		obj = new PiranhaFlower(x,y);
+		{
+			int top = atoi(tokens[4].c_str());
+			int bot = atoi(tokens[5].c_str());
+			int left = atoi(tokens[6].c_str());
+			int right = atoi(tokens[7].c_str());
+			obj = new PiranhaFlower(x,y);
+			// General object setup
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listMoving.push_back(obj);
 
-		// General object setup
-		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-		//obj->SetPosition(x, y);
-		//obj->SetAnimationSet(ani_set);
-		//objects.push_back(obj);
-	}
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridMoving->pushObjectIntoGrid(obj, row, col);
+			}
+
+		}
 	break;
 
 	case OBJECT_TYPE_FIRE_FLOWER:
-	{
-		int type = atoi(tokens[4].c_str());
-		obj = new FireFlower(x, y, type);
-		// General object setup
-		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-		//obj->SetPosition(x, y);
-		//obj->SetAnimationSet(ani_set);
-		//objects.push_back(obj);
-	}
-	break;
+		{
+			int type = atoi(tokens[4].c_str());
+
+			int top = atoi(tokens[5].c_str());
+			int bot = atoi(tokens[6].c_str());
+			int left = atoi(tokens[7].c_str());
+			int right = atoi(tokens[8].c_str());
+			obj = new FireFlower(x, y, type);
+			// General object setup
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listMoving.push_back(obj);
+
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridMoving->pushObjectIntoGrid(obj, row, col);
+			}
+			break;
+		}
+		break;
 	case OBJECT_TYPE_BRICK: 
 		{
 			int typeBrick = atoi(tokens[4].c_str());
 			int typeItem = atoi(tokens[5].c_str());
 			int count = atoi(tokens[6].c_str());
 
+			int top = atoi(tokens[7].c_str());
+			int bot = atoi(tokens[8].c_str());
+			int left = atoi(tokens[9].c_str());
+			int right = atoi(tokens[10].c_str());
+
 			obj = new CBrick(x,y,typeBrick, typeItem, count);
 
-	//		// General object setup
-	//		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-	//		//obj->SetPosition(x, y);
-	//		//obj->SetAnimationSet(ani_set);
-	//		//objects.push_back(obj);
+			// General object setup
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listStatic.push_back(obj);
+
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridStatic->pushObjectIntoGrid(obj, row, col);
+			}
 		}
 		break;
 	case OBJECT_TYPE_GROUND: 
@@ -238,34 +289,46 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			// Read file
 			int w = atoi(tokens[4].c_str());
 			int h = atoi(tokens[5].c_str());
-			int i = atoi(tokens[6].c_str());
-
-			obj = new CGround(w, h, i);
+			int isInteract = atoi(tokens[6].c_str());
+			int top = atoi(tokens[7].c_str());
+			int bot = atoi(tokens[8].c_str());
+			int left = atoi(tokens[9].c_str());
+			int right = atoi(tokens[10].c_str());
+			obj = new CGround(w, h, isInteract);
 
 			// General object setup
-			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-			//obj->SetPosition(x, y);
-			//obj->SetAnimationSet(ani_set);
-			//objects.push_back(obj);
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listStatic.push_back(obj);
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridStatic->pushObjectIntoGrid(obj, row, col);
+			}
+			break;
 		}
 		break;
 	case OBJECT_TYPE_PIPE:
-	{
-		int typePipe = atoi(tokens[4].c_str());
-		int hasPortal = atoi(tokens[5].c_str());
-		float des_x = atoi(tokens[6].c_str());
-		float des_y = atoi(tokens[7].c_str());
-		int direct = atoi(tokens[8].c_str());
+		{
+			int typePipe = atoi(tokens[4].c_str());
+			int hasPortal = atoi(tokens[5].c_str());
 
-		obj = new Pipe(typePipe, hasPortal, { des_x, des_y }, direct);
+			/*float des_x = atoi(tokens[6].c_str());
+			float des_y = atoi(tokens[7].c_str());
+			int direct = atoi(tokens[8].c_str());
+			int top = atoi(tokens[9].c_str());
+			int bot = atoi(tokens[10].c_str());
+			int left = atoi(tokens[11].c_str());
+			int right = atoi(tokens[12].c_str());
 
-		// General object setup
-		//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-		//obj->SetPosition(x, y);
-		//obj->SetAnimationSet(ani_set);
-		//objects.push_back(obj);
-	}
-	break;
+			obj = new Pipe(typePipe, hasPortal, { des_x, des_y }, direct);*/
+			// General object setup
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listObjects.push_back(obj);
+		}
+		break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			// Read file
@@ -274,13 +337,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			int scene_id = atoi(tokens[6].c_str());
 			// float des_x = atoi(tokens[7].c_str());
 			// float des_y = atoi(tokens[8].c_str());
+			
+			
 			obj = new CPortal(x, y, r, b, scene_id);
-
 			// General object setup
-			//LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-			//obj->SetPosition(x, y);
-			//obj->SetAnimationSet(ani_set);
-			//objects.push_back(obj);
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listObjects.push_back(obj);
 		}
 		break;
 	default:
@@ -289,16 +353,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	// General object setup
-	obj->SetPosition(x, y);
+	/*obj->SetPosition(x, y);
 
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
 	obj->SetAnimationSet(ani_set);
-	listObjects.push_back(obj);
+	listObjects.push_back(obj);*/
 
 	// Khoi tao camera
 	cam = Camera::GetInstance();
 }
+
 
 void CPlayScene::Load()
 {
@@ -306,9 +371,9 @@ void CPlayScene::Load()
 
 	ifstream f;
 	f.open(sceneFilePath);
-	
+
 	// current resource section flag
-	int section = SCENE_SECTION_UNKNOWN;					
+	int section = SCENE_SECTION_UNKNOWN;
 
 	char str[MAX_SCENE_LINE];
 	while (f.getline(str, MAX_SCENE_LINE))
@@ -318,29 +383,35 @@ void CPlayScene::Load()
 		if (line[0] == '#') continue;	// skip comment lines	
 
 		if (line == "[TEXTURES]") { section = SCENE_SECTION_TEXTURES; continue; }
-		if (line == "[SPRITES]") { 
-			section = SCENE_SECTION_SPRITES; continue; }
-		if (line == "[ANIMATIONS]") { 
-			section = SCENE_SECTION_ANIMATIONS; continue; }
-		if (line == "[ANIMATION_SETS]") { 
-			section = SCENE_SECTION_ANIMATION_SETS; continue; }
-		if (line == "[OBJECTS]") { 
-			section = SCENE_SECTION_OBJECTS; continue; }
+		if (line == "[SPRITES]") {
+			section = SCENE_SECTION_SPRITES; continue;
+		}
+		if (line == "[ANIMATIONS]") {
+			section = SCENE_SECTION_ANIMATIONS; continue;
+		}
+		if (line == "[ANIMATION_SETS]") {
+			section = SCENE_SECTION_ANIMATION_SETS; continue;
+		}
 		if (line == "[MAPS]") {
-			section = SCENE_SECTION_TILE_MAP; continue;	}
-		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }	
+			section = SCENE_SECTION_TILE_MAP; continue;
+		}
+		if (line == "[OBJECTS]") {
+			section = SCENE_SECTION_OBJECTS; continue;
+		}
+
+		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
 		// data section
 		//
 		switch (section)
-		{ 
-			case SCENE_SECTION_TEXTURES: _ParseSection_TEXTURES(line); break;
-			case SCENE_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
-			case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
-			case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
-			case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
-			case SCENE_SECTION_TILE_MAP: _ParseSection_MAPS(line); break;
+		{
+		case SCENE_SECTION_TEXTURES: _ParseSection_TEXTURES(line); break;
+		case SCENE_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
+		case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
+		case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
+		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+		case SCENE_SECTION_TILE_MAP: _ParseSection_MAPS(line); break;
 		}
 	}
 
@@ -351,10 +422,53 @@ void CPlayScene::Load()
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
+
+#pragma endregion
+
+
+
+
+#pragma region UPDATE SCENE
+
+void CPlayScene::GetObjectToGrid() {
+	// xoa het cac object
+	listItems.clear();
+	listObjects.clear();
+	listGrid.clear();
+
+	gridMoving->GetObjFromGrid(listGrid);
+	gridStatic->GetObjFromGrid(listGrid);
+
+	for (UINT i = 0; i < listGrid.size(); i++) {
+		if (listGrid[i]->GetType() == COIN
+			//|| listGrid[i]->GetType() == LAST_ITEM 
+			|| listGrid[i]->GetType() == ITEM)
+			listItems.push_back(listGrid[i]);
+		else
+			listObjects.push_back(listGrid[i]);
+	}
+}
+
 void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
+	
+	// reset lai grid -> xoa het listObject r ms get object khac
+	gridMoving->ResetCamGrid(listMoving);
+	gridStatic->ResetCamGrid(listStatic);
+	GetObjectToGrid();
+
+	// TINH THOI GIAN CHOI
+	//if (player->GetState() != MARIO_STATE_DIE) {
+	//	this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime()) / MINISEC_PER_SEC);
+	//	DebugOut(L"remaining time ==== %d \n ", remainingTime);
+	//}
+	//if (this->remainingTime < 0)
+	//{
+	//	player->SetState(MARIO_STATE_DIE);
+	//	this->remainingTime = 0;
+	//}
 
 	/// PUSH ITEM VAO BRICK 
 	for (size_t i = 0; i < listObjects.size(); i++)	{
@@ -445,10 +559,20 @@ void CPlayScene::Update(DWORD dt)
 	// mario
 	player->Update(dt, &listObjects, &listItems);
 
+	// Update item to GRID
+	for (size_t i = 0; i < listItems.size(); i++) {
+		if (!listItems[i]->isInCam) {
+			listItems[i]->isInCam = true;
+			listMoving.push_back(listItems[i]);
+			gridMoving->pushNewObjIntoGrid(listItems[i]);
+		}
+	}
+
+
 	// Update cac thuoc tinh cua mario
 	//xoa bullet
 	for (size_t i = 0; i < player->listBullet.size(); i++) {
-		if (player->listBullet[i]->GetState() == STATE_DISABLE) {
+		if (player->listBullet[i]->GetState() == STATE_DESTROYED) {
 
 			player->listBullet.erase(player->listBullet.begin() + i);
 			i--;
@@ -493,16 +617,25 @@ void CPlayScene::Update(DWORD dt)
 	if (!player->isInHiddenMap)	{
 		// startHiddenMap_x = endMainMap_x 
 		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->startHiddenMap_x - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
+		
+		// ngan mario rot khoi map
+		if (player->x < 0)
+			player->SetPosition(0, cy);
 	}
 
 	// Mario in hidden map
 	else { 
 		cam->Update(dt, { cx,cy }, { map->startHiddenMap_x,0 }, { float(map->endHidden_x - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
-		
+
+		// ngan mario rot khoi map
 		if (player->x < map->startHiddenMap_x)
 			player->SetPosition(map->startHiddenMap_x, cy);
 	}
 #pragma endregion
+
+	// khong can update listStatic
+	gridMoving->UpdateGrid(listMoving);
+
 }
 
 void CPlayScene::Render()
@@ -513,8 +646,10 @@ void CPlayScene::Render()
 	for (int i = 0; i < listObjects.size(); i++)
 		listObjects[i]->Render();
 
+
 	for (int i = 0; i < listItems.size(); i++)
 		listItems[i]->Render();
+	player->Render();
 
 	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
 }
@@ -526,18 +661,29 @@ void CPlayScene::Unload()
 {
 	for (int i = 0; i < listObjects.size(); i++)
 		delete listObjects[i];
-
 	listObjects.clear();
+	
+	for (int i = 0; i < listItems.size(); i++)
+		delete listItems[i];
+	listItems.clear();
+
 	// maps.clear();
 
 	player = NULL;
 	delete hud;
+	delete gridMoving;
+	delete gridStatic;
+
+	gridMoving = NULL;
+	gridStatic = NULL;
+
+	if (cam) cam->ResetPosition();
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
+#pragma endregion
 
-
-/* INPUT KEYBOARD */
+#pragma region INPUT KEYBOARD
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
@@ -725,3 +871,5 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	
 }
+
+#pragma endregion

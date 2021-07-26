@@ -2,7 +2,6 @@
 #include "GameObject.h"
 
 #define TAIL_STATE_HIT			0
-#define TAIL_STATE_DISABLE		100
 
 #define TAIL_ANI_RIGHT			0	
 #define TAIL_ANI_LEFT			1

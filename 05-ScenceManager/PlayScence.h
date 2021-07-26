@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "Camera.h"
 #include "Hud.h"
+#include "Grid.h"
 
 #define PLAY_TIME			300
 #define MINISEC_PER_SEC		1000
@@ -21,13 +22,21 @@ protected:
 	LPCAMERA cam = nullptr;
 	LPHUD hud;
 
+	LPGRID gridMoving; 
+	LPGRID gridStatic;
+
 	vector<LPGAMEOBJECT> listObjects; // chua tat ca object except item + effect
 	vector<LPGAMEOBJECT> listItems;	  // list item
 	vector<LPGAMEOBJECT> effects;	  // list effect
 
+	vector<LPGAMEOBJECT> listStatic;
+	vector<LPGAMEOBJECT> listMoving;
+	vector<LPGAMEOBJECT> listGrid; // chua cac doi tuong can dua vao grid
 
-	vector<LPGAMEOBJECT> listStatic; // include: Ground, brick, pipe, portal
+	Timer* playTimer = new Timer(PLAY_TIME * MINISEC_PER_SEC);
+	int remainingTime = 0;
 
+	// DOC FILE
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);
@@ -37,6 +46,8 @@ protected:
 
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
+
+	void GetObjectToGrid();
 
 	virtual void Load();
 	virtual void Update(DWORD dt);

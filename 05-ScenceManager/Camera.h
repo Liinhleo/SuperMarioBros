@@ -26,6 +26,8 @@ public:
 	// D3DXVECTOR2 start, D3DXVECTOR2 end : (2 map: main / hidden map) mario o map nao -> start vi tri map
 	void Update(DWORD dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying, bool isOnGround);
 
+	void ResetPosition() { position.x = 0; position.y = 0; }
+
 	int GetWidth() { return this->width; }
 	int GetHeight() { return this->height; }
 

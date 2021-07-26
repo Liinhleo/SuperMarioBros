@@ -9,7 +9,7 @@
 #define BULLET_SPEED_X	0.2f 
 #define BULLET_SPEED_Y	0.1f 
 
-#define STATE_DISABLE	99
+	
 
 class Bullet :  public CGameObject
 {
