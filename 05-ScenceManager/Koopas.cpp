@@ -2,12 +2,17 @@
 #include "Ground.h"
 #include "Brick.h"
 
+CKoopas::CKoopas() {
+	this->type = ObjectType::KOOPA;
+	SetState(KOOPAS_STATE_SHELL_IDLE);
+	
+}
+
 CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 {
 	this->type = ObjectType::KOOPA;
 	this->KoopaType = KoopaType;
-	this->isWing = isWing;
-
+	
 	this->start_x = x;
 	this->start_y = y;
 
@@ -36,7 +41,16 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	CGameObject::Update(dt, coObjects);
 	vy += MARIO_GRAVITY * dt;
 
-	
+	if (state == ENEMY_STATE_DAMAGE) {
+		if (isWing) {
+			isWing = false;
+			SetState(KOOPAS_STATE_WALKING);
+		}
+		else if (!isWing) {
+			SetState(KOOPAS_STATE_SHELL_IDLE);
+		}
+	}
+
 	// XU LY VA CHAM
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -220,8 +234,20 @@ void CKoopas::SetState(int state)
 		idleTimer->Start(); // bd tinh gio dung yen
 		vx = 0;
 		break;
+	case KOOPAS_STATE_SHELL_RUNNING:
+		vx = -nx * KOOPA_RUNNING_SPEED;
+		isOnGround = true;
+		break;
+	case KOOPAS_STATE_SHAKING:
+		vx = 0;
+		isOnGround = true;
+		break;
+
 	}
 }
+//#define KOOPAS_STATE_SHELL_IDLE			200
+//#define KOOPAS_STATE_SHELL_RUNNING		300
+//#define KOOPAS_STATE_SHAKING			400
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

@@ -17,8 +17,8 @@ private:
 public:
 	static Camera* GetInstance();
 
-	bool islockUpdate = false; // lock when mario die
-	bool islockY; // lock when mario isOnGround and jump to get higher ->cam not move
+	bool islockUpdate = false;	// lock when mario die
+	bool islockY;				// lock when mario isOnGround and jump to get higher ->cam not move
 
 	Camera();
 	~Camera() {}

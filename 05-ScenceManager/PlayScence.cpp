@@ -312,41 +312,44 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		{
 			int typePipe = atoi(tokens[4].c_str());
 			int hasPortal = atoi(tokens[5].c_str());
-
-			/*float des_x = atoi(tokens[6].c_str());
+			float des_x = atoi(tokens[6].c_str());
 			float des_y = atoi(tokens[7].c_str());
 			int direct = atoi(tokens[8].c_str());
+
 			int top = atoi(tokens[9].c_str());
 			int bot = atoi(tokens[10].c_str());
 			int left = atoi(tokens[11].c_str());
 			int right = atoi(tokens[12].c_str());
+			obj = new Pipe(typePipe, hasPortal, { des_x, des_y }, direct);
 
-			obj = new Pipe(typePipe, hasPortal, { des_x, des_y }, direct);*/
 			// General object setup
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetPosition(x, y);
 			obj->SetAnimationSet(ani_set);
-			listObjects.push_back(obj);
+			listStatic.push_back(obj);
+
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridStatic->pushObjectIntoGrid(obj, row, col);
+			}
+			break;
 		}
 		break;
-	case OBJECT_TYPE_PORTAL:
-		{	
-			// Read file
-			float r = atof(tokens[4].c_str());
-			float b = atof(tokens[5].c_str());
-			int scene_id = atoi(tokens[6].c_str());
-			// float des_x = atoi(tokens[7].c_str());
-			// float des_y = atoi(tokens[8].c_str());
-			
-			
-			obj = new CPortal(x, y, r, b, scene_id);
-			// General object setup
-			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-			obj->SetPosition(x, y);
-			obj->SetAnimationSet(ani_set);
-			listObjects.push_back(obj);
-		}
-		break;
+	//case OBJECT_TYPE_PORTAL:
+	//	{	
+	//		// Read file
+	//		float r = atof(tokens[4].c_str());
+	//		float b = atof(tokens[5].c_str());
+	//		int scene_id = atoi(tokens[6].c_str());	
+	//		
+	//		obj = new CPortal(x, y, r, b, scene_id);
+	//		// General object setup
+	//		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+	//		obj->SetPosition(x, y);
+	//		obj->SetAnimationSet(ani_set);
+	//		listObjects.push_back(obj);
+	//	}
+	//	break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -425,9 +428,6 @@ void CPlayScene::Load()
 
 #pragma endregion
 
-
-
-
 #pragma region UPDATE SCENE
 
 void CPlayScene::GetObjectToGrid() {
@@ -441,7 +441,6 @@ void CPlayScene::GetObjectToGrid() {
 
 	for (UINT i = 0; i < listGrid.size(); i++) {
 		if (listGrid[i]->GetType() == COIN
-			//|| listGrid[i]->GetType() == LAST_ITEM 
 			|| listGrid[i]->GetType() == ITEM)
 			listItems.push_back(listGrid[i]);
 		else
@@ -632,8 +631,7 @@ void CPlayScene::Update(DWORD dt)
 			player->SetPosition(map->startHiddenMap_x, cy);
 	}
 #pragma endregion
-
-	// khong can update listStatic
+	// Update cac doi moving list (case: enemy di ra khoi grid)
 	gridMoving->UpdateGrid(listMoving);
 
 }
@@ -781,6 +779,20 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
+
+	if (game->IsKeyDown(DIK_UP)) {
+		mario->canGoThroughPipe_up = true;
+	}
+	else {
+		mario->canGoThroughPipe_up = false;
+	}
+
+	if (game->IsKeyDown(DIK_DOWN)) {
+		mario->canGoThroughPipe_down = true;
+	}
+	else {
+		mario->canGoThroughPipe_down = false;
+	}
 
 	if (mario->isOnGround) {
 		// RUN RIGHT

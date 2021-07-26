@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Bullet.h"
 #include "MarioTail.h"
+#include "Koopas.h"
 
 class CMario : public CGameObject
 {
@@ -27,15 +28,22 @@ public:
 
 
 	float a;
+
+	CKoopas* shell = new CKoopas();
+
 	MarioTail* tail; // mario has a tail when level = RACOON
 
 	Timer* flyTime = new Timer(TIME_FLY);
 
 	bool isOnGround = false;
 	bool isAttack = false;
-	bool isInHiddenMap = false;
 	bool isFlying = false;
+	bool canHolding = false;
 
+	// Xu ly chui pipe
+	bool isInHiddenMap = false;
+	bool canGoThroughPipe_up = false;
+	bool canGoThroughPipe_down = false;
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	~CMario() {};

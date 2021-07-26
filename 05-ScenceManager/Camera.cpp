@@ -24,6 +24,7 @@ void Camera::Update(DWORD dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECT
 	if (islockUpdate)
 		return;
 
+	// vi tri camera lun nam giua Mario
 	position.x = playerPos.x - width / 2 + MARIO_BIG_BBOX_WIDTH;
 
 	/*DebugOut(L"playerPos X ==== %f \n", playerPos.x);

@@ -2,8 +2,9 @@
 #include "Enemy.h"
 #include "Timer.h"
 
-#define KOOPAS_WALKING_SPEED 0.03f;
-#define KOOPA_JUMP_SPEED	0.2f
+#define KOOPAS_WALKING_SPEED	0.03f;
+#define KOOPA_JUMP_SPEED		0.16f
+#define KOOPA_RUNNING_SPEED		0.2f
 
 #define KOOPAS_BBOX_WIDTH			16
 #define KOOPAS_BBOX_HEIGHT			27
@@ -60,7 +61,8 @@ public:
 	Timer* idleTimer = new Timer(KOOPA_TIME_SHELL_IDLE);
 	// before relife, koopa shaking ->3s
 	Timer* startRelifeTimer = new Timer(KOOPA_TIME_SHELL_IDLE - KOOPA_TIME_RELIFE);
-	
+
+	CKoopas();
 	CKoopas(int KoopaType, bool isWing,  float x, float y);
 	~CKoopas() {}
 

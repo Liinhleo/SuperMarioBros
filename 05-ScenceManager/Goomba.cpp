@@ -21,6 +21,23 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	CGameObject::Update(dt, coObjects);
 	vy += MARIO_GRAVITY * dt;
 
+	
+	if (state == ENEMY_STATE_DAMAGE) { 
+		if (isWing) {
+			isWing = false;
+			SetState(GOOMBA_STATE_WALKING);
+		}
+		else if (!isWing && timeDestroy->IsTimeUp()) {
+				SetState(STATE_DESTROYED);
+				timeDestroy->Stop();
+		}
+	}
+
+	if (state == ENEMY_STATE_DIE_BY_ATTACK && isOutOfCam()) {
+		SetState(STATE_DESTROYED);
+	}
+
+
 	// Die -> disappear
 	if (timeDisappear->IsTimeUp()) {
 		timeDisappear->Stop();

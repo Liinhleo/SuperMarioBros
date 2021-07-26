@@ -58,6 +58,8 @@ public:
 	int state;
 	int type;
 	int ani;
+	
+	bool isInCam; // check objs co nam trong camera?
 
 	DWORD dt; 
 	
@@ -72,13 +74,15 @@ public:
 	int GetType() { return this->type; }
 	void SetType(int type) { this->type = type; }
 
+	virtual void SetState(int state) { this->state = state; }
+	int GetState() { return this->state; }
+
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 
 	void RenderBoundingBox();
-	bool CheckAABB(float left_a, float top_a, float right_a, float bottom_a, float left_b, float top_b, float right_b, float bottom_b);
-	bool isAABB(LPGAMEOBJECT object);
-
+	bool isOutOfCam();
+	
 	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);
@@ -93,7 +97,6 @@ public:
 		float &rdx, 
 		float &rdy);
 
-	// check collision with only ground 
 	void FilterCollision(
 		vector<LPCOLLISIONEVENT>& coEvents,
 		vector<LPCOLLISIONEVENT>& coEventsResult,
@@ -112,9 +115,15 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
 
-	virtual void SetState(int state) { this->state = state; }
-	int GetState() { return this->state; }
-
+	bool CheckAABB(float left_a, float top_a, float right_a, float bottom_a, float left_b, float top_b, float right_b, float bottom_b);
+	bool isAABB(LPGAMEOBJECT object);
+	bool IsCollidingWithObject(LPGAMEOBJECT object);	
+	bool IsCollidingWithObjectNx(LPGAMEOBJECT object);		// nx != 0
+	bool IsCollidingWithObjectNx1(LPGAMEOBJECT object);		// nx = 1
+	bool IsCollidingWithObjectNx_1(LPGAMEOBJECT object);	// nx = -1
+	bool IsCollidingWithObjectNy(LPGAMEOBJECT object);		// ny != 0
+	bool IsCollidingWithObjectNy1(LPGAMEOBJECT object);		// ny = 1
+	bool IsCollidingWithObjectNy_1(LPGAMEOBJECT object);	// ny = -1
 
 	~CGameObject();
 };

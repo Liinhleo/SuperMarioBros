@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include "define.h"
+#include "Utils.h"
 
 // map 1-1 { width: 3360  || height: 432 }  => { col : 26.25 ~> 27 ||  row:  4.5 ~> 5 }
 // map 1-3 { width: 3584  || height: 432 }  => { col : 28 ||  row:  4.5 ~> 5 }
@@ -9,8 +10,8 @@ Grid::Grid(int map_width, int map_height) {
 	this->map_width = map_width; 
 	this->map_height = map_height;
 
-	this->num_col = int((this->map_width/ BRICK_BBOX_SIZE)/ CELL_WIDTH) + 1;
-	this->num_row = int((this->map_height / BRICK_BBOX_SIZE) / CELL_HEIGHT) + 1;
+	this->num_col = ceil(float(this->map_width/ BRICK_BBOX_SIZE)/ CELL_WIDTH);
+	this->num_row = ceil(float(this->map_height / BRICK_BBOX_SIZE) / CELL_HEIGHT);
 
 	cells.resize(num_row);
 	for (int i = 0; i < num_row; i++)
@@ -34,12 +35,13 @@ void Grid::UpdateGrid(vector<LPGAMEOBJECT> objects) {
 		float l, t, r, b;
 		objects[i]->GetBoundingBox(l, t, r, b);
 		// objects[i] rot khoi map
-		if (b > (map_height * BRICK_BBOX_SIZE)
+		if (b > (map_height)
 			|| l < 0
-			|| r > (map_width * BRICK_BBOX_SIZE))
+			|| r > (map_width))
 		{
 			objects[i]->SetState(STATE_DESTROYED);
 		}
+
 		int top = int(t / (CELL_HEIGHT * BRICK_BBOX_SIZE));
 		int bottom = ceil(b / (CELL_HEIGHT * BRICK_BBOX_SIZE));
 		int left = int(l / (CELL_WIDTH * BRICK_BBOX_SIZE));
@@ -47,8 +49,13 @@ void Grid::UpdateGrid(vector<LPGAMEOBJECT> objects) {
 
 		if (objects[i]->GetState() != STATE_DESTROYED) {
 			for (int row = top; row < bottom; row++)
-				for (int col = left; col < right; col++)
+				for (int col = left; col < right; col++) {
+					DebugOut(L"COL=====  %d \n", col);
+					DebugOut(L"ROW=====  %d \n", row);
+
 					cells[row][col].push_back(objects[i]);
+
+				}
 		}
 	}
 }

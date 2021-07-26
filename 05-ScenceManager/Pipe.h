@@ -19,7 +19,7 @@ class Pipe :  public CGameObject
 	int PipeType;
 	bool hasPortal; // 1: true -> destination
 
-	D3DXVECTOR2 destination; // vi tri toi hidden map
+	D3DXVECTOR2 destination; // vi tri 
 	bool direction; // huong cua ong (0: down/ 1: up)
 
 public:

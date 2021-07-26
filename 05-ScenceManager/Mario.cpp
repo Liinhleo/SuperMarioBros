@@ -11,6 +11,7 @@
 #include "Brick.h"
 #include "Pswitch.h"
 #include "Item.h"
+#include "Pipe.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -117,33 +118,143 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		x += dx; 
 		y += dy;
 	}
-	else{
+	else {
 		float min_tx, min_ty, nx = 0, ny;
-		float rdx = 0; 
+		float rdx = 0;
 		float rdy = 0;
 
-		// TODO: This is a very ugly designed function!!!!
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+		LPGAMEOBJECT objectX = NULL; // lay doi tuong co kha nang va cham vs mario theo chieu x
+		LPGAMEOBJECT objectY = NULL; // lay doi tuong co kha nang va cham vs mario theo phuong y
+
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy, objectX, objectY);
 
 		// block every object first!
-		x += min_tx*dx + nx*0.1f; // nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty*dy + ny*0.1f;
+		x += min_tx * dx + nx * 0.1f; // nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty * dy + ny * 0.1f;
 
-		if (nx!=0) vx = 0; //va cham theo phuong x
+		if (nx != 0) vx = 0; //va cham theo phuong x
 		//if (ny!=0) vy = 0; //va cham theo truc y
 
-		if (ny == -1)//va cham theo truc y
+		if (ny == -1)// mario jump on top: mario dap len object
 		{
 			vy = 0;
 			isOnGround = true;
+			collideGround = objectY;
 			//DebugOut(L"on ground NY=: %d \n", ny);
 		}
 
 
+#pragma region COLLIDE WITH OBJECT
+		for (int i = 0; i < coObjects->size(); i++)
+		{
+			switch (coObjects->at(i)->GetType()) {
+			case ObjectType::GROUND:
+			case ObjectType::PIPE:
+			case ObjectType::BRICK:
+				break;
+			case ObjectType::PIRANHA_FLOWER:
+			case ObjectType::FIRE_FLOWER:
+			case ObjectType::FIRE_BALL:
+				if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+					if (this->IsCollidingWithObject(coObjects->at(i))) {
+						this->isDamaged(); // xu ly mario bi thuong
+					}
+				}
+				break;
+
+			case ObjectType::GOOMBA:
+				if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+					if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) {
+						if (coObjects->at(i)->GetState() != STATE_DESTROYED
+							&& coObjects->at(i)->GetState() != ENEMY_STATE_DAMAGE
+							&& coObjects->at(i)->GetState() != ENEMY_STATE_DIE_BY_ATTACK)
+						{
+							CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
+							goomba->damageOnTop();
+							this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+						}
+					}
+					else if (isAABB(coObjects->at(i))) {
+						this->isDamaged(); // xu ly mario bi thuong
+					}
+				}
+				break;
+				case ObjectType::KOOPA:
+					if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+						if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) { // jump on top
+							CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
+
+							if (koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
+								koopa->damageOnTop();
+								this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+							}
+							else{ // TH : KOOPA LA SHELL IDLE
+								this->GetPosition(x, y); // vi tri cua mario
+
+								float k_x, k_y; 
+								koopa->GetPosition(k_x, k_y); // vi tri cua shell
+								if ((k_x - this->x) > 0)
+									koopa->nx = -1;
+								else
+									koopa->nx = 1;
+								koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
+								this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+
+							}
+						}
+						// Va cham theo phuong ngang
+						else if (this->IsCollidingWithObjectNx(coObjects->at(i))) {
+							CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
+							if (koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
+								koopa->vx = -koopa->vx; // di xuyen qua
+								this->isDamaged(); // xu ly mario bi thuong
+							}
+							else {
+								if (this->canHolding) {
+									this->shell = koopa;
+									koopa->isBeingHeld = true;
+								}
+								else {
+									koopa->nx = -this->nx;
+									koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
+								}
+							}
+						}
+					}
+					else if (isAABB(coObjects->at(i)) && !canHolding) {
+						this->isDamaged(); // xu ly mario bi thuong
+					}
+					break;
+
+			}
+		}
+
+#pragma endregion
+	
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (e->ny > 0) { // neu va cham theo truc y
+			//Mario can go through pipe if it has Portal
+			if (e->ny != 0) { // collide from 2 direct (up/down)
+				if (e->obj->GetType() == PIPE) {
+					Pipe* pipe = dynamic_cast<Pipe*>(e->obj); // if e->obj is Pipe 
+					if (pipe->IsHasPortal()) {
+						if (pipe->GetDirection()&& this->canGoThroughPipe_up) {
+
+							this->isInHiddenMap = !this->isInHiddenMap;
+							this->SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);
+						}
+						else if (!pipe->GetDirection() && this->canGoThroughPipe_down) {
+							
+							this->isInHiddenMap = !this->isInHiddenMap;
+							this->SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);
+						}
+					}
+				}
+			}
+
+
+			if (e->ny > 0) { // mario's head collide brick 
 				// BRICK
 				if (e->obj->GetType() == ObjectType::BRICK) {
 					vy = 0;
@@ -236,45 +347,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 #pragma endregion
 
 
-#pragma region COLLISION WITH ENEMY
-			if (coObjects->at(i)->GetState() != STATE_DESTROYED
-				&& coObjects->at(i)->GetState() != ENEMY_STATE_DAMAGE
-				&& coObjects->at(i)->GetState() != ENEMY_STATE_DIE_BY_ATTACK)
-			{
-				switch (coObjects->at(i)->GetType()) {
-				case ObjectType::GOOMBA:
-					if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-						CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
-						goomba->damageOnTop();
-						vy = -MARIO_JUMP_DEFLECT_SPEED;
-					}
-					else {
-						this->isDamaged(); // xu ly mario bi thuong
-					}
-					break;
-
-				case  ObjectType::KOOPA:
-					//if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-					//	CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
-					//	goomba->damageOnTop();
-					//	vy = -MARIO_JUMP_DEFLECT_SPEED;
-					//}
-					//else {
-					//	this->isDamaged(); // xu ly mario bi thuong
-					//}
-					break;
-				}
-			}
-
-			
-#pragma endregion
-
 #pragma region COLLISION WITH PORTAL
-			if (dynamic_cast<CPortal*>(e->obj))
+			/*if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
-			}
+			}*/
 #pragma endregion
 
 		}
