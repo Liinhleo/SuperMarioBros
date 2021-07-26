@@ -41,6 +41,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	CGameObject::Update(dt, coObjects);
 	vy += MARIO_GRAVITY * dt;
 
+	// mario nhay len dau
 	if (state == ENEMY_STATE_DAMAGE) {
 		if (isWing) {
 			isWing = false;
@@ -51,6 +52,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		}
 	}
 
+	
 	// XU LY VA CHAM
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -129,6 +131,8 @@ void CKoopas::Render()
 
 	if (state == STATE_DESTROYED)
 		return;
+
+	// if (isShellUp) -> ani SHELL UP
 
 	if (GetKoopaType() == KOOPAS_TYPE_RED) {
 		switch (state) {
@@ -210,6 +214,7 @@ void CKoopas::SetState(int state)
 		vy = 0;
 		break;
 	case ENEMY_STATE_DIE_BY_ATTACK: // tail
+		isShellUp = true;
 		vy = -KOOPA_JUMP_SPEED;
 		if (nx > 0) {
 			vx = KOOPAS_WALKING_SPEED;

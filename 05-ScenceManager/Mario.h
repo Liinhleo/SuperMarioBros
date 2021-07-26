@@ -65,7 +65,7 @@ public:
 	int GetLevel() {return level; }
 
 	void UpdateSpeed(DWORD dt);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> * coObjects, vector <LPGAMEOBJECT>* coItem);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> * coObjects, vector <LPGAMEOBJECT>* coItem, vector <LPGAMEOBJECT>* listEffect);
 	virtual void Render();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);

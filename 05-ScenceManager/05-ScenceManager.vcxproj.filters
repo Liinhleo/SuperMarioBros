@@ -21,12 +21,15 @@
     <Filter Include="Items">
       <UniqueIdentifier>{08c123a9-1548-4766-944a-afd8f4dfbafe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effects">
+      <UniqueIdentifier>{bae22a07-70d3-406a-9e43-bc3b4caf246c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{fd874b74-fe1a-4618-80f2-991b480ab617}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Scence.cpp">
@@ -66,12 +69,6 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MarioTail.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FireFlower.cpp">
@@ -128,14 +125,26 @@
     <ClCompile Include="SpeedBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="CoinEffect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
     <ClCompile Include="Grid.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Mario.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="MarioTail.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Mario.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Scence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -178,13 +187,7 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MarioTail.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="define.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
@@ -241,8 +244,23 @@
     <ClInclude Include="SpeedBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="CoinEffect.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
     <ClInclude Include="Grid.h">
-      <Filter>Header Files</Filter>
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="MarioTail.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Mario.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

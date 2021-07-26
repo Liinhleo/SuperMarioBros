@@ -2,9 +2,8 @@
 #include "Mario.h"
 #include "Utils.h"
 #include "Goomba.h"
-#include "Koopas.h"
-#include "FireFlower.h"
-#include "PiranhaFlower.h"
+#include "Plant.h"
+#include "Pswitch.h"
 
 MarioTail::MarioTail(float& x, float& y, int& nx){
 	xMario = &x;
@@ -13,29 +12,84 @@ MarioTail::MarioTail(float& x, float& y, int& nx){
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(2));
 }
 
-// Xet va cham theo 2 bbox CheckAABB is still ok
 void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
+	
+	// chi xet va cham khi tail o frame 2 va 4
 	if (animation_set->at(ani)->getCurrentFrame() >= 2 
 		|| animation_set->at(ani)->getCurrentFrame() >= 4) {
 
 		for (UINT i = 0; i < coObjects->size(); i++)
 		{
-			float top, left, bottom, right; // bbox of object
-			coObjects->at(i)->GetBoundingBox(left, top, right, bottom);
-			if (isCollision(left, top, right, bottom)) {
-				if (coObjects->at(i)->type == ObjectType::GOOMBA
-					|| coObjects->at(i)->type == ObjectType::KOOPA) {
-					coObjects->at(i)->SetState(ENEMY_STATE_DIE_BY_ATTACK);
-				}
-				else if (coObjects->at(i)->type == ObjectType::FIRE_FLOWER 
-					|| coObjects->at(i)->type == ObjectType::PIRANHA_FLOWER) {
-					coObjects->at(i)->SetState(STATE_DESTROYED);
+			if (this->isAABB(coObjects->at(i))) {
+				switch (coObjects->at(i)->GetType()) {
+				case ObjectType::GROUND:
+				case ObjectType::PIPE:
+					break;
+
+				case ObjectType::BRICK:
+					{
+						CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
+
+						if (brick->GetBrickType() != BRICK_BROKEN) {
+
+							// QUESTION BRICK
+							if (brick->GetCountItem() == 1 && brick->GetBrickType() == BRICK_QUESTION)
+								brick->SetBrickType(BRICK_BROKEN);
+
+							else if (brick->GetCountItem() != BRICK_GLASS)
+								brick->SetState(BRICK_STATE_BOUNDING);
+
+							// GLASS BRICK
+							else {
+								if (brick->GetTypeItem() == CONTAIN_PSWITCH) {
+									CGameObject* obj = new Pswitch(brick->start_x, brick->start_y - BRICK_BBOX_SIZE);
+									coObjects->push_back(obj);
+									brick->SetBrickType(BRICK_BROKEN);
+								}
+								else
+									brick->SetState(BRICK_STATE_BROKEN);
+								
+							}
+							brick->count--;
+						}
+						break;
+					}
+					
+				case ObjectType::PIRANHA_FLOWER:
+				case ObjectType::FIRE_FLOWER:
+					{
+						Plant* plant = dynamic_cast<Plant*>(coObjects->at(i));
+						plant->damageByWeapon();
+						break;
+					}
+
+				case ObjectType::GOOMBA:
+					{
+						CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
+						goomba->SetState(ENEMY_STATE_DIE_BY_ATTACK);
+						break;
+					}
+
+				case ObjectType::KOOPA:
+					{
+						CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
+						
+						this->GetPosition(x, y); // vi tri cua mario
+						float k_x, k_y;
+						koopa->GetPosition(k_x, k_y); // vi tri cua shell
+						if ((k_x - this->x) > 0)
+							koopa->nx = -1;
+						else
+							koopa->nx = 1;
+						koopa->SetState(ENEMY_STATE_DIE_BY_ATTACK);
+						break;
+					}
+				default:
+					return;
+					
 				}
 			}
 		}
-	}
-	if (animation_set->at(ani)->getCurrentFrame() >= 2) {
-
 	}
 }
 

@@ -72,12 +72,12 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 					if (e->nx != 0 || e->ny != 0) { // va cham theo phuong x, y
 						Enemy* enemy = dynamic_cast<Enemy*>(e->obj);
 						enemy->nx = this->nx;
-						enemy->damageByWeapon();
-
-						this->state = STATE_DESTROYED; // va cham-> not render bullet
+						enemy->SetState(STATE_DESTROYED);
 
 						// tinh diem cho Mario 100d
 					}
+					this->state = STATE_DESTROYED; // va cham-> not render bullet
+
 			}
 		}
 	}

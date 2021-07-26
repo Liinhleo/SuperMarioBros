@@ -27,7 +27,7 @@ protected:
 
 	vector<LPGAMEOBJECT> listObjects; // chua tat ca object except item + effect
 	vector<LPGAMEOBJECT> listItems;	  // list item
-	vector<LPGAMEOBJECT> effects;	  // list effect
+	vector<LPGAMEOBJECT> listEffects;	  // list effect
 
 	vector<LPGAMEOBJECT> listStatic;
 	vector<LPGAMEOBJECT> listMoving;

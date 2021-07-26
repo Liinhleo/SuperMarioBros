@@ -12,6 +12,7 @@
 #include "Pswitch.h"
 #include "Item.h"
 #include "Pipe.h"
+#include "CoinEffect.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -47,7 +48,7 @@ void CMario::UpdateSpeed(DWORD dt) {
 	}
 }
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJECT>* coItem) {
+void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect) {
 
 	UpdateSpeed(dt);
 
@@ -234,9 +235,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
+
+
 			//Mario can go through pipe if it has Portal
 			if (e->ny != 0) { // collide from 2 direct (up/down)
-				if (e->obj->GetType() == PIPE) {
+				if (e->obj->GetType() == ObjectType::PIPE) {
 					Pipe* pipe = dynamic_cast<Pipe*>(e->obj); // if e->obj is Pipe 
 					if (pipe->IsHasPortal()) {
 						if (pipe->GetDirection()&& this->canGoThroughPipe_up) {
@@ -266,26 +269,50 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 
 								switch (brick->typeItem) {
 								case CONTAIN_NONE:
-									brick->SetState(BRICK_STATE_BOUNDING);
+									{
+										brick->SetState(BRICK_STATE_BOUNDING);
 
-									if (brick->GetCountItem() == 0)
-										brick->SetState(BRICK_STATE_BROKEN);
-									break;
+										if (brick->GetCountItem() == 0)
+											brick->SetState(BRICK_STATE_BROKEN);
+										break;
+									}
+									
 								case CONTAIN_ITEM_UP:
-								case CONTAIN_COIN:
-									brick->SetState(BRICK_STATE_BOUNDING);
+									{
+										brick->SetState(BRICK_STATE_BOUNDING);
+										AddScore(1000);
+										AddCoin();
+										if (brick->GetCountItem() > 0)
+											brick->count--;
+										if (brick->GetCountItem() == 0)
+											brick->SetState(BRICK_STATE_BROKEN);
+										break;
+									}
+									
+								case CONTAIN_COIN: 
+									{
+										brick->SetState(BRICK_STATE_BOUNDING);
+										AddScore(100);
+										AddCoin();
+										float b_x, b_y;
+										brick->GetPosition(b_x, b_y); // vi tri cua brick
+										CGameObject* effect = new CoinEffect({ b_x,b_y });
+										listEffect->push_back(effect);
 
-									if (brick->GetCountItem() > 0)
-										brick->count--;
-									if (brick->GetCountItem() == 0)
-										brick->SetState(BRICK_STATE_BROKEN);
-									break;
+										if (brick->GetCountItem() > 0)
+											brick->count--;
+										if (brick->GetCountItem() == 0)
+											brick->SetState(BRICK_STATE_BROKEN);
+										break;
+									}
 								case CONTAIN_PSWITCH:
-									CGameObject* pswitch = new Pswitch(brick->start_x, brick->start_y - 16);
-									coObjects->push_back(pswitch);
-									brick->SetBrickType(BRICK_BROKEN);
-									brick->SetState(BRICK_STATE_BOUNDING);
-									break;
+									{
+										CGameObject* pswitch = new Pswitch(brick->start_x, brick->start_y - 16);
+										coObjects->push_back(pswitch);
+										brick->SetBrickType(BRICK_BROKEN);
+										brick->SetState(BRICK_STATE_BOUNDING);
+										break;
+									}
 								}
 							}
 						}
@@ -375,11 +402,13 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 		if (isAABB(coItem->at(i))) {
 			if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
 			{
-
+				AddScore(100);
+				AddCoin();
 			}
 			if (coItem->at(i)->GetType() == ObjectType::COIN)//brick khi chuyen thanh tien
 			{
-
+				AddScore(100);
+				AddCoin();
 			}
 			else {
 				Item* item = dynamic_cast<Item*>(coItem->at(i));
@@ -397,7 +426,9 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 					this->SetLevel(MARIO_LEVEL_BIG);
 					break;
 				}
+				AddScore(1000);
 			}
+			coItem->at(i)->SetState(STATE_DESTROYED);
 		}
 	}
 }

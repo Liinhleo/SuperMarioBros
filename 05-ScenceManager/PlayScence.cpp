@@ -14,7 +14,7 @@
 #include "Koopas.h"
 #include "PiranhaFlower.h"
 #include "Goomba.h"
-
+#include "Coin.h"
 
 using namespace std;
 
@@ -77,9 +77,8 @@ void CPlayScene::_ParseSection_MAPS(string line)
 	int widthMap = atoi(tokens[2].c_str());
 	int heightMap = atoi(tokens[3].c_str());
 	float hidden_start = strtof(tokens[4].c_str(), NULL);
-	float hidden_end = strtof(tokens[5].c_str(), NULL);
 	
-	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap, hidden_start, hidden_end);
+	map = new CMap(map_id, matrix_path.c_str(), widthMap, heightMap, hidden_start);
 
 	if (map) {
 		gridMoving = new Grid(map->getWidthMap(), map->getHeighthMap());
@@ -233,9 +232,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 				for (int col = left; col < right; col++)
 					gridMoving->pushObjectIntoGrid(obj, row, col);
 			}
-
 		}
-	break;
+		break;
 
 	case OBJECT_TYPE_FIRE_FLOWER:
 		{
@@ -256,7 +254,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 				for (int col = left; col < right; col++)
 					gridMoving->pushObjectIntoGrid(obj, row, col);
 			}
-			break;
 		}
 		break;
 	case OBJECT_TYPE_BRICK: 
@@ -305,7 +302,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 				for (int col = left; col < right; col++)
 					gridStatic->pushObjectIntoGrid(obj, row, col);
 			}
-			break;
 		}
 		break;
 	case OBJECT_TYPE_PIPE:
@@ -332,9 +328,29 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 				for (int col = left; col < right; col++)
 					gridStatic->pushObjectIntoGrid(obj, row, col);
 			}
-			break;
 		}
 		break;
+	case OBJECT_TYPE_COIN:
+	{
+		//int top = atoi(tokens[4].c_str());
+		//int bot = atoi(tokens[5].c_str());
+		//int left = atoi(tokens[6].c_str());
+		//int right = atoi(tokens[7].c_str());
+
+		obj = new Coin();
+
+		// General object setup
+		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		obj->SetPosition(x, y);
+		obj->SetAnimationSet(ani_set);
+		listStatic.push_back(obj);
+
+	/*	for (int row = top; row < bot; row++) {
+			for (int col = left; col < right; col++)
+				gridStatic->pushObjectIntoGrid(obj, row, col);
+		}*/
+	}
+	break;
 	//case OBJECT_TYPE_PORTAL:
 	//	{	
 	//		// Read file
@@ -440,8 +456,8 @@ void CPlayScene::GetObjectToGrid() {
 	gridStatic->GetObjFromGrid(listGrid);
 
 	for (UINT i = 0; i < listGrid.size(); i++) {
-		if (listGrid[i]->GetType() == COIN
-			|| listGrid[i]->GetType() == ITEM)
+		if (listGrid[i]->GetType() == ObjectType::COIN
+			|| listGrid[i]->GetType() == ObjectType::ITEM)
 			listItems.push_back(listGrid[i]);
 		else
 			listObjects.push_back(listGrid[i]);
@@ -555,10 +571,26 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
-	// mario
-	player->Update(dt, &listObjects, &listItems);
+	// Update list Effect
+	for (size_t i = 0; i < listEffects.size(); i++)	{
+		listEffects[i]->Update(dt);
+	}
 
-	// Update item to GRID
+
+	// mario
+	player->Update(dt, &listObjects, &listItems, &listEffects);
+
+	// Update Object to GRID
+	for (size_t i = 0; i < listObjects.size(); i++) {
+		if (listObjects[i]->GetType() == ObjectType::FIRE_BALL
+			&& !listObjects[i]->isInCam)
+		{
+			listObjects[i]->isInCam = true;
+			listMoving.push_back(listObjects[i]);
+			gridMoving->pushNewObjIntoGrid(listObjects[i]);
+		}
+	}
+
 	for (size_t i = 0; i < listItems.size(); i++) {
 		if (!listItems[i]->isInCam) {
 			listItems[i]->isInCam = true;
@@ -596,6 +628,14 @@ void CPlayScene::Update(DWORD dt)
 			i--;
 		}
 	}
+
+	for (size_t i = 0; i < listEffects.size(); i++) {
+		if (listEffects[i]->GetState() == STATE_DESTROYED) {
+
+			listEffects.erase(listEffects.begin() + i);
+			i--;
+		}
+	}
 	
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return; 
@@ -614,7 +654,6 @@ void CPlayScene::Update(DWORD dt)
 	
 	// Mario in main map
 	if (!player->isInHiddenMap)	{
-		// startHiddenMap_x = endMainMap_x 
 		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->startHiddenMap_x - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
 		
 		// ngan mario rot khoi map
@@ -624,13 +663,16 @@ void CPlayScene::Update(DWORD dt)
 
 	// Mario in hidden map
 	else { 
-		cam->Update(dt, { cx,cy }, { map->startHiddenMap_x,0 }, { float(map->endHidden_x - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
+		cam->Update(dt, { cx,cy }, { map->startHiddenMap_x,0 }, { float(map->widthMap - SCREEN_WIDTH) , float(map->getHeighthMap() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
 
 		// ngan mario rot khoi map
 		if (player->x < map->startHiddenMap_x)
 			player->SetPosition(map->startHiddenMap_x, cy);
+		if (player->x > map->widthMap - MARIO_BIG_BBOX_WIDTH * 2)
+			player->SetPosition(map->widthMap - MARIO_BIG_BBOX_WIDTH * 2, cy);
 	}
 #pragma endregion
+
 	// Update cac doi moving list (case: enemy di ra khoi grid)
 	gridMoving->UpdateGrid(listMoving);
 
@@ -640,13 +682,18 @@ void CPlayScene::Render()
 {
 	map->Render();
 
-	// i = 0 : Render Mario (player)
+	// list objects
 	for (int i = 0; i < listObjects.size(); i++)
 		listObjects[i]->Render();
 
-
+	// list item
 	for (int i = 0; i < listItems.size(); i++)
 		listItems[i]->Render();
+
+	// list effect
+	for (size_t i = 0; i < listEffects.size(); i++)
+		listEffects.at(i)->Render();
+
 	player->Render();
 
 	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
@@ -775,11 +822,14 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
-
+	
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
 
+	if (game->IsKeyDown(DIK_A)) {
+		mario->canHolding = true;
+	}
 	if (game->IsKeyDown(DIK_UP)) {
 		mario->canGoThroughPipe_up = true;
 	}
@@ -789,6 +839,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (game->IsKeyDown(DIK_DOWN)) {
 		mario->canGoThroughPipe_down = true;
+		DebugOut(L"pippipipipipipip");
 	}
 	else {
 		mario->canGoThroughPipe_down = false;

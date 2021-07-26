@@ -6,8 +6,6 @@ class CMap
 {
 	int mapID;
 	LPCWSTR matrix_path;
-	int widthMap;
-	int heightMap;
 
 	//vector<vector<int>> tileMaps; // arr 2D of tile maps 
 	
@@ -16,11 +14,15 @@ class CMap
 	int numRow;
 
 public:
+	int widthMap;
+	int heightMap;
 
-	float startHiddenMap_x, endHidden_x; // hidden map
+	float startHiddenMap_x;  // hidden map
 
-	CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap, float startHiddenMap_x, float endHidden_x);
+	CMap(int mapID, LPCWSTR matrix_path, int widthMap, int heightMap, float startHiddenMap_x);
 	//CMap();
+
+	float GetStartHiddenMap();
 
 	int getMapID();
 	LPCWSTR getMatrixPath();
