@@ -57,29 +57,56 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 	CGameObject::Update(dt);
 	this->vy += MARIO_GRAVITY * dt;// Simple fall down
 
-	if (flyTime->IsTimeUp()) {
+
+	if (flyTime->IsTimeUp())
 		flyTime->Stop();
+
+	if (!isAttack && tail)	tail->SetState(STATE_DESTROYED);
+
+	if (level == MARIO_LEVEL_FIRE && isAttack) {
+		// Tao bullet
+		if (listBullet.size() < 2) {
+			if (nx > 0)
+				listBullet.push_back(CreateBullet(x + 6, y + 6, nx));
+			else
+				listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+		}
+		isAttack = false;
 	}
 
-	//DebugOut(L"current state: %d \n", state);
-	if (isAttack) {
-		if (level == MARIO_LEVEL_FIRE) {
-			// Tao bullet
-			if (listBullet.size() < 2) {
-				if (nx > 0)
-					listBullet.push_back(CreateBullet(x + 6, y + 6, nx));
-				else
-					listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
-			}
-		}
-		if (level == MARIO_LEVEL_RACOON) {
+	if (level == MARIO_LEVEL_RACOON) {
+		if (isAttack && !attackStart->IsTimeUp()) {
+			this->state = MARIO_STATE_ATTACK;
+
 			tail->SetState(TAIL_STATE_HIT);
 			tail->SetPosition(x, y);
 			tail->nx;
 			tail->Update(dt, coObjects);
 		}
-		isAttack = false;
+		else {
+			if (!isOnGround) {
+				if (isFlying && !flyTime->IsTimeUp()) {
+					this->state = MARIO_STATE_FLY;
+				}
+				else {
+					isFlying = false;
+					this->state = MARIO_STATE_JUMP;
+				}
+				isAttack = false;
+				attackStart->Stop();
+			}
+		}
+
+		/*if (!isOnGround) {
+			if (isFlying && !flyTime->IsTimeUp()) {
+				this->state = MARIO_STATE_FLY;
+			}
+			else {
+				this->state = MARIO_STATE_JUMP;
+			}
+		}*/
 	}
+	
 
 	//update listBullet
 	for (size_t i = 0; i < listBullet.size(); i++)
@@ -163,7 +190,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 					}
 				}
 				break;
-
+			case ObjectType::P_SWITCH:
+				if (this->IsCollidingWithObjectNy(coObjects->at(i)))
+					coObjects->at(i)->SetState(SWITCH_STATE_OFF);
+				break;
 			case ObjectType::GOOMBA:
 				if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
 					if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) {
@@ -401,11 +431,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		}
 	}
 
-	// han che lap frame attack
-	if (level == MARIO_LEVEL_RACOON && isAttack 
-		&& animation_set->at(ani)->getCurrentFrame() >= 4) {
-		isAttack = false;
-	}
+	//// han che lap frame attack
+	//if (level == MARIO_LEVEL_RACOON && isAttack 
+	//	&& animation_set->at(ani)->getCurrentFrame() >= 4) {
+	//	isAttack = false;
+	//}
 
 
 	// clean up collision events
@@ -764,9 +794,8 @@ void CMario::SetState(int state)
 		vx = nx * MARIO_WALKING_SPEED; // vx_bandau
 		break;
 	case MARIO_STATE_STOP:
-		vx = 0;
-		break;
 	case MARIO_STATE_IDLE:
+		//DecreaseSpeed();
 		vx = 0;
 		break;
 	case MARIO_STATE_JUMP:
@@ -802,6 +831,7 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_ATTACK:
 		isAttack = true;
+		attackStart->Start(); //bd tinh gio danh
 		break;
 	}
 }
@@ -879,4 +909,35 @@ void CMario::Reset() {
 void CMario::StartUntouchable() {
 	this->untouchable = 1;
 	this->untouchable_start = GetTickCount64();
+}
+
+void CMario::ToRight() {
+	nx = 1;
+	/*if (vx == 0)
+		vx = MARIO_WALKING_SPEED;
+	if (vx <= 0)
+		vx = 0;*/
+	if (vx == 0) {
+		vx = MARIO_WALKING_SPEED;
+	}
+	//vx = -MARIO_WALKING_SPEED;
+	if (vx <= 0)
+		SetState(MARIO_STATE_STOP);
+
+}
+void CMario::ToLeft() {
+	nx = -1;
+	if (vx == 0) {
+		vx = -MARIO_WALKING_SPEED;
+	}
+		//vx = -MARIO_WALKING_SPEED;
+	if (vx >= 0)
+		SetState(MARIO_STATE_STOP);
+}
+
+CMario* CMario::__instance = nullptr;
+CMario* CMario::GetInstance()
+{
+	if (__instance == NULL) __instance = new CMario();
+	return __instance;
 }

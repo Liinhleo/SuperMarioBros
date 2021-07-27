@@ -16,6 +16,7 @@
 #include "Goomba.h"
 #include "Coin.h"
 #include "FireBallEffect.h"
+#include "Pswitch.h"
 
 using namespace std;
 
@@ -164,7 +165,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 				return;
 			}
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-			obj = new CMario(x, y);
+			obj = CMario::GetInstance();
 			obj->SetPosition(x, y);
 			obj->SetAnimationSet(ani_set);
 
@@ -457,11 +458,16 @@ void CPlayScene::GetObjectToGrid() {
 	gridStatic->GetObjFromGrid(listGrid);
 
 	for (UINT i = 0; i < listGrid.size(); i++) {
+
 		if (listGrid[i]->GetType() == ObjectType::COIN
-			|| listGrid[i]->GetType() == ObjectType::ITEM)
+			|| listGrid[i]->GetType() == ObjectType::LAST_ITEM
+			|| listGrid[i]->GetType() == ObjectType::ITEM) {
+			
 			listItems.push_back(listGrid[i]);
-		else
+		}
+		else {
 			listObjects.push_back(listGrid[i]);
+		}
 	}
 }
 
@@ -567,6 +573,10 @@ void CPlayScene::Update(DWORD dt)
 			Plant* plant = dynamic_cast<Plant*>(listObjects[i]);
 			plant->Update(dt, &listObjects, { l,t,r,b });
 		}
+		else if (listObjects[i]->GetType() == ObjectType::P_SWITCH) {
+			Pswitch* p_switch = dynamic_cast<Pswitch*>(listObjects[i]);
+			p_switch->Update(dt, &listObjects, &listItems);
+		}
 		else {
 			listObjects[i]->Update(dt, &listObjects);
 		}
@@ -583,6 +593,13 @@ void CPlayScene::Update(DWORD dt)
 
 	// Update Object to GRID
 	for (size_t i = 0; i < listObjects.size(); i++) {
+		if (listObjects[i]->GetType() == ObjectType::P_SWITCH
+			&& !listObjects[i]->isInCam)
+		{
+			listObjects[i]->isInCam = true;
+			listStatic.push_back(listObjects[i]);
+			gridStatic->pushNewObjIntoGrid(listObjects[i]);
+		}
 		if (listObjects[i]->GetType() == ObjectType::FIRE_BALL
 			&& !listObjects[i]->isInCam)
 		{
@@ -673,8 +690,10 @@ void CPlayScene::Update(DWORD dt)
 		// ngan mario rot khoi map
 		if (player->x < map->startHiddenMap_x)
 			player->SetPosition(map->startHiddenMap_x, cy);
-		if (player->x > map->widthMap - MARIO_BIG_BBOX_WIDTH * 2)
-			player->SetPosition(map->widthMap - MARIO_BIG_BBOX_WIDTH * 2, cy);
+		if (player->x >= map->widthMap) {
+			cam->islockUpdate = true;
+			player->SetPosition(map->widthMap, cy);
+		}
 	}
 #pragma endregion
 
@@ -734,6 +753,7 @@ void CPlayScene::Unload()
 #pragma endregion
 
 #pragma region INPUT KEYBOARD
+
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
@@ -760,10 +780,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			mario->SetState(MARIO_STATE_JUMP_LOW);
 		break;
 	case DIK_A:
+
 		if (!mario->isAttack)
 		{
 			if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE) {
 				mario->SetState(MARIO_STATE_ATTACK);
+
 			}
 		}
 		break;
@@ -788,6 +810,23 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->SetLevel(MARIO_LEVEL_FIRE);
 		mario->Reset();
 		break;
+	
+	// get pipe down
+	case DIK_5:
+		mario->SetPosition(1900, mario->y);
+		CGame::GetInstance()->cam_x = 1900;
+		break;
+
+
+	// get pipe up
+	case DIK_6:
+		break;
+
+
+	// go to Hidden map
+	case DIK_7:
+		break;
+
 	}
 }
 
@@ -844,6 +883,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (game->IsKeyDown(DIK_A)) {
 		mario->canHolding = true;
 	}
+
 	if (game->IsKeyDown(DIK_UP)) {
 		mario->canGoThroughPipe_up = true;
 	}
@@ -853,7 +893,6 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (game->IsKeyDown(DIK_DOWN)) {
 		mario->canGoThroughPipe_down = true;
-		DebugOut(L"pippipipipipipip");
 	}
 	else {
 		mario->canGoThroughPipe_down = false;
@@ -865,6 +904,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			if (mario->state == MARIO_STATE_SIT)
 				return;
 			if (mario->vx < 0) {
+				mario->nx = 1;
 				mario->SetState(MARIO_STATE_STOP);
 			}
 			else {
@@ -878,7 +918,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			if (mario->state == MARIO_STATE_SIT)
 				return;
 			if (mario->vx > 0) {
-				//mario->SetAccelerate(mario->a += MARIO_SPEED_DOWN);
+				mario->nx = -1;
 				mario->SetState(MARIO_STATE_STOP);
 			}
 			else {
@@ -894,7 +934,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			
 			// suy nghi them de mario co the truot 1 doan truoc khi di tiep ben trai
 			if (mario->vx < 0) {
-				mario->SetAccelerate(mario->a = 0);
+				//mario->SetAccelerate(mario->a = 0);
+				mario->nx = -1;
 				mario->SetState(MARIO_STATE_STOP);
 			}
 
@@ -914,6 +955,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			if (mario->state == MARIO_STATE_SIT)
 				return;
 			if (mario->vx > 0) {
+				mario->nx = -1;
 				mario->SetState(MARIO_STATE_STOP);
 			}
 			else {

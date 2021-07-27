@@ -9,8 +9,6 @@ class ScoreEffect :
     public CGameObject
 {
 	int score;
-	bool beBounded; //ktra tien co nay len
-
 public:
 	ScoreEffect(D3DXVECTOR2 position, int score);
 	~ScoreEffect() {};

@@ -8,7 +8,7 @@ Pswitch::Pswitch(float x, float y) {
 	this->start_y = y;
 
 	state = SWITCH_STATE_ON;
-	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(15));
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(31));
 }
 
 void Pswitch::Render() {
@@ -18,7 +18,7 @@ void Pswitch::Render() {
 		ani = SWITCH_ANI_OFF;
 	animation_set->at(ani)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void Pswitch::GetBoundingBox(float& l, float& t, float& r, float& b) {
@@ -42,6 +42,7 @@ void Pswitch::SetState(int state) {
 		changeTimer->Start();
 		//gach bien thanh tien
 		onChange = true;
+		y = y + 10;
 		break;
 	case SWITCH_STATE_ON:
 		break;
@@ -50,7 +51,41 @@ void Pswitch::SetState(int state) {
 	}
 }
 
-void Pswitch::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* objects, vector<LPGAMEOBJECT>* colObj) {
+void Pswitch::Update(DWORD dt, vector<LPGAMEOBJECT>* objects, vector<LPGAMEOBJECT>* items) {
+	
 	CGameObject::Update(dt);
+
+	vector<LPGAMEOBJECT> glassBrick;
+	if (onChange) {// ktra nhan nut
+		// gach bien mat -> state coin
+		for (int i = 0; i < objects->size(); i++) {
+			if (objects->at(i)->GetType() == ObjectType::BRICK) {
+
+				CBrick* brick = dynamic_cast<CBrick*>(objects->at(i));
+
+				if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() != BRICK_STATE_HIDDEN) {
+					brick->SetState(BRICK_STATE_HIDDEN);
+				}
+			}
+		}
+		onChange = false;
+	}
+
+	if (changeTimer && changeTimer->IsTimeUp()) {
+		//tien bien lai thanh gach
+		for (int i = 0; i < items->size(); i++) {
+			if (dynamic_cast<CBrick*>(items->at(i))) {
+
+				CBrick* brick = dynamic_cast<CBrick*>(items->at(i));
+
+				if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN) {
+					
+					brick->SetState(BRICK_STATE_ACTIVE);
+
+				}
+			}
+		}
+		changeTimer->Stop();
+	}
 
 }

@@ -2,6 +2,8 @@
 #include "Brick.h"
 #include "Ground.h"
 #include "Enemy.h"
+#include "Pswitch.h"
+#include "Mario.h"
 
 Bullet::Bullet(D3DXVECTOR2 position, int nx) {
 	x = position.x;
@@ -46,7 +48,6 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 			this->vy = -BULLET_SPEED_Y; // nhay tung tung len
 		}
 
-
 		for (UINT i = 0; i < coEventsResult.size(); i++) 
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
@@ -65,20 +66,36 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 
 			else if (e->obj->GetType() == ObjectType::BRICK || e->obj->GetType() == ObjectType::PIPE) {
 				if (e->nx != 0){ // va cham theo phuong x
+					//this->state = STATE_DESTROYED; // va cham-> not render bullet
+
+					// TEST THU P_SWITCH
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+					if (brick->GetBrickType() != BRICK_BROKEN && brick->GetTypeItem() == CONTAIN_PSWITCH) {
+						CGameObject* obj = new Pswitch(brick->start_x, brick->start_y - BRICK_BBOX_SIZE);
+						coObjects->push_back(obj);
+						brick->SetBrickType(BRICK_BROKEN);
+					}
 					this->state = STATE_DESTROYED; // va cham-> not render bullet
+
 				}
 			}
+			else if (e->obj->GetType() == ObjectType::PIRANHA_FLOWER || e->obj->GetType() == ObjectType::FIRE_FLOWER) {
+				e->obj->SetState(STATE_DESTROYED);
+				state = STATE_DESTROYED;
+				CMario::GetInstance()->AddScore(100);
+			}
+		
 			else {
 					if (e->nx != 0 || e->ny != 0) { // va cham theo phuong x, y
 						Enemy* enemy = dynamic_cast<Enemy*>(e->obj);
 						enemy->nx = this->nx;
 						enemy->SetState(STATE_DESTROYED);
-
-						// tinh diem cho Mario 100d
+						CMario::GetInstance()->AddScore(100);
 					}
 					this->state = STATE_DESTROYED; // va cham-> not render bullet
 
 			}
+
 		}
 	}
 }

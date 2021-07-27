@@ -27,6 +27,12 @@
     <Filter Include="Player">
       <UniqueIdentifier>{fd874b74-fe1a-4618-80f2-991b480ab617}</UniqueIdentifier>
     </Filter>
+    <Filter Include="BoardGame">
+      <UniqueIdentifier>{42e5e95c-a216-4fd5-a26b-1f5c65c49e8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GreenLand">
+      <UniqueIdentifier>{a716da57-4450-4151-83a4-1f8df9334c52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -67,9 +73,6 @@
     </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FireFlower.cpp">
       <Filter>Enemy</Filter>
@@ -113,26 +116,11 @@
     <ClCompile Include="FireFlowerBall.cpp">
       <Filter>Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Hud.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SpeedBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Coin.cpp">
       <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="CoinEffect.cpp">
       <Filter>Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="Grid.cpp">
-      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Mario.cpp">
       <Filter>Player</Filter>
@@ -148,6 +136,39 @@
     </ClCompile>
     <ClCompile Include="FireBallEffect.cpp">
       <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Hud.cpp">
+      <Filter>BoardGame</Filter>
+    </ClCompile>
+    <ClCompile Include="SpeedBar.cpp">
+      <Filter>BoardGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>BoardGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>BoardGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>BoardGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>BoardGame</Filter>
+    </ClCompile>
+    <ClCompile Include="LastItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ninja.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="NinjaBoomerang.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="GreeenLand.cpp">
+      <Filter>GreenLand</Filter>
+    </ClCompile>
+    <ClCompile Include="GreenLandObject.cpp">
+      <Filter>GreenLand</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,9 +207,6 @@
     </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
@@ -238,26 +256,11 @@
     <ClInclude Include="FireFlowerBall.h">
       <Filter>Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Hud.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpeedBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Coin.h">
       <Filter>Items</Filter>
     </ClInclude>
     <ClInclude Include="CoinEffect.h">
       <Filter>Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="Grid.h">
-      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="MarioTail.h">
       <Filter>Player</Filter>
@@ -273,6 +276,39 @@
     </ClInclude>
     <ClInclude Include="FireBallEffect.h">
       <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>BoardGame</Filter>
+    </ClInclude>
+    <ClInclude Include="SpeedBar.h">
+      <Filter>BoardGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Hud.h">
+      <Filter>BoardGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>BoardGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>BoardGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>BoardGame</Filter>
+    </ClInclude>
+    <ClInclude Include="LastItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ninja.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="NinjaBoomerang.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="GreeenLand.h">
+      <Filter>GreenLand</Filter>
+    </ClInclude>
+    <ClInclude Include="GreenLandObject.h">
+      <Filter>GreenLand</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

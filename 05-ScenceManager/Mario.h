@@ -7,8 +7,12 @@
 #include "MarioTail.h"
 #include "Koopas.h"
 
+#define MARIO_TIME_ATTACK	400
+
 class CMario : public CGameObject
 {
+	static CMario* __instance;
+
 	// HUD
 	int score;
 	int coin;
@@ -18,6 +22,20 @@ class CMario : public CGameObject
 	DWORD untouchable_start;
 
 public: 
+	static CMario* GetInstance();
+
+	// GREENLAND VARIABLES
+	bool isIdling;
+	bool canWalkLeft;
+	bool canWalkRight;
+	bool canWalkUp;
+	bool canWalkDown;
+
+	bool canSwitchScene;
+
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* objects);
+
+
 	Bullet* CreateBullet(float x, float y, int nx) {
 		Bullet* bullet = new Bullet({ x, y }, nx);
 		return bullet;
@@ -25,8 +43,6 @@ public:
 	vector< LPGAMEOBJECT> listBullet;
 
 	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
-
-
 	float a;
 
 	CKoopas* shell = new CKoopas();
@@ -34,6 +50,7 @@ public:
 	MarioTail* tail; // mario has a tail when level = RACOON
 
 	Timer* flyTime = new Timer(TIME_FLY);
+	Timer* attackStart = new Timer(MARIO_TIME_ATTACK);
 
 	bool isOnGround = false;
 	bool isAttack = false;
@@ -65,6 +82,7 @@ public:
 	int GetLevel() {return level; }
 
 	void UpdateSpeed(DWORD dt);
+	void DecreaseSpeed();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> * coObjects, vector <LPGAMEOBJECT>* coItem, vector <LPGAMEOBJECT>* listEffect);
 	virtual void Render();
 
@@ -77,6 +95,9 @@ public:
 
 	void Reset();
 	void CollideWithItem(vector<LPGAMEOBJECT>* Item);
+
+	void ToRight();
+	void ToLeft();
 
 
 	// HUD

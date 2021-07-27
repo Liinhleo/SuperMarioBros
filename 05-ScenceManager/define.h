@@ -68,6 +68,11 @@
 #define MARIO_STATE_STAND_UP		1100
 #define MARIO_STATE_JUMP_LOW		1200
 
+// Greenland
+#define MARIO_STATE_WALKING_UP				1300
+#define MARIO_STATE_WALKING_DOWN			1400
+#define MARIO_STATE_IDLE_GREENLAND			1500
+
 
 // =========== ANI BIG MARIO ====================
 #define MARIO_ANI_BIG_IDLE_RIGHT			0
@@ -226,6 +231,10 @@ enum ObjectType {
 
 	//trans_map
 	PORTAL = 14,
+	LAST_ITEM = 15,
+
+	//green land
+	GL_OBJECT = 16
 };
 
 #define OBJECT_TYPE_MARIO	0
@@ -247,5 +256,7 @@ enum ObjectType {
 
 
 #define OBJECT_TYPE_PORTAL	50
+
+#define OBJECT_GREEN_LAND	51
 
 #define MAX_SCENE_LINE 1024

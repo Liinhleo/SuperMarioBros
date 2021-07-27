@@ -48,7 +48,13 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 								}
 								else
 									brick->SetState(BRICK_STATE_BROKEN);
-								
+								CMario::GetInstance()->AddScore(100);							
+							}
+							// chua nhieu coin
+							if (brick->GetTypeItem() == CONTAIN_COIN)
+							{
+								CMario::GetInstance()->AddScore(100);
+								CMario::GetInstance()->AddCoin();
 							}
 							brick->count--;
 						}
@@ -60,6 +66,7 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 					{
 						Plant* plant = dynamic_cast<Plant*>(coObjects->at(i));
 						plant->damageByWeapon();
+						CMario::GetInstance()->AddScore(100);
 						break;
 					}
 
@@ -67,6 +74,7 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 					{
 						CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
 						goomba->SetState(ENEMY_STATE_DIE_BY_ATTACK);
+						CMario::GetInstance()->AddScore(100);
 						break;
 					}
 
@@ -82,6 +90,8 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 						else
 							koopa->nx = 1;
 						koopa->SetState(ENEMY_STATE_DIE_BY_ATTACK);
+						CMario::GetInstance()->AddScore(100);
+
 						break;
 					}
 				default:
@@ -106,34 +116,31 @@ void MarioTail::GetBoundingBox(float& left, float& top, float& right, float& bot
 
 			else {
 				left = x + DISTANCE_XTAIL_MARIO;
-				right = left + TAIL_BBOX_WIDTH + 2;
+				right = left + TAIL_BBOX_WIDTH + 5;
 			}
 			top = y + 19;
 			break;
 
 		case 2:
-			left = x;
-			top = y;
 			if (nx > 0) {
-				right = left + MARIO_RACCOON_BBOX_WIDTH;
+				left = x + DISTANCE_XTAIL_MARIO;
+				right = left + TAIL_BBOX_WIDTH + 5;
 			}
 			else {
-				left = x + TAIL_BBOX_WIDTH - 2;
-				right = left + MARIO_RACCOON_BBOX_WIDTH;
+				left = x - 2;
+				right = left + TAIL_BBOX_WIDTH;
 			}
 			top = y + 19;
 			break;
 		default:
 			break;
 		}
-		right = left + 10;
-		bottom = top + 5;
+		bottom = top + 6;
 	}
 
 }
 
 void MarioTail::Render() {
-	int ani = -1;
 	if (state == TAIL_STATE_HIT) {
 		if (nx > 0) ani = TAIL_ANI_RIGHT;
 		else ani = TAIL_ANI_LEFT;

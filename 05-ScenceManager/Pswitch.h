@@ -21,7 +21,7 @@ public:
 	Timer* changeTimer = new Timer(12000);
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects, vector<LPGAMEOBJECT>* coObj);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects, vector<LPGAMEOBJECT>* coObj);
 
 	void SetState(int state);
 };

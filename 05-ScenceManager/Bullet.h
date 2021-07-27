@@ -9,8 +9,6 @@
 #define BULLET_SPEED_X	0.2f 
 #define BULLET_SPEED_Y	0.1f 
 
-	
-
 class Bullet :  public CGameObject
 {
 public:

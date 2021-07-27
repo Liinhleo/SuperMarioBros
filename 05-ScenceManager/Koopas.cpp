@@ -195,7 +195,7 @@ void CKoopas::Render()
 	}
 	animation_set->at(ani)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -261,7 +261,9 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	bottom = y + KOOPAS_BBOX_HEIGHT;
 
 	if (state == ENEMY_STATE_DAMAGE) {
-		right = x + KOOPAS_BBOX_WIDTH + 2; // shell width = 18
+		top = y + KOOPAS_BBOX_HEIGHT - 15;
+
+
 	}
 	else {
 		right = x + KOOPAS_BBOX_WIDTH;

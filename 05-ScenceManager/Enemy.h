@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Timer.h"
 
-#define TIME_DESTROYED	300 // time bien mat
+#define TIME_DESTROYED	500 // time bien mat
 
 #define ENEMY_STATE_DAMAGE				1 // bi thuong khi nhay len dau
 #define ENEMY_STATE_DIE_BY_ATTACK		2 // bi thuong khi khi bi attack by weapon
