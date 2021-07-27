@@ -143,6 +143,12 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+    <ClCompile Include="ScoreEffect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="FireBallEffect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scence.h">
@@ -261,6 +267,12 @@
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreEffect.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="FireBallEffect.h">
+      <Filter>Effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

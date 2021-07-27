@@ -15,6 +15,7 @@
 #include "PiranhaFlower.h"
 #include "Goomba.h"
 #include "Coin.h"
+#include "FireBallEffect.h"
 
 using namespace std;
 
@@ -601,10 +602,14 @@ void CPlayScene::Update(DWORD dt)
 
 
 	// Update cac thuoc tinh cua mario
-	//xoa bullet
+	// bullet 
 	for (size_t i = 0; i < player->listBullet.size(); i++) {
 		if (player->listBullet[i]->GetState() == STATE_DESTROYED) {
-
+			float b_x, b_y;
+			player->listBullet[i]->GetPosition(b_x, b_y);
+			CGameObject* effect = new FireBallEffect({ b_x, b_y });
+			listEffects.push_back(effect);
+			
 			player->listBullet.erase(player->listBullet.begin() + i);
 			i--;
 		}
@@ -754,16 +759,16 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		if (mario->isOnGround)
 			mario->SetState(MARIO_STATE_JUMP_LOW);
 		break;
-	case DIK_F1:
-		mario->Reset();
-		break;
 	case DIK_A:
-		if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE) {
-			mario->SetState(MARIO_STATE_ATTACK);
+		if (!mario->isAttack)
+		{
+			if (mario->GetLevel() == MARIO_LEVEL_RACOON || mario->GetLevel() == MARIO_LEVEL_FIRE) {
+				mario->SetState(MARIO_STATE_ATTACK);
+			}
 		}
 		break;
 
-		// HACK KEY
+	// HACK KEY
 	case DIK_1:
 		mario->SetLevel(MARIO_LEVEL_SMALL);
 		mario->Reset();
@@ -814,6 +819,15 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		}
 		else
 			return;
+		break;
+	case DIK_A:
+		mario->canHolding = false;
+		break;
+	case DIK_RIGHT:
+		mario->nx = 1;
+		break;
+	case DIK_LEFT:
+		mario->nx = -1;
 		break;
 	}
 }
@@ -929,7 +943,12 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 	}
 	else {
-		// is not on Ground -> jump / fly
+		if (game->IsKeyDown(DIK_RIGHT)) {
+			mario->nx = 1;
+		}
+		if (game->IsKeyDown(DIK_LEFT)) {
+			mario->nx = -1;
+		}
 	}
 
 	

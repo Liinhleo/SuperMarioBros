@@ -1,7 +1,6 @@
 #include "CoinEffect.h"
 #include "Utils.h"
 
-#define COIN_SPEED_Y	0.2f
 
 CoinEffect::CoinEffect(D3DXVECTOR2 position)
 {

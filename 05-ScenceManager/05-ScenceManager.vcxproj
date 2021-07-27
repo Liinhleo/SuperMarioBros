@@ -136,6 +136,7 @@
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CoinEffect.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FireBallEffect.cpp" />
     <ClCompile Include="FireFlower.cpp" />
     <ClCompile Include="FireFlowerBall.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="Plant.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Pswitch.cpp" />
+    <ClCompile Include="ScoreEffect.cpp" />
     <ClCompile Include="SpeedBar.cpp" />
     <ClCompile Include="SuperLeaf.cpp" />
     <ClCompile Include="SuperMushroom.cpp" />
@@ -176,6 +178,7 @@
     <ClInclude Include="Coin.h" />
     <ClInclude Include="CoinEffect.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FireBallEffect.h" />
     <ClInclude Include="FireFlower.h" />
     <ClInclude Include="FireFlowerBall.h" />
     <ClInclude Include="Grid.h" />
@@ -191,6 +194,7 @@
     <ClInclude Include="Plant.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Pswitch.h" />
+    <ClInclude Include="ScoreEffect.h" />
     <ClInclude Include="SpeedBar.h" />
     <ClInclude Include="SuperLeaf.h" />
     <ClInclude Include="SuperMushroom.h" />

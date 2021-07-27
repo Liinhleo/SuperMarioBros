@@ -62,8 +62,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	coEvents.clear();
 
 	// turn off collision when die 
-	if (state != ENEMY_STATE_DIE_BY_ATTACK)
-		CalcPotentialCollisions(coObjects, coEvents);
+	CalcPotentialCollisions(coObjects, coEvents);
 
 	//CalcPotentialCollisions(coObjects, coEvents);
 
@@ -164,7 +163,7 @@ void CGoomba::Render()
 
 	animation_set->at(ani)->Render(x,y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)
@@ -224,4 +223,5 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 		else
 			bottom = y + GOOMBA_BBOX_HEIGHT;
 	}
+
 }

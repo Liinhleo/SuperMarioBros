@@ -13,6 +13,7 @@
 #include "Item.h"
 #include "Pipe.h"
 #include "CoinEffect.h"
+#include "ScoreEffect.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -173,6 +174,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 							CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
 							goomba->damageOnTop();
 							this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+
+							// them effect
+							this->AddScore(100);
+							float g_x, g_y;
+							goomba->GetPosition(g_x, g_y);
+							CGameObject* effect = new ScoreEffect({ g_x, g_y }, 100);
+							listEffect->push_back(effect);
 						}
 					}
 					else if (isAABB(coObjects->at(i))) {
@@ -188,6 +196,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 							if (koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
 								koopa->damageOnTop();
 								this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+
+								// them effect
+								this->AddScore(100);
+								float k_x, k_y;
+								koopa->GetPosition(k_x, k_y);
+								CGameObject* effect = new ScoreEffect({ k_x, k_y }, 100);
+								listEffect->push_back(effect);
+
 							}
 							else{ // TH : KOOPA LA SHELL IDLE
 								this->GetPosition(x, y); // vi tri cua mario

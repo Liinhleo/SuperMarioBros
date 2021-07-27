@@ -1,20 +1,21 @@
 #pragma once
 #include "GameObject.h"
-#define COIN_SPEED_Y	0.2f
+#include "Timer.h"
 
-class CoinEffect :
+#define TIME_SCORE_EFFECT	400
+#define SCORE_SPEED_Y	0.08f
+
+class FireBallEffect :
     public CGameObject
 {
-    bool beBounded; //ktra tien co nay len
-	DWORD timeStartEffect;
-
+	
 public:
-	CoinEffect(D3DXVECTOR2 position);
-	~CoinEffect() {};
+	FireBallEffect(D3DXVECTOR2 position);
+	~FireBallEffect() {};
+
+	Timer* effectTimer = new Timer(TIME_SCORE_EFFECT);
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
-
 };
-
