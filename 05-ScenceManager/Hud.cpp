@@ -43,6 +43,11 @@ char* IntToChar(int value, int len = 10)
 }
 
 void Hud::Render(D3DXVECTOR2 position, CMario* mario, int reamainingTime, int stage) {
+	
+	DebugOut(L"[MAP] poss x %f\n", position.x);
+	DebugOut(L"[MAP] poss y %f\n", position.x);
+
+	
 	background->Draw(position.x, position.y + board_margin_y);
 	board->at(0)->Render(position.x + MARGINLEFT, position.y + board_margin_y);
 

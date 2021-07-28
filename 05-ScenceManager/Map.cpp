@@ -76,17 +76,26 @@ void CMap::LoadMap() {
 void CMap::Render()
 {
 	int col_begin = CGame::GetInstance()->GetCamPosX() / TILE_SIZE;
-	int col_end = col_begin + (SCREEN_WIDTH / TILE_SIZE) + 1; // col_end + 1 
-	
+	int col_end = col_begin + (SCREEN_WIDTH / TILE_SIZE);
+
 	CGame* game = CGame::GetInstance();
+	/*DebugOut(L"[MAP] poss x %f\n", CGame::GetInstance()->GetCamPosX());
+	DebugOut(L"[MAP] poss y %f\n", CGame::GetInstance()->GetCamPosY());
+	DebugOut(L"[MAP] row %d\n", numRow);
+	DebugOut(L"[MAP] column %d\n", col_end);*/
 
 	for (int i = 0; i < numRow; i++) {
-		for (int j = 0; j <= col_end; j++) {
-			int x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + (int)game->GetCamPosX() ;
+		for (int j = 0; j < col_end - 1; j++) {
+			int x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + (int)game->GetCamPosX();
 			int y = TILE_SIZE * i;
 
 			CSprites::GetInstance()->Get(tileMaps[i][j])->Draw(x, y, 255);
-			//CSprites::GetInstance()->Get(tileMaps[6][2])->Draw(x, y, 255);
+		/*	DebugOut(L"[MAP] x %d\n", x);
+			DebugOut(L"[MAP] y %d\n", y);
+			DebugOut(L"[MAP] i %d j %d\n", i, j);
+			DebugOut(L"[MAP] spritesid %d\n", tileMaps[i][j]);
+			DebugOut(L"[MAP] -----------------------------------------------\n");*/
+			//CSprites::GetInstance()->Get(tileMaps[0][15])->Draw(x, y, 255);
 		}
 	}
 }

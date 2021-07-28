@@ -6,10 +6,11 @@
 #define TEXT_OBJECT		2
 #define GUARD_OBJECT	3
 
-#define ANI_GUARD_WALK_RIGHT		0
-#define ANI_GUARD_WALK_LEFT			1
-#define ANI_PLANT_OBJECT			2
-#define ANI_TEXT_HELP				3
+
+#define ANI_PLANT_OBJECT			0
+#define ANI_TEXT_HELP				1
+#define ANI_GUARD_WALK_RIGHT		2
+#define ANI_GUARD_WALK_LEFT			3
 
 class GreenLandObject :
     public CGameObject

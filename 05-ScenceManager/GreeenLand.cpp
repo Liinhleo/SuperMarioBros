@@ -149,11 +149,12 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj = CMario::GetInstance();
 			player = (CMario*)obj;
-			hud = new Hud();
 
 			// General object setup
 			obj->SetPosition(x, y);
 			obj->SetAnimationSet(ani_set);
+
+			hud = new Hud();
 
 			DebugOut(L"[INFO] Player object created!\n");
 			break;
@@ -256,6 +257,7 @@ void GreenLand::Load()
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
+	CGame::GetInstance()->SetCamPos(0, 0);
 }
 
 #pragma endregion
@@ -285,7 +287,7 @@ void GreenLand::Render()
 		listObjects[i]->Render();
 
 	player->Render();
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 0, this->id);
+	//hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 0, this->id);
 }
 
 void GreenLand::Unload()

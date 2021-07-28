@@ -241,8 +241,8 @@
 204	1	17	17	32	60
 
 #help
-205	80	32	96	48	30000
-206	160	32	176	48	30000
+205	18	2	34	17	60
+206	1	50	17	66	60
 
 #guard
 #right
@@ -352,7 +352,7 @@
 
 #map_id	matrix_path	width	height
 [MAPS]
-30000	map\matrix_GLand.txt	320	176	256
+30000	map\matrix_GLand.txt	256	176	256
 
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
@@ -703,11 +703,11 @@
 51	224	128	3	1
 51	224	144	3	1
 
-
 #help
 51	208	96	3	2
 
 #guard
-51	112	112	3	3
+51	208	112	3	3
+
 
 

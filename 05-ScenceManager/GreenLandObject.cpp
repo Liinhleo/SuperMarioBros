@@ -32,7 +32,6 @@ void GreenLandObject::Render()
 			ani = ANI_GUARD_WALK_RIGHT;
 	}
 	animation_set->at(ani)->Render(x, y);
-	//RenderBoundingBox();
 }
 
 void GreenLandObject::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
