@@ -65,9 +65,6 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
 }
 
-/*
-	Parse a line in section [MAPS]
-*/
 void CPlayScene::_ParseSection_MAPS(string line)
 {
 	vector<string> tokens = split(line);
@@ -170,7 +167,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj->SetAnimationSet(ani_set);
 
 			player = (CMario*)obj;
+			float px, py;
+			player->GetWorldMapPosition(px, py);
 			player->SetStage(this->id);  // lay scene id 
+			//player->RefreshState();
+
 			hud = new Hud();
 
 			DebugOut(L"[INFO] Player object created!\n");
@@ -724,7 +725,7 @@ void CPlayScene::Render()
 
 	player->Render();
 
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
+	//hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
 }
 
 /*
@@ -985,8 +986,15 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			else
 				mario->SetState(MARIO_STATE_IDLE);
 		}
-		else
-			mario->SetState(MARIO_STATE_IDLE);
+		else {
+			if (mario->GetStage() == ID_SCENE_GREENLAND) {
+				mario->SetState(MARIO_STATE_IDLE_GREENLAND);
+			}
+			else {
+				mario->SetState(MARIO_STATE_IDLE);
+			}
+		}
+			
 	}
 	else {
 		if (game->IsKeyDown(DIK_RIGHT)) {

@@ -342,10 +342,12 @@ void CGame::_ParseSection_SCENES(string line)
 	LPCWSTR path = ToLPCWSTR(tokens[1]);
 
 	LPSCENE scene = nullptr;
-	if (id == ID_SCENE_GREENLAND)
-		scene = new GreenLand(id,path);
-	else
+	if (id == ID_SCENE_GREENLAND) {
+		scene = new GreenLand(id, path);
+	}
+	else if (id == ID_SCENE_1 || id == ID_SCENE_3) {
 		scene = new CPlayScene(id, path);
+	}
 	scenes[id] = scene;
 }
 

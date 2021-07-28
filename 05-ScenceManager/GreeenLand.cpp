@@ -54,9 +54,6 @@ void GreenLand::_ParseSection_SPRITES(string line)
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
 }
 
-/*
-	Parse a line in section [MAPS]
-*/
 void GreenLand::_ParseSection_MAPS(string line)
 {
 	vector<string> tokens = split(line);
@@ -116,9 +113,6 @@ void GreenLand::_ParseSection_ANIMATION_SETS(string line)
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
 
-/*
-	Parse a line in section [OBJECTS]
-*/
 void GreenLand::_ParseSection_OBJECTS(string line)
 {
 	vector<string> tokens = split(line);
@@ -155,7 +149,9 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 
 			player = (CMario*)obj;
 			player->SetStage(this->id);  // lay scene id 
-			
+			player->RefreshState();
+			DebugOut(L"Get stage hien tai: %d \n", player->GetStage());
+
 			// lay vi tri moi cua mario
 			float px, py;
 			player->GetWorldMapPosition(px, py);
@@ -163,7 +159,6 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 				player->SetPosition(x, y);
 			else
 				player->SetPosition(px, py);
-
 
 			hud = new Hud();
 

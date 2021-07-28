@@ -18,6 +18,12 @@
 
 CMario::CMario(float x, float y) : CGameObject()
 {
+	this->type = ObjectType::MARIO;
+	this->score = 100;
+	this->coin = 0;
+	this->level = 1;
+	
+	this->SetState(MARIO_STATE_IDLE);
 	this->level = MARIO_LEVEL_SMALL;
 	this->untouchable = 0;
 
@@ -30,14 +36,6 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->a = 0;
 
 	tail = new MarioTail(x, y, nx);
-
-	if (GetStage() == ID_SCENE_GREENLAND) {
-		SetState(MARIO_STATE_IDLE_GREENLAND);
-	}
-	else {
-		SetState(MARIO_STATE_IDLE);
-	}
-
 }
 
 
@@ -107,6 +105,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 
 			if (this->IsCollidingWithObjectNx(point) || this->IsCollidingWithObjectNy(point)) {
 				SetState(MARIO_STATE_IDLE_GREENLAND);
+				//SetState(MARIO_STATE_IDLE);
+
 				this->x = point->x;
 				this->y = point->y;
 
@@ -301,7 +301,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 						{
 							CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
 							goomba->damageOnTop();
-							this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+							//this->vy = -MARIO_JUMP_DEFLECT_SPEED;
 
 							// them effect
 							this->AddScore(100);
@@ -579,7 +579,8 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 
 void CMario::Render()
 {
-	if (GetStage() == ID_SCENE_GREENLAND) {
+	switch (stage) {
+	case ID_SCENE_GREENLAND:
 		if (GetLevel() == MARIO_LEVEL_FIRE)
 			ani = MARIO_ANI_FIRE_GREENLAND;
 		else if (GetLevel() == MARIO_LEVEL_RACOON)
@@ -588,9 +589,9 @@ void CMario::Render()
 			ani = MARIO_ANI_BIG_GREENLAND;
 		else
 			ani = MARIO_ANI_SMALL_GREENLAND;
-	}
-	else {
-#pragma region SMALL MARIO
+		break;
+	default:
+		#pragma region SMALL MARIO
 		if (GetLevel() == MARIO_LEVEL_SMALL) {
 			switch (state) {
 			case MARIO_STATE_DIE:
@@ -919,6 +920,7 @@ void CMario::SetState(int state)
 	case MARIO_STATE_IDLE:
 		//DecreaseSpeed();
 		vx = 0;
+		vy = 0;
 		break;
 	case MARIO_STATE_JUMP:
 		isOnGround = false;
@@ -1024,9 +1026,7 @@ void CMario::isDamaged() {
 		SetState(MARIO_STATE_DIE);
 }
 
-/*
-	Reset Mario status to the beginning state of a scene
-*/
+
 void CMario::Reset() {
 	SetState(MARIO_STATE_IDLE);
 	GetLevel();
@@ -1034,6 +1034,35 @@ void CMario::Reset() {
 	SetSpeed(0, 0);
 }
 
+void  CMario::RefreshState() {
+	isOnGround = false;
+	isAttack = false;
+	isFlying = false;
+	canHolding = false;
+
+// GREEN LAND SOLVING
+	isIdling = false;
+	canWalkLeft = false;
+	canWalkRight = false;
+	canWalkUp = false;
+	canWalkDown = false;
+
+	canSwitchScene = false;
+
+// HIDDEN MAP SOLVING
+	isInHiddenMap = false;
+	canGoThroughPipe_up = false;
+	canGoThroughPipe_down = false;
+	
+	collideGround = NULL;
+
+	if (GetStage() == ID_SCENE_GREENLAND) {
+		SetState(MARIO_STATE_IDLE_GREENLAND);
+	}
+	else {
+		SetState(MARIO_STATE_IDLE);
+	}
+}
 void CMario::StartUntouchable() {
 	this->untouchable = 1;
 	this->untouchable_start = GetTickCount64();
@@ -1048,7 +1077,6 @@ void CMario::ToRight() {
 	if (vx == 0) {
 		vx = MARIO_WALKING_SPEED;
 	}
-	//vx = -MARIO_WALKING_SPEED;
 	if (vx <= 0)
 		SetState(MARIO_STATE_STOP);
 
@@ -1058,7 +1086,6 @@ void CMario::ToLeft() {
 	if (vx == 0) {
 		vx = -MARIO_WALKING_SPEED;
 	}
-		//vx = -MARIO_WALKING_SPEED;
 	if (vx >= 0)
 		SetState(MARIO_STATE_STOP);
 }

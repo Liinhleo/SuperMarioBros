@@ -50,8 +50,8 @@ void Grid::UpdateGrid(vector<LPGAMEOBJECT> objects) {
 		if (objects[i]->GetState() != STATE_DESTROYED) {
 			for (int row = top; row < bottom; row++)
 				for (int col = left; col < right; col++) {
-					DebugOut(L"COL=====  %d \n", col);
-					DebugOut(L"ROW=====  %d \n", row);
+					/*DebugOut(L"COL=====  %d \n", col);
+					DebugOut(L"ROW=====  %d \n", row);*/
 
 					cells[row][col].push_back(objects[i]);
 

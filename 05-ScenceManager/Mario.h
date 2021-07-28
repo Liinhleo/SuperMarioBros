@@ -48,11 +48,11 @@ public:
 
 	// GREEN LAND SOLVING
 	bool isIdling = false;
-	bool canWalkLeft;
-	bool canWalkRight;
-	bool canWalkUp;
-	bool canWalkDown ;
-	bool canSwitchScene;
+	bool canWalkLeft = false;
+	bool canWalkRight = false;
+	bool canWalkUp = false;
+	bool canWalkDown = false;
+	bool canSwitchScene = false;
 
 	D3DXVECTOR2 GreenLand_pos = { -1,-1 };
 
@@ -84,6 +84,7 @@ public:
 	// Trang thai
 	void SetState(int state);
 	int GetState() { return state; }
+	void RefreshState(); // update variable when switch scene
 
 	// Level
 	void SetLevel(int l) { level = l; }
