@@ -197,7 +197,7 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 	}
 
 	// Khoi tao camera
-	//cam = Camera::GetInstance();
+	cam = Camera::GetInstance();
 }
 
 
@@ -274,16 +274,6 @@ void GreenLand::Update(DWORD dt)
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
-
-	// Update camera to follow mario
-	float cx, cy;
-	player->GetPosition(cx, cy);
-
-	CGame* game = CGame::GetInstance();
-	cx -= game->GetScreenWidth() / 2;
-	cy -= game->GetScreenHeight() / 2;
-
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 
 }
 

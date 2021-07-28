@@ -30,18 +30,12 @@
     <Filter Include="BoardGame">
       <UniqueIdentifier>{42e5e95c-a216-4fd5-a26b-1f5c65c49e8c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GreenLand">
+    <Filter Include="Scene">
       <UniqueIdentifier>{a716da57-4450-4151-83a4-1f8df9334c52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scence.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayScence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Portal.cpp">
@@ -165,19 +159,19 @@
       <Filter>Enemy</Filter>
     </ClCompile>
     <ClCompile Include="GreeenLand.cpp">
-      <Filter>GreenLand</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="GreenLandObject.cpp">
-      <Filter>GreenLand</Filter>
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayScence.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scence.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayScence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Portal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -305,10 +299,16 @@
       <Filter>Enemy</Filter>
     </ClInclude>
     <ClInclude Include="GreeenLand.h">
-      <Filter>GreenLand</Filter>
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="GreenLandObject.h">
-      <Filter>GreenLand</Filter>
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scence.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayScence.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

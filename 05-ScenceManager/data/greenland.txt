@@ -628,7 +628,6 @@
 # MARIO
 0	36	48	1
 
-
 # PORTAL
 #type	x	y	ani_set	portal	idscene	l	r	up	down
 50	32	48	2	0	0	0	1	0	0
@@ -654,7 +653,7 @@
 50	192	112	2	0	0	1	0	0	0
 
 #==============GREENLAND OBJECTS==========
-type	x	y	ani_set	GL_Obj_Type
+#type	x	y	ani_set	GL_Obj_Type
 #PLANT
 51	16	16	3	1
 51	16	32	3	1
