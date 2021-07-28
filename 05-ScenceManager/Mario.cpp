@@ -141,6 +141,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 				if (canSwitchScene) {
 					if (point->IsHasPortal())
 						CGame::GetInstance()->SwitchScene(point->GetSceneID());
+				
 				}
 			}
 		}
@@ -544,6 +545,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 	for (UINT i = 0; i < coItem->size(); i++) {
 		if (isAABB(coItem->at(i))) {
+			if (coItem->at(i)->GetType() == ObjectType::LAST_ITEM)
+			{
+				cards.push_back(coItem->at(i)->animation_set->at(ani)->getCurrentFrame());
+				SetState(MARIO_STATE_WALKING_RIGHT);
+				isAutoGo = true;
+			}
 			if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
 			{
 				AddScore(100);
@@ -591,7 +598,8 @@ void CMario::Render()
 			ani = MARIO_ANI_SMALL_GREENLAND;
 		break;
 	default:
-		#pragma region SMALL MARIO
+
+#pragma region SMALL MARIO
 		if (GetLevel() == MARIO_LEVEL_SMALL) {
 			switch (state) {
 			case MARIO_STATE_DIE:
@@ -920,7 +928,6 @@ void CMario::SetState(int state)
 	case MARIO_STATE_IDLE:
 		//DecreaseSpeed();
 		vx = 0;
-		vy = 0;
 		break;
 	case MARIO_STATE_JUMP:
 		isOnGround = false;
@@ -1026,10 +1033,16 @@ void CMario::isDamaged() {
 		SetState(MARIO_STATE_DIE);
 }
 
+void CMario::Relife() {
+	SetLevel(MARIO_LEVEL_SMALL);
+	SetState(MARIO_STATE_IDLE);
+	SetPosition(x, start_y);
+	SetSpeed(0, 0);
+}
 
 void CMario::Reset() {
-	SetState(MARIO_STATE_IDLE);
 	GetLevel();
+	SetState(MARIO_STATE_IDLE);
 	SetPosition(x, y - MARIO_RACCOON_BBOX_WIDTH); //tang y tranh mario rot
 	SetSpeed(0, 0);
 }
@@ -1039,6 +1052,7 @@ void  CMario::RefreshState() {
 	isAttack = false;
 	isFlying = false;
 	canHolding = false;
+	isAutoGo = false;
 
 // GREEN LAND SOLVING
 	isIdling = false;

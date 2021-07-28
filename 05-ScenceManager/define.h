@@ -223,7 +223,6 @@ enum ObjectType {
 	GROUND = 01,
 	BRICK = 02,	
 	PIPE = 03,
-	LIFT = 04,
 
 	//dynamic list object
 	GOOMBA = 05,
@@ -254,16 +253,17 @@ enum ObjectType {
 #define OBJECT_TYPE_BRICK	1
 #define OBJECT_TYPE_GROUND	2
 #define OBJECT_TYPE_PIPE	3
-#define OBJECT_TYPE_LIFT	4
 
 //item
 #define OBJECT_TYPE_COIN		5
+#define OBJECT_TYPE_LAST_ITEM	6
 
 // enemy
 #define OBJECT_TYPE_GOOMBA			10
 #define OBJECT_TYPE_KOOPAS			11
 #define OBJECT_TYPE_PIRANHA_FLOWER	12
 #define OBJECT_TYPE_FIRE_FLOWER		13
+#define OBJECT_TYPE_NINJA			14
 
 
 #define OBJECT_TYPE_PORTAL	50

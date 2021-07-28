@@ -303,7 +303,6 @@ void GreenLand::Unload()
 
 	listObjects.clear();
 
-	delete player;
 	delete hud;
 
 	player = NULL;

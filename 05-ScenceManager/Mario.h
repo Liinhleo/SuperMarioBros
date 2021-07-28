@@ -34,17 +34,19 @@ public:
 	MarioTail* tail; // mario has a tail when level = RACOON
 	CKoopas* shell = new CKoopas();
 
-
-	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
-	float a; // accelerate
-
+	// XET THOI GIAN
 	Timer* flyTime = new Timer(TIME_FLY);
 	Timer* attackStart = new Timer(MARIO_TIME_ATTACK);
 
+	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
+	
+	float a; // accelerate
+	
 	bool isOnGround = false;
 	bool isAttack = false;
 	bool isFlying = false;
 	bool canHolding = false;
+	bool isAutoGo = false;
 
 	// GREEN LAND SOLVING
 	bool isIdling = false;
@@ -100,9 +102,9 @@ public:
 	void isDamaged();
 	void StartUntouchable();
 
-	void StartTimeFly();
-
 	void Reset();
+	void Relife();
+
 	void CollideWithItem(vector<LPGAMEOBJECT>* Item);
 
 	void ToRight();
@@ -111,6 +113,7 @@ public:
 
 	// HUD
 	vector<int> cards;
+
 	int GetCoin() { return this->coin; }
 	void SetCoin(int x) { this->coin = x; }
 	void AddCoin() { this->coin++; }

@@ -33,7 +33,7 @@ protected:
 	vector<LPGAMEOBJECT> listMoving;
 	vector<LPGAMEOBJECT> listGrid; // chua cac doi tuong can dua vao grid
 
-	Timer* playTimer = new Timer(PLAY_TIME * MINISEC_PER_SEC);
+	Timer* playTime = new Timer(PLAY_TIME * MINISEC_PER_SEC);
 	int remainingTime = 0;
 
 	// DOC FILE

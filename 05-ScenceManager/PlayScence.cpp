@@ -23,6 +23,7 @@ using namespace std;
 CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
+	playTime->Start();
 }
 
 #pragma region PARSE FILE
@@ -131,9 +132,6 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
 
-/*
-	Parse a line in section [OBJECTS] 
-*/
 void CPlayScene::_ParseSection_OBJECTS(string line)
 {
 	vector<string> tokens = split(line);
@@ -169,8 +167,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			player = (CMario*)obj;
 			float px, py;
 			player->GetWorldMapPosition(px, py);
-			player->SetStage(this->id);  // lay scene id 
-			//player->RefreshState();
+			player->SetStage(this->id); 
+			player->RefreshState();
 
 			hud = new Hud();
 
@@ -186,6 +184,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			int left = atoi(tokens[8].c_str());
 			int right = atoi(tokens[9].c_str());
 			obj = new CGoomba(goombaType, isWing);
+
 			// General object setup
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetPosition(x, y);
@@ -207,6 +206,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			int left = atoi(tokens[8].c_str());
 			int right = atoi(tokens[9].c_str());
 			obj = new CKoopas(koopaType, isWing, x, y); 
+
 			// General object setup
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetPosition(x, y);
@@ -226,6 +226,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			int left = atoi(tokens[6].c_str());
 			int right = atoi(tokens[7].c_str());
 			obj = new PiranhaFlower(x,y);
+
 			// General object setup
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetPosition(x, y);
@@ -248,6 +249,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			int left = atoi(tokens[7].c_str());
 			int right = atoi(tokens[8].c_str());
 			obj = new FireFlower(x, y, type);
+
 			// General object setup
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetPosition(x, y);
@@ -335,11 +337,32 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 		break;
 	case OBJECT_TYPE_COIN:
+		{
+			int top = atoi(tokens[4].c_str());
+			int bot = atoi(tokens[5].c_str());
+			int left = atoi(tokens[6].c_str());
+			int right = atoi(tokens[7].c_str());
+
+			obj = new Coin();
+
+			// General object setup
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetPosition(x, y);
+			obj->SetAnimationSet(ani_set);
+			listStatic.push_back(obj);
+
+			for (int row = top; row < bot; row++) {
+				for (int col = left; col < right; col++)
+					gridStatic->pushObjectIntoGrid(obj, row, col);
+			}
+		}
+	break;
+	case OBJECT_TYPE_LAST_ITEM:
 	{
-		//int top = atoi(tokens[4].c_str());
-		//int bot = atoi(tokens[5].c_str());
-		//int left = atoi(tokens[6].c_str());
-		//int right = atoi(tokens[7].c_str());
+		int top = atoi(tokens[4].c_str());
+		int bot = atoi(tokens[5].c_str());
+		int left = atoi(tokens[6].c_str());
+		int right = atoi(tokens[7].c_str());
 
 		obj = new Coin();
 
@@ -349,47 +372,25 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetAnimationSet(ani_set);
 		listStatic.push_back(obj);
 
-	/*	for (int row = top; row < bot; row++) {
+		for (int row = top; row < bot; row++) {
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjectIntoGrid(obj, row, col);
-		}*/
+		}
 	}
-	break;
-	//case OBJECT_TYPE_PORTAL:
-	//	{	
-	//		// Read file
-	//		float r = atof(tokens[4].c_str());
-	//		float b = atof(tokens[5].c_str());
-	//		int scene_id = atoi(tokens[6].c_str());	
-	//		
-	//		obj = new CPortal(x, y, r, b, scene_id);
-	//		// General object setup
-	//		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-	//		obj->SetPosition(x, y);
-	//		obj->SetAnimationSet(ani_set);
-	//		listObjects.push_back(obj);
-	//	}
-	//	break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
 	}
 
-	// General object setup
-	/*obj->SetPosition(x, y);
-
-	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-
-	obj->SetAnimationSet(ani_set);
-	listObjects.push_back(obj);*/
-
 	// Khoi tao camera
 	cam = Camera::GetInstance();
 }
 
-
 void CPlayScene::Load()
 {
+	if (playTime)
+		playTime->Reset();
+
 	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
 
 	ifstream f;
@@ -441,10 +442,10 @@ void CPlayScene::Load()
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
+	CGame::GetInstance()->SetCamPos(0, 250);
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
-
 
 #pragma endregion
 
@@ -484,15 +485,15 @@ void CPlayScene::Update(DWORD dt)
 	GetObjectToGrid();
 
 	// TINH THOI GIAN CHOI
-	//if (player->GetState() != MARIO_STATE_DIE) {
-	//	this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime()) / MINISEC_PER_SEC);
-	//	DebugOut(L"remaining time ==== %d \n ", remainingTime);
-	//}
-	//if (this->remainingTime < 0)
-	//{
-	//	player->SetState(MARIO_STATE_DIE);
-	//	this->remainingTime = 0;
-	//}
+	if (player->GetState() != MARIO_STATE_DIE) {
+		this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTime->GetStartTime()) / MINISEC_PER_SEC);
+		DebugOut(L"remaining time ==== %d \n ", remainingTime);
+	}
+	if (this->remainingTime < 0)
+	{
+		player->SetState(MARIO_STATE_DIE);
+		this->remainingTime = 0;
+	}
 
 	/// PUSH ITEM VAO BRICK 
 	for (size_t i = 0; i < listObjects.size(); i++)	{
@@ -621,7 +622,6 @@ void CPlayScene::Update(DWORD dt)
 
 
 	// Update cac thuoc tinh cua mario
-	// bullet 
 	for (size_t i = 0; i < player->listBullet.size(); i++) {
 		if (player->listBullet[i]->GetState() == STATE_DESTROYED) {
 			float b_x, b_y;
@@ -634,7 +634,6 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
-	// XOA cac object / item sau khi bien mat
 	// xoa obj co state = STATE_DESTROYED
 	for (size_t i = 0; i < listObjects.size(); i++) {
 		if (listObjects[i]->GetState() == STATE_DESTROYED) {
@@ -644,15 +643,16 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
+	// xoa item co state = STATE_DESTROYED
 	for (size_t i = 0; i < listItems.size(); i++) {
 		if (listItems[i]->GetState() == STATE_DESTROYED
-			 && listItems[i]->GetType() == ObjectType::ITEM) {
+			|| listItems[i]->isOutOfCam() && listItems[i]->GetType() == ObjectType::ITEM) {
 
 			listItems.erase(listItems.begin() + i);
 			i--;
 		}
 	}
-
+	// xoa effect co state = STATE_DESTROYED
 	for (size_t i = 0; i < listEffects.size(); i++) {
 		if (listEffects[i]->GetState() == STATE_DESTROYED) {
 
@@ -724,8 +724,7 @@ void CPlayScene::Render()
 		listEffects.at(i)->Render();
 
 	player->Render();
-
-	//hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
 }
 
 /*
@@ -765,7 +764,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
 	// disable control key when Mario die 
-	if (mario->GetState() == MARIO_STATE_DIE)
+	if (mario->GetState() == MARIO_STATE_DIE && KeyCode != DIK_F1)
 		return;
 
 	switch (KeyCode)
@@ -796,6 +795,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 
 	// HACK KEY
+	case DIK_F1:
+		mario->Relife();
+		CGame::GetInstance()->cam_x = 0;
+		break;
 	case DIK_1:
 		mario->SetLevel(MARIO_LEVEL_SMALL);
 		mario->Reset();
@@ -854,6 +857,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		else {
 			mario->vy = 0;
 		}
+		
 		break;
 	case DIK_DOWN:
 		if (mario->GetLevel() == MARIO_LEVEL_BIG
@@ -986,15 +990,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			else
 				mario->SetState(MARIO_STATE_IDLE);
 		}
-		else {
-			if (mario->GetStage() == ID_SCENE_GREENLAND) {
-				mario->SetState(MARIO_STATE_IDLE_GREENLAND);
-			}
-			else {
-				mario->SetState(MARIO_STATE_IDLE);
-			}
-		}
-			
+		else
+			mario->SetState(MARIO_STATE_IDLE);
+					
 	}
 	else {
 		if (game->IsKeyDown(DIK_RIGHT)) {
