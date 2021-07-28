@@ -19,7 +19,6 @@ Camera::Camera() {
 
 
 void Camera::Update(DWORD dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying, bool isOnGround) {
-	
 
 	if (islockUpdate)
 		return;
@@ -42,7 +41,7 @@ void Camera::Update(DWORD dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECT
 	// Check lock_y
 	if (playerPos.y < end.y && isFlying)
 		islockY = false;
-	if (playerPos.y > end.y && isOnGround)
+	if (playerPos.y > end.y && isOnGround && !isFlying)
 		islockY = true;
 	
 	// Update pos_cam_y

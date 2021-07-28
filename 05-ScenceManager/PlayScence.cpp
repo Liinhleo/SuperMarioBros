@@ -864,9 +864,11 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		break;
 	case DIK_RIGHT:
 		mario->nx = 1;
+		mario->a = 0;
 		break;
 	case DIK_LEFT:
 		mario->nx = -1;
+		mario->a = 0;
 		break;
 	}
 }
@@ -977,23 +979,19 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->SetState(MARIO_STATE_SIT);
 			}
 			else
-				return;
+				mario->SetState(MARIO_STATE_IDLE);
 		}
-		else {
-			mario->SetAccelerate(mario->a = 0);
+		else
 			mario->SetState(MARIO_STATE_IDLE);
-		}
 	}
 	else {
 		if (game->IsKeyDown(DIK_RIGHT)) {
-			mario->nx = 1;
+			mario->ToRight();
 		}
 		if (game->IsKeyDown(DIK_LEFT)) {
-			mario->nx = -1;
+			mario->ToLeft();
 		}
 	}
-
-	
 }
 
 #pragma endregion

@@ -15,6 +15,7 @@
 #include "CoinEffect.h"
 #include "ScoreEffect.h"
 
+
 CMario::CMario(float x, float y) : CGameObject()
 {
 	this->level = MARIO_LEVEL_SMALL;
@@ -47,6 +48,49 @@ void CMario::UpdateSpeed(DWORD dt) {
 			//DebugOut(L"max speed max speed %f \n", vx);
 		}
 	}
+}
+void CMario::DecreaseSpeed() {
+	if (abs(vx) > MARIO_WALKING_SPEED) { //RUN
+		if (vx > 0) { // right
+			vx -= 0.00006f * dt; // giam toc
+
+			if (vx < 0) {
+				vx = 0;
+			}
+		}
+		else if (vx < 0) { // left
+			vx += 0.00006f * dt; // giam toc
+			if (vx < 0) {
+				vx = 0;
+			}
+
+		}
+	}
+	else {
+		if (vx > 0) { // right
+			vx -= 0.00003f * dt; // giam toc
+
+			if (vx < 0) {
+				vx = 0;
+			}
+		}
+		else if (vx < 0) { // left
+			vx += 0.00003f * dt; // giam toc
+			if (vx < 0) {
+				vx = 0;
+			}
+
+		}
+	}
+}
+
+// GREENLAND 
+void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* objects) {
+	CGameObject::Update(dt);
+	x += dx;
+	y += dy;
+
+
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect) {
