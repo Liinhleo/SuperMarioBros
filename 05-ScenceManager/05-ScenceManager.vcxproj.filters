@@ -38,9 +38,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Portal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -170,11 +167,11 @@
     <ClCompile Include="Scence.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Portal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -308,6 +305,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="PlayScence.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

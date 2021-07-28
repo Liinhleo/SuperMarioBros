@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-
+#include "define.h"
 #include "Game.h"
 #include "Utils.h"
 
@@ -320,9 +320,7 @@ CGame *CGame::GetInstance()
 #define GAME_FILE_SECTION_SETTINGS 1
 #define GAME_FILE_SECTION_SCENES 2
 
-#define ID_SCENE_GREENLAND	3
-#define ID_SCENE_3			2
-#define ID_SCENE_1			1
+
 
 void CGame::_ParseSection_SETTINGS(string line)
 {

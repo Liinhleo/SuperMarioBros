@@ -85,7 +85,7 @@ void CMap::Render()
 	DebugOut(L"[MAP] column %d\n", col_end);*/
 
 	for (int i = 0; i < numRow; i++) {
-		for (int j = 0; j < col_end - 1; j++) {
+		for (int j = 0; j < col_end; j++) {
 			int x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + (int)game->GetCamPosX();
 			int y = TILE_SIZE * i;
 

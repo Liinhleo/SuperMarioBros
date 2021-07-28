@@ -13,6 +13,7 @@ class CMario : public CGameObject
 {
 	static CMario* __instance;
 
+	int stage; 
 	// HUD
 	int score;
 	int coin;
@@ -24,30 +25,18 @@ class CMario : public CGameObject
 public: 
 	static CMario* GetInstance();
 
-	// GREENLAND VARIABLES
-	bool isIdling;
-	bool canWalkLeft;
-	bool canWalkRight;
-	bool canWalkUp;
-	bool canWalkDown;
-
-	bool canSwitchScene;
-
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* objects);
-
-
+	// Bullet
+	vector< LPGAMEOBJECT> listBullet;
 	Bullet* CreateBullet(float x, float y, int nx) {
 		Bullet* bullet = new Bullet({ x, y }, nx);
 		return bullet;
 	}
-	vector< LPGAMEOBJECT> listBullet;
-
-	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
-	float a;
-
+	MarioTail* tail; // mario has a tail when level = RACOON
 	CKoopas* shell = new CKoopas();
 
-	MarioTail* tail; // mario has a tail when level = RACOON
+
+	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
+	float a; // accelerate
 
 	Timer* flyTime = new Timer(TIME_FLY);
 	Timer* attackStart = new Timer(MARIO_TIME_ATTACK);
@@ -57,7 +46,26 @@ public:
 	bool isFlying = false;
 	bool canHolding = false;
 
-	// Xu ly chui pipe
+	// GREEN LAND SOLVING
+	bool isIdling = false;
+	bool canWalkLeft;
+	bool canWalkRight;
+	bool canWalkUp;
+	bool canWalkDown ;
+	bool canSwitchScene;
+
+	D3DXVECTOR2 GreenLand_pos = { -1,-1 };
+
+	void SetStage(int stage) { this->stage = stage; }
+	int GetStage() { return this->stage; }
+
+	void SetWorldMapPosition(float x, float y) { GreenLand_pos.x = x; GreenLand_pos.y = y; }
+	void GetWorldMapPosition(float& x, float& y) { x = this->GreenLand_pos.x; y = this->GreenLand_pos.y; }
+
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* objects);
+
+	
+	// HIDDEN MAP SOLVING
 	bool isInHiddenMap = false;
 	bool canGoThroughPipe_up = false;
 	bool canGoThroughPipe_down = false;

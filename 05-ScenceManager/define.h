@@ -21,6 +21,11 @@
 #define SCENE_SECTION_OBJECTS			6
 #define SCENE_SECTION_TILE_MAP			7
 
+// ======================================= SCENE ID	===============================================
+#define ID_SCENE_GREENLAND	3
+#define ID_SCENE_3			2
+#define ID_SCENE_1			1
+
 // ========================================= MARIO ==================================================
 // =========== BBOX ====================
 #define MARIO_BIG_BBOX_WIDTH				14
@@ -185,6 +190,12 @@
 #define MARIO_ANI_FIRE_THROUGH_PIPE				101
 #define MARIO_ANI_FIRE_FALLING_RIGHT			102
 #define MARIO_ANI_FIRE_FALLING_LEFT				103
+
+// Ani Greenland
+#define MARIO_ANI_SMALL_GREENLAND			104
+#define MARIO_ANI_BIG_GREENLAND				105
+#define MARIO_ANI_RACOON_GREENLAND			106
+#define MARIO_ANI_FIRE_GREENLAND			107
 
 
 // ========= MARIO LEVEL ========

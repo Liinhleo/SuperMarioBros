@@ -148,11 +148,22 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 			}
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj = CMario::GetInstance();
-			player = (CMario*)obj;
 
 			// General object setup
 			obj->SetPosition(x, y);
 			obj->SetAnimationSet(ani_set);
+
+			player = (CMario*)obj;
+			player->SetStage(this->id);  // lay scene id 
+			
+			// lay vi tri moi cua mario
+			float px, py;
+			player->GetWorldMapPosition(px, py);
+			if (px == -1 && py == -1)
+				player->SetPosition(x, y);
+			else
+				player->SetPosition(px, py);
+
 
 			hud = new Hud();
 
@@ -287,7 +298,7 @@ void GreenLand::Render()
 		listObjects[i]->Render();
 
 	player->Render();
-	//hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 0, this->id);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 0, this->id);
 }
 
 void GreenLand::Unload()
@@ -311,24 +322,24 @@ void GreenLand::Unload()
 void GreenLandKeyHandler::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
-
 	CMario* mario = ((GreenLand*)scence)->GetPlayer();
+	
 	switch (KeyCode)
 	{
 	case DIK_RIGHT:
-		if (mario->isIdling && mario->canWalkRight)
+		if (mario->canWalkRight)
 			mario->SetState(MARIO_STATE_WALKING_RIGHT);
 		break;
 	case DIK_LEFT:
-		if (mario->isIdling && mario->canWalkLeft)
+		if (mario->canWalkLeft)
 			mario->SetState(MARIO_STATE_WALKING_LEFT);
 		break;
 	case DIK_UP:
-		if (mario->isIdling && mario->canWalkUp)
+		if (mario->canWalkUp)
 			mario->SetState(MARIO_STATE_WALKING_UP);
 		break;
 	case DIK_DOWN:
-		if (mario->isIdling && mario->canWalkDown)
+		if (mario->canWalkDown)
 			mario->SetState(MARIO_STATE_WALKING_DOWN);
 		break;
 	}

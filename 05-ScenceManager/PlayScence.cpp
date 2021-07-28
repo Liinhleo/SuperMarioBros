@@ -170,6 +170,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj->SetAnimationSet(ani_set);
 
 			player = (CMario*)obj;
+			player->SetStage(this->id);  // lay scene id 
 			hud = new Hud();
 
 			DebugOut(L"[INFO] Player object created!\n");
@@ -700,6 +701,9 @@ void CPlayScene::Update(DWORD dt)
 	// Update cac doi moving list (case: enemy di ra khoi grid)
 	gridMoving->UpdateGrid(listMoving);
 
+	//chuyen scene
+	if (player->canSwitchScene)
+		CGame::GetInstance()->SwitchScene(ID_SCENE_GREENLAND);
 }
 
 void CPlayScene::Render()
