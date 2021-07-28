@@ -20,5 +20,5 @@ void Coin::GetBoundingBox(float& l, float& t, float& r, float& b) {
 
 void Coin::Render() {
 	animation_set->at(0)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }

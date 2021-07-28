@@ -6,8 +6,7 @@
 
 #define NINJA_ANI_WALKING_RIGHT		0
 #define NINJA_ANI_WALKING_LEFT		1
-#define NINJA_ANI_ATTACK_RIGHT		2
-#define NINJA_ANI_ATTACK_LEFT		3
+#define NINJA_ANI_DIE				2
 
 #define LIMIT_POSITION				32 // gioi han vi tri di chuyen
 
@@ -39,9 +38,19 @@ void Ninja::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 void Ninja::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	CGameObject::Update(dt);
 	vy += MARIO_GRAVITY * dt;
+	
 }
 void Ninja::Render() {
+	if (state == STATE_DESTROYED)
+		return;
+	if (state == NINJA_STATE_WALKING) {
+		if (vx < 0)	ani = NINJA_ANI_WALKING_RIGHT;
+		else ani = NINJA_ANI_WALKING_LEFT;
+	}
 
+	animation_set->at(ani)->Render(x, y);
+
+	//RenderBoundingBox();
 }
 
 void Ninja::SetState(int state) {

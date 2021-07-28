@@ -17,6 +17,7 @@
 #include "Coin.h"
 #include "FireBallEffect.h"
 #include "Pswitch.h"
+#include "Ninja.h"
 
 using namespace std;
 
@@ -196,7 +197,25 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			}
 		}
 		break;
+	case OBJECT_TYPE_NINJA:
+	{
+		int top = atoi(tokens[4].c_str());
+		int bot = atoi(tokens[5].c_str());
+		int left = atoi(tokens[6].c_str());
+		int right = atoi(tokens[7].c_str());
+		obj = new Ninja();
 
+		// General object setup
+		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		obj->SetPosition(x, y);
+		obj->SetAnimationSet(ani_set);
+		listMoving.push_back(obj);
+		for (int row = top; row < bot; row++) {
+			for (int col = left; col < right; col++)
+				gridMoving->pushObjectIntoGrid(obj, row, col);
+		}
+	}
+	break;
 	case OBJECT_TYPE_KOOPAS:
 		{
 			int koopaType = atoi(tokens[4].c_str());
