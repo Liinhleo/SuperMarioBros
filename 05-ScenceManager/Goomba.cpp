@@ -21,7 +21,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	CGameObject::Update(dt, coObjects);
 	vy += MARIO_GRAVITY * dt;
 
-	
+
 	if (state == ENEMY_STATE_DAMAGE) { 
 		if (isWing) {
 			isWing = false;
@@ -31,14 +31,6 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				SetState(STATE_DESTROYED);
 				timeDestroy->Stop();
 		}
-	}
-
-	// Die -> disappear
-	if (GetState()==ENEMY_STATE_DAMAGE && timeDisappear->IsTimeUp()) {
-		timeDisappear->Stop();
-		SetState(STATE_DESTROYED);
-		// Xu ly khong ve nua -> xu ly ben playScence
-	
 	}
 
 	if (isWing) {
@@ -59,6 +51,11 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	coEvents.clear();
 
 	// turn off collision when die 
+	if (state == ENEMY_STATE_DIE_BY_ATTACK) {
+		x += dx;
+		y += dy;
+	}
+
 	CalcPotentialCollisions(coObjects, coEvents);
 
 	//CalcPotentialCollisions(coObjects, coEvents);
@@ -126,6 +123,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			else if (e->obj->GetType() == ObjectType::KOOPA) { //dung nhau thi doi huong
 				if (e->nx != 0) {
 					x += dx; //di xuyen qua
+					y += dy;
 				}
 			}
 		}
@@ -174,8 +172,9 @@ void CGoomba::SetState(int state)
 			vy = 0;
 			break;
 		case ENEMY_STATE_DAMAGE: // jump on top and die
-			timeDisappear->Start(); // bd tinh gio disappear
-			y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
+			timeDestroy->Start();
+
+			y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE;
 			vx = 0;
 			vy = -GOOMBA_DIE_DEFLECT_SPEED;
 			break;

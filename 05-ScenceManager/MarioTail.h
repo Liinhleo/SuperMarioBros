@@ -7,24 +7,24 @@
 #define TAIL_ANI_LEFT			1
 
 #define TAIL_BBOX_HEIGHT		6
-#define TAIL_BBOX_WIDTH			9
+#define TAIL_BBOX_WIDTH			10
 #define DISTANCE_XTAIL_MARIO	7 // kc tu vi tri x cua tail
 
 
 class MarioTail : public CGameObject
 {
-	float *xMario, *yMario;
-	int *nxMario;
+	static MarioTail* __instance;
+
 public:
-	MarioTail(float& x, float& y, int& nx);
+	MarioTail();
 	~MarioTail() {}
 
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
-	bool isCollision(float obj_left, float obj_top, float obj_right, float obj_bottom);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void Render();
 	void SetState(int state);
 
+	static MarioTail* GetInstance();
 };
 

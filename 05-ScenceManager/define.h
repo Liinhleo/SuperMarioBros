@@ -55,7 +55,7 @@
 
 #define MARIO_DIE_DEFLECT_SPEED		0.35f  // die
 
-#define TIME_FLY					3000
+#define TIME_FLY					2000
 
 // 
 // =========== STATE MARIO ====================

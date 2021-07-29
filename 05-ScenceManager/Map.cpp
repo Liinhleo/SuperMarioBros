@@ -86,8 +86,8 @@ void CMap::Render()
 
 	for (int i = 0; i < numRow; i++) {
 		for (int j = 0; j < col_end; j++) {
-			int x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + (int)game->GetCamPosX();
-			int y = TILE_SIZE * i;
+			float x = TILE_SIZE * (j - col_begin) - (int)game->GetCamPosX() % TILE_SIZE + game->GetCamPosX();
+			float y = TILE_SIZE * i;
 
 			CSprites::GetInstance()->Get(tileMaps[i][j])->Draw(x, y, 255);
 		/*	DebugOut(L"[MAP] x %d\n", x);

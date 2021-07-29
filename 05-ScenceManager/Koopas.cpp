@@ -1,12 +1,15 @@
 #include "Koopas.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Enemy.h"
 
-//CKoopas::CKoopas() {
-//	this->type = ObjectType::KOOPA;
-//	SetState(KOOPAS_STATE_SHELL_IDLE);
-//	
-//}
+#define DISTANCE_START_X		5.0f // kc 2 dau tru bot de rua k rot
+
+CKoopas::CKoopas() {
+	this->type = ObjectType::KOOPA;
+	SetState(KOOPAS_STATE_SHELL_IDLE);
+	
+}
 
 CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 {
@@ -17,13 +20,10 @@ CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 	this->start_y = y;
 
 	if (KoopaType == KOOPAS_TYPE_RED) {
-		this->SetAnimationSet(CAnimationSets::GetInstance()->Get(4));
 		SetState(KOOPAS_STATE_WALKING);
 
 	}
 	else {
-
-		this->SetAnimationSet(CAnimationSets::GetInstance()->Get(5));
 		if (isWing==true) {
 			SetState(KOOPAS_STATE_FLYING);
 		}
@@ -34,10 +34,10 @@ CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 }
 
 
-void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-	vy += MARIO_GRAVITY * dt;
+
 
 	if (GetState() == KOOPAS_STATE_SHELL_IDLE && idleTimer->IsTimeUp())
 	{
@@ -56,89 +56,294 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		SetState(KOOPAS_STATE_WALKING);
 	}
 
-	// mario nhay len dau
-	if (GetState() == ENEMY_STATE_DAMAGE) {
-		if (isWing) {
-			isWing = false;
-			SetState(KOOPAS_STATE_WALKING);
-		}
-		else if (!isWing) {
-			SetState(KOOPAS_STATE_SHELL_IDLE);
-		}
-	}
+#pragma region NOT IS BEING HELD
 
-	
-	// XU LY VA CHAM
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
+	if (!isBeingHeld) {
 
-	coEvents.clear();
+#pragma region XU LY RED KOOPA WALKING TREN LIST GACH -> START_X, END_X
 
-	CalcPotentialCollisions(coObjects, coEvents);
-	if (coEvents.size() == 0) // no collision
-	{
-		x += dx;
-		y += dy;
-	}
-	else
-	{
-		float min_tx, min_ty, nx = 0, ny = 0;
-		float rdx = 0;
-		float rdy = 0;
+		vector<LPGAMEOBJECT> glassBricks; // list chua gach -> xet collide 
 
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-
-		y += min_ty * dy + ny * 0.4f;
-		x += min_tx * dx + nx * 0.25f;
-
-		if (ny != 0)
+		for (int i = 0; i < coObjects->size(); i++)
 		{
-			vy = 0;
-			if (ny < 0) // va cham ground
+			if (coObjects->at(i)->GetType() == ObjectType::BRICK)
 			{
-				isOnGround = true;
-				if (isWing) {
-					vy = -KOOPA_JUMP_SPEED;
-				}
+				CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
+				if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() != BRICK_STATE_HIDDEN)
+					glassBricks.push_back(coObjects->at(i));
 			}
 		}
-		for (UINT i = 0; i < coEventsResult.size(); i++)
-		{
-			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (e->obj->GetType() == ObjectType::GROUND) {
-				CGround* ground = dynamic_cast<CGround*>(e->obj);
-				if (e->nx != 0) { // va cham theo phuong x voi color box
-					if (ground->isInteract) {
-						x += dx; //di xuyen qua
-					}
-					else {
-						vx = -vx; // doi huong
+		// RED KOOPA STAND ON GLASS BRICK 
+		if (collideGround && this->KoopaType == KOOPAS_TYPE_RED
+			&& GetState() != KOOPAS_STATE_SHELL_RUNNING) {
+
+			float kl, kt, kr, kb, gl, gt, gr, gb;
+			collideGround->GetBoundingBox(gl, gt, gr, gb);
+			GetBoundingBox(kl, kt, kr, kb);
+
+			if (collideGround->GetType() == ObjectType::BRICK) {
+				CBrick* brick = dynamic_cast<CBrick*>(collideGround);
+				if (brick->GetBrickType() == BRICK_GLASS
+					&& brick->GetState() != BRICK_STATE_HIDDEN) {
+
+					// DUYET GLASS BRICK 
+					for (int i = 0; i < glassBricks.size(); i++) {
+						
+						if (collideGround == glassBricks[i]) {
+
+							bool isCheck = false;
+
+							// KIEM TRA GACH CANH NHAU
+							for (int j = 0; j < glassBricks.size(); j++) {
+
+								float j_l, j_t, j_r, j_b;
+								glassBricks.at(j)->GetBoundingBox(j_l, j_t, j_r, j_b);
+
+								if (i != j && CheckAABB(j_l, j_t, j_r, j_b, gl - 1.0f, gt, gr + 1.0f, gb)) {
+									isCheck = true;
+
+									if (glassBricks.at(j)->start_x < collideGround->start_x) {
+										if (this->start.x < 0) {
+											this->start_x = glassBricks.at(j)->start_x - DISTANCE_START_X;
+										}
+
+										else if (this->start.x > glassBricks.at(j)->start_x - DISTANCE_START_X) {
+											this->start_x = glassBricks.at(j)->start_x - DISTANCE_START_X;
+										}
+
+										if (this->end.x < (gr - DISTANCE_START_X) || end.x < 0) {
+											this->end.x = gr - DISTANCE_START_X;
+										}
+									}
+									else if (glassBricks.at(j)->start_x > collideGround->start_x) {
+										if (this->end.x < 0) {
+											this->end.x = glassBricks.at(j)->start_x + BRICK_BBOX_SIZE - DISTANCE_START_X;
+										}
+										else if (this->end.x < glassBricks.at(j)->start_x + BRICK_BBOX_SIZE - DISTANCE_START_X) {
+											this->end.x = glassBricks.at(j)->start_x + BRICK_BBOX_SIZE - DISTANCE_START_X;
+										}
+										if (this->start.x > (gl - DISTANCE_START_X) || start.x < 0)
+										{
+											this->start.x = gl - DISTANCE_START_X;
+										}
+									}
+									//DebugOut(L"start===========: %f\n", start.x);
+									//DebugOut(L"end==========: %f\n", end.x);
+								}
+							}
+							// TRUONG HOP GACH CHI CO 1 CUC DUY NHAT
+							if (!isCheck) {
+								this->start.x = gl - DISTANCE_START_X;
+								this->start.y = this->end.y = gb;
+								this->end.x = gr - DISTANCE_START_X;
+							}
+						}
 					}
 				}
 			}
 
-			else if (e->obj->GetType() == ObjectType::BRICK || e->obj->GetType() == ObjectType::PIPE) {
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+			else { // color box, ground
+				this->start.x = gl - DISTANCE_START_X;
+				this->end.x = gr - DISTANCE_START_X;
+			}
+			// XET DOI HUONG CHO KOOPA NEU DI QUA START_X, END_X
+			if (kl < this->start.x || kl > this->end.x) {
+				if (kl < this->start.x)
+					this->x = gl - DISTANCE_START_X;
+				else
+					this->x = gr - DISTANCE_START_X;
+				this->vx = -vx;
+			}
+		}
+#pragma endregion
 
-				if (e->nx != 0 || e->ny != 0) {
 
-					// XU LY GLASS BRICK WHEN STATE HIDDEN
-					if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN) {
+#pragma region COLLISION SOLVING
+
+		if (this->GetState() == KOOPAS_STATE_SHELL_RUNNING)
+			this->vy += MARIO_GRAVITY * 10 * dt;
+		else {
+			this->vy += MARIO_GRAVITY * dt;
+		}
+
+		// XU LY VA CHAM
+		vector<LPCOLLISIONEVENT> coEvents;
+		vector<LPCOLLISIONEVENT> coEventsResult;
+
+		coEvents.clear();
+
+		CalcPotentialCollisions(coObjects, coEvents);
+		if (coEvents.size() == 0) // no collision
+		{
+			x += dx;
+			y += dy;
+		}
+		else
+		{
+			float min_tx, min_ty, nx = 0, ny = 0;
+			float rdx = 0;
+			float rdy = 0;
+
+			LPGAMEOBJECT objectX = NULL;
+			LPGAMEOBJECT objectY = NULL;
+
+			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy, objectX, objectY);
+
+			y += min_ty * dy + ny * 0.4f;
+			x += min_tx * dx + nx * 0.25f;
+
+			if (ny != 0)
+			{
+				vy = 0;
+				if (ny < 0) // va cham ground
+				{
+					collideGround = objectY;
+					if (isWing) {
+						vy = -KOOPA_JUMP_SPEED;
+					}
+				}
+				// ktra co bi attack by tail again?
+			}
+			for (UINT i = 0; i < coEventsResult.size(); i++)
+			{
+				LPCOLLISIONEVENT e = coEventsResult[i];
+
+				if (e->obj->GetType() == ObjectType::GROUND) {
+					CGround* ground = dynamic_cast<CGround*>(e->obj);
+					if (e->nx != 0) { // va cham theo phuong x voi color box
+						if (ground->isInteract) {
+							x += dx; //di xuyen qua
+						}
+						else {
+							vx = -vx; // doi huong
+						}
+					}
+				}
+
+				else if (e->obj->GetType() == ObjectType::BRICK) {
+
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+
+					if (e->nx != 0 || e->ny != 0) {
+
+						// XU LY GLASS BRICK WHEN STATE HIDDEN (thanh COIN)
+						if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN) {
+							x += dx;
+							y += dy;
+						}
+					}
+
+					// CASE KOOPA BI ROT XUONG GACH BEN DUOI (VA CHAM NX CUA GACH KHAC)
+					if (e->nx != 0 && brick->start_y < (y + KOOPAS_BBOX_HEIGHT)) {
+
+						vx = -vx; 
+
+						if (state == KOOPAS_STATE_SHELL_RUNNING
+							&& brick->GetBrickType() == BRICK_GLASS
+							&& brick->GetState() != BRICK_STATE_HIDDEN)
+						{
+							brick->SetState(BRICK_STATE_BROKEN);
+						}
+						else if (brick->GetBrickType() == BRICK_QUESTION) {
+
+							brick->SetBrickType(BRICK_BROKEN);
+							brick->SetState(BRICK_STATE_BOUNDING);
+						}
+
+					}
+
+				}
+				else if (e->obj->GetType() == ObjectType::GOOMBA) {
+					if (e->nx != 0) {
+						x += dx; //di xuyen qua
+						y += dy;
+					}
+				}
+				else if (e->obj->GetType() == ObjectType::PIPE) {
+					if (e->nx != 0) {
 						x += dx;
 						y += dy;
 					}
+				}
+				else if (e->obj->GetType() == ObjectType::KOOPA 
+					&& e->obj->GetState() == KOOPAS_STATE_WALKING 
+					&& state == KOOPAS_STATE_WALKING) {
+					
+					CKoopas* koopa = dynamic_cast<CKoopas*>(e->obj);
+					
+					if (e->nx != 0) {
+						this->vx = -this->vx;
+						koopa->vx = -vx;
+					}
+				}
+				else if (dynamic_cast<Enemy*>(e->obj) && this->GetState() == KOOPAS_STATE_SHELL_RUNNING) {
+					Enemy* enemy = dynamic_cast<Enemy*>(e->obj); // goomba, flower
+					enemy->nx = this->nx;
+					enemy->damageByWeapon();
+				}
 
-					vx = -vx; // doi huong
-					// CHUA XU LY KOOPA DI QUA LAI 1 DOAN BRICK
+			}
+		}
+#pragma endregion
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	}
+#pragma endregion
+
+#pragma region IS BEING HELD BY MARIO 
+	else {
+
+		vy = 0;
+
+		vector<LPCOLLISIONEVENT> coEvents;
+		vector<LPCOLLISIONEVENT> coEventsResult;
+		coEvents.clear();
+		CalcPotentialCollisions(coObjects, coEvents);
+
+		if (coEvents.size() == 0)
+		{
+			x += dx;
+			y += dy;
+		}
+		else {
+			float min_tx, min_ty, nx = 0, ny;
+			float rdx = 0;
+			float rdy = 0;
+
+			// TODO: This is a very ugly designed function!!!!
+			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+			// block every object first!
+			x += min_tx * dx + nx * 0.4f;
+			y += min_ty * dy + ny * 0.4f;///chinh lai xet va cham koopas voi brick -> cai nay do no xet y trung hop r
+
+			//if (nx != 0) vx = 0;
+			if (ny != 0) vy = 0;
+
+			//
+			// Collision logic with other objects
+			//
+			for (UINT i = 0; i < coEventsResult.size(); i++)
+			{
+				LPCOLLISIONEVENT e = coEventsResult[i];
+
+				if (dynamic_cast<Enemy*>(e->obj) && state == KOOPAS_STATE_SHELL_IDLE)
+				{
+					Enemy* enemy = dynamic_cast<Enemy*>(e->obj);
+					enemy->nx = -nx;
+					enemy->damageByWeapon();
+
+					this->nx = -nx;
+					this->damageByWeapon();
 				}
 			}
-
+			for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 		}
 	}
+#pragma endregion
 
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
+
 
 void CKoopas::Render()
 {
@@ -151,7 +356,7 @@ void CKoopas::Render()
 
 	if (GetKoopaType() == KOOPAS_TYPE_RED) {
 		switch (state) {
-		case ENEMY_STATE_DAMAGE: // mario jump on
+		case KOOPAS_STATE_SHELL_IDLE: // mario jump on
 			ani = KOOPAS_ANI_RED_SHELL_DOWN_IDLE;
 			break;
 
@@ -179,7 +384,7 @@ void CKoopas::Render()
 	else {
 		switch (state) {
 		
-		case ENEMY_STATE_DAMAGE: // mario jump on
+		case KOOPAS_STATE_SHELL_IDLE: // mario jump on
 			ani = KOOPAS_ANI_GREEN_SHELL_DOWN_IDLE;
 			break;
 
@@ -218,16 +423,12 @@ void CKoopas::SetState(int state)
 	CGameObject::SetState(state);
 	switch (state)
 	{
-	// xu ly state bi thuong cua Koopa
-	case STATE_DESTROYED: // bullet
-		vx = 0;
-		vy = 0;
-		break;
-	case ENEMY_STATE_DAMAGE: // mario jump on head
-		y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_WIDTH + 1;
-		vx = 0;
-		vy = 0;
-		break;
+	//// xu ly state bi thuong cua Koopa
+	//case STATE_DESTROYED: // bullet
+	//	vx = 0;
+	//	vy = 0;
+	//	break;
+
 	case ENEMY_STATE_DIE_BY_ATTACK: // tail
 		isShellUp = true;
 		vy = -KOOPA_JUMP_SPEED;
@@ -241,13 +442,11 @@ void CKoopas::SetState(int state)
 	// xu ly cac state khac
 	case KOOPAS_STATE_FLYING:
 		isWing = true;
-		isOnGround = false;
 		vy = -KOOPAS_WALKING_SPEED ;
 		vx = -KOOPA_JUMP_SPEED;
 		break;
 	case KOOPAS_STATE_WALKING:
 		isWing = false;
-		isOnGround = true;
 		vx = -KOOPAS_WALKING_SPEED;
 		break;
 	case KOOPAS_STATE_SHELL_IDLE:
@@ -256,7 +455,6 @@ void CKoopas::SetState(int state)
 		break;
 	case KOOPAS_STATE_SHELL_RUNNING:
 		vx = -nx * KOOPA_RUNNING_SPEED;
-		isOnGround = true;
 		break;
 	case KOOPAS_STATE_SHAKING:
 		startRelifeTimer->Start();
@@ -266,9 +464,6 @@ void CKoopas::SetState(int state)
 
 	}
 }
-//#define KOOPAS_STATE_SHELL_IDLE			200
-//#define KOOPAS_STATE_SHELL_RUNNING		300
-//#define KOOPAS_STATE_SHAKING			400
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

@@ -7,8 +7,7 @@
 #include "MarioTail.h"
 #include "Koopas.h"
 
-#define MARIO_TIME_ATTACK	1000
-
+#define MARIO_TIME_ATTACK	500
 class CMario : public CGameObject
 {
 	static CMario* __instance;
@@ -31,8 +30,8 @@ public:
 		Bullet* bullet = new Bullet({ x, y }, nx);
 		return bullet;
 	}
-	MarioTail* tail; // mario has a tail when level = RACOON
-	//CKoopas* shell;
+	MarioTail* tail = MarioTail::GetInstance(); // mario has a tail when level = RACOON
+	CKoopas* shell;
 
 	// XET THOI GIAN
 	Timer* flyTime = new Timer(TIME_FLY);
@@ -49,7 +48,6 @@ public:
 	bool isAutoGo = false;
 
 	// GREEN LAND SOLVING
-	bool isIdling = false;
 	bool canWalkLeft = false;
 	bool canWalkRight = false;
 	bool canWalkUp = false;

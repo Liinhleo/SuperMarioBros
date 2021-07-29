@@ -5,17 +5,25 @@
 #include "Plant.h"
 #include "Pswitch.h"
 
-MarioTail::MarioTail(float& x, float& y, int& nx){
-	xMario = &x;
-	yMario = &y;
-	nxMario = &nx;
+MarioTail* MarioTail::__instance = nullptr;
+
+MarioTail* MarioTail::GetInstance()
+{
+	if (__instance == NULL) __instance = new MarioTail();
+	return __instance;
+}
+MarioTail::MarioTail(){
+
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(2));
 }
 
 void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	
+	CGameObject::Update(dt);
+	x += dx;
+	y += dy;
+
 	// chi xet va cham khi tail o frame 0 || 2 || 4
-	
 	if (animation_set->at(ani)->getCurrentFrame() == 0
 		||animation_set->at(ani)->getCurrentFrame() == 2
 		|| animation_set->at(ani)->getCurrentFrame() == 4) {
@@ -106,38 +114,38 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 }
 
 void MarioTail::GetBoundingBox(float& left, float& top, float& right, float& bottom){
+	
 	if (state == TAIL_STATE_HIT) {
+		
 		switch (animation_set->at(ani)->getCurrentFrame()) {
 		case 0:
 		case 4:
 			if (nx > 0) {
-				left = x - 2; 
-				right = left + TAIL_BBOX_WIDTH;
-
+				left = x - 5; 
 			}
 
 			else {
-				left = x + DISTANCE_XTAIL_MARIO;
-				right = left + TAIL_BBOX_WIDTH + 5;
+				left = x + DISTANCE_XTAIL_MARIO + TAIL_BBOX_WIDTH;
 			}
 			top = y + 19;
+
 			break;
 
 		case 2:
 			if (nx > 0) {
-				left = x + DISTANCE_XTAIL_MARIO;
-				right = left + TAIL_BBOX_WIDTH + 5;
+				left = x + DISTANCE_XTAIL_MARIO + TAIL_BBOX_WIDTH;
 			}
 			else {
-				left = x - 2;
-				right = left + TAIL_BBOX_WIDTH;
+				left = x - 5;
 			}
 			top = y + 19;
+
 			break;
 		default:
 			break;
 		}
-		bottom = top + 6;
+		right = left + TAIL_BBOX_WIDTH;
+		bottom = top + TAIL_BBOX_HEIGHT;
 	}
 
 }
@@ -147,23 +155,10 @@ void MarioTail::Render() {
 		if (nx > 0) ani = TAIL_ANI_RIGHT;
 		else ani = TAIL_ANI_LEFT;
 	}
-	//animation_set->at(ani)->Render(x, y);
-
 	RenderBoundingBox();
 }
 
 void MarioTail::SetState(int state) {
 	
 	CGameObject::SetState(state);
-}
-
-bool MarioTail::isCollision(float obj_left, float obj_top, float obj_right, float obj_bottom)
-{
-	float tail_left,
-		tail_top,
-		tail_right,
-		tail_bottom;
-
-	GetBoundingBox(tail_left, tail_top, tail_right, tail_bottom);
-	return CGameObject::CheckAABB(tail_left, tail_top, tail_right, tail_bottom, obj_left, obj_top, obj_right, obj_bottom);
 }

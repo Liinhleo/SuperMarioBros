@@ -146,9 +146,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>BoardGame</Filter>
     </ClCompile>
-    <ClCompile Include="LastItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Ninja.cpp">
       <Filter>Enemy</Filter>
     </ClCompile>
@@ -169,6 +166,12 @@
     </ClCompile>
     <ClCompile Include="Portal.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CardItemEffect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="LastItem.cpp">
+      <Filter>Items</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -286,9 +289,6 @@
     <ClInclude Include="Camera.h">
       <Filter>BoardGame</Filter>
     </ClInclude>
-    <ClInclude Include="LastItem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Ninja.h">
       <Filter>Enemy</Filter>
     </ClInclude>
@@ -309,6 +309,12 @@
     </ClInclude>
     <ClInclude Include="Portal.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CardItemEffect.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="LastItem.h">
+      <Filter>Items</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

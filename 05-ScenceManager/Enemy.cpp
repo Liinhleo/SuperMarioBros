@@ -16,7 +16,6 @@
 
 void Enemy::damageOnTop() {
 	SetState(ENEMY_STATE_DAMAGE);
-	timeDestroy->Start();
 }
 
 void Enemy::damageByWeapon() {

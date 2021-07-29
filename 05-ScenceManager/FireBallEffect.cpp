@@ -9,9 +9,8 @@ FireBallEffect::FireBallEffect(D3DXVECTOR2 position) {
 
 
 
-void FireBallEffect::GetBoundingBox(float& l, float& t, float& r, float& b) {
-	l = t = r = b = 0;
-}
+void FireBallEffect::GetBoundingBox(float& l, float& t, float& r, float& b) {}
+
 void FireBallEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	CGameObject::Update(dt);
 	y += dy;

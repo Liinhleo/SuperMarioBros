@@ -53,16 +53,17 @@ class CKoopas : public Enemy
 
 public:
 	bool isOnGround;
-	bool isShellUp; // check shell up? 
-	bool isWing; // 0: non -> state walk || 1: wing ->state jump fly
-	bool isBeingHeld = false; // check mario co dang holding shell
+	bool isShellUp;				// check shell up? 
+	bool isWing;				// 0: non -> state walk || 1: wing ->state jump fly
+	bool isBeingHeld = false;	// check mario co dang holding shell
 	bool isRelife = false;
-	
-	Timer* idleTimer = new Timer(KOOPA_TIME_SHELL_IDLE);
-	// before relife, koopa shaking ->3s
-	Timer* startRelifeTimer = new Timer(KOOPA_TIME_SHELL_IDLE - KOOPA_TIME_RELIFE);
+	LPGAMEOBJECT collideGround;
 
-	//CKoopas();
+	
+	Timer* idleTimer = new Timer(KOOPA_TIME_SHELL_IDLE); // Thoi gian state shell
+	Timer* startRelifeTimer = new Timer(KOOPA_TIME_SHELL_IDLE - KOOPA_TIME_RELIFE);	// before relife, koopa shaking ->3s
+
+	CKoopas();
 	CKoopas(int KoopaType, bool isWing,  float x, float y);
 	~CKoopas() {}
 

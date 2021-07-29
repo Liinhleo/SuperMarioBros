@@ -33,7 +33,7 @@
 #define GOOMBA_YELLOW	1
 #define GOOMBA_RED		2
 
-#define TIME_DISAPPEAR	2000
+//#define TIME_DISAPPEAR	2000
 
 
 class CGoomba : public Enemy
@@ -42,7 +42,7 @@ class CGoomba : public Enemy
 
 public: 
 
-	Timer* timeDisappear = new Timer(TIME_DISAPPEAR);
+	//Timer* timeDisappear = new Timer(TIME_DISAPPEAR);
 	Timer* timeStartJump = new Timer(3000);
 
 	bool isWing; // 0: non -> state walk || 1: wing ->state fly
