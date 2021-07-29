@@ -18,6 +18,7 @@
 #include "FireBallEffect.h"
 #include "Pswitch.h"
 #include "Ninja.h"
+#include "ScoreEffect.h"
 
 using namespace std;
 
@@ -495,9 +496,6 @@ void CPlayScene::GetObjectToGrid() {
 
 void CPlayScene::Update(DWORD dt)
 {
-	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
-	// TO-DO: This is a "dirty" way, need a more organized way 
-	
 	// reset lai grid -> xoa het listObject r ms get object khac
 	gridMoving->ResetCamGrid(listMoving);
 	gridStatic->ResetCamGrid(listStatic);
@@ -506,7 +504,7 @@ void CPlayScene::Update(DWORD dt)
 	// TINH THOI GIAN CHOI
 	if (player->GetState() != MARIO_STATE_DIE) {
 		this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTime->GetStartTime()) / MINISEC_PER_SEC);
-		DebugOut(L"remaining time ==== %d \n ", remainingTime);
+		//DebugOut(L"remaining time ==== %d \n ", remainingTime);
 	}
 	if (this->remainingTime < 0)
 	{
@@ -514,12 +512,17 @@ void CPlayScene::Update(DWORD dt)
 		this->remainingTime = 0;
 	}
 
-	/// PUSH ITEM VAO BRICK 
+#pragma region PUSH ITEM TO BRICK
+
 	for (size_t i = 0; i < listObjects.size(); i++)	{
 
 		if (listObjects[i]->GetType() == ObjectType::BRICK)	{
 			CBrick* brick = dynamic_cast<CBrick*>(listObjects[i]);
 			
+			//push glass brick vao listitem (de xet TH gach -> coin)
+			if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN)
+				listItems.push_back(brick);
+
 			if (brick->isFallingItem) {
 				//CREATE ITEM FOLLOW MARIO LEVEL
 				Item* item;
@@ -538,13 +541,12 @@ void CPlayScene::Update(DWORD dt)
 				brick->isFallingItem = false;
 			}
 
-			//push glass brick vao listitem (de xet TH gach -> coin)
-			if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN)
-				listItems.push_back(brick);
+			
 		}
 	}
+#pragma endregion
 
-	// XU LY COIN -> BRICK &&  BRICK -> COIN (GLASS_BRICK)
+#pragma region BRICK TO COIN
 	// xoa glass brick ra khoi list object sau khi bi hidden
 	for (size_t i = 0; i < listObjects.size(); i++)	{
 		if (listObjects[i]->GetType() == ObjectType::BRICK) {
@@ -578,11 +580,9 @@ void CPlayScene::Update(DWORD dt)
 			}
 		}
 	}
+#pragma endregion
 
-	// Update listItems 
-	for (size_t i = 0; i < listItems.size(); i++) {
-		listItems[i]->Update(dt, &listObjects);
-	}
+#pragma region UPDATE OBJECT, ITEM, EFFECT 
 
 	// Update list Object 
 	for (size_t i = 0; i < listObjects.size(); i++)
@@ -604,15 +604,30 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
+	// Update listItems 
+	for (size_t i = 0; i < listItems.size(); i++) {
+		listItems[i]->Update(dt, &listObjects);
+	}
+
 	// Update list Effect
 	for (size_t i = 0; i < listEffects.size(); i++)	{
 		listEffects[i]->Update(dt);
+		
+		// effect score effect after hit money
+		if (listEffects[i]->GetType() == ObjectType::COIN && listEffects[i]->GetState()== STATE_DESTROYED) {
+			float c_x, c_y;
+			listEffects[i]->GetPosition(c_x, c_y);
+			CGameObject* score = new ScoreEffect({ c_x, c_y}, 100);
+			listEffects.push_back(score);
+		}
 	}
-
 
 	// mario
 	player->Update(dt, &listObjects, &listItems, &listEffects);
 
+#pragma endregion
+
+#pragma region PUSH NEW OBJECT/ITEM TO GRID
 	// Update Object to GRID
 	for (size_t i = 0; i < listObjects.size(); i++) {
 		if (listObjects[i]->GetType() == ObjectType::P_SWITCH
@@ -639,10 +654,12 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
+#pragma endregion
 
-	// Update cac thuoc tinh cua mario
+	// Update list bullet cua mario
 	for (size_t i = 0; i < player->listBullet.size(); i++) {
-		if (player->listBullet[i]->GetState() == STATE_DESTROYED) {
+		if (player->listBullet[i]->GetState() == STATE_DESTROYED
+			|| player->listBullet[i]->isOutOfCam()) {
 			float b_x, b_y;
 			player->listBullet[i]->GetPosition(b_x, b_y);
 			CGameObject* effect = new FireBallEffect({ b_x, b_y });
@@ -653,7 +670,8 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
-	// xoa obj co state = STATE_DESTROYED
+#pragma region XOA OBJECT STATE DESTROYED
+
 	for (size_t i = 0; i < listObjects.size(); i++) {
 		if (listObjects[i]->GetState() == STATE_DESTROYED) {
 
@@ -662,7 +680,6 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
-	// xoa item co state = STATE_DESTROYED
 	for (size_t i = 0; i < listItems.size(); i++) {
 		if (listItems[i]->GetState() == STATE_DESTROYED
 			|| listItems[i]->isOutOfCam() && listItems[i]->GetType() == ObjectType::ITEM) {
@@ -671,7 +688,7 @@ void CPlayScene::Update(DWORD dt)
 			i--;
 		}
 	}
-	// xoa effect co state = STATE_DESTROYED
+
 	for (size_t i = 0; i < listEffects.size(); i++) {
 		if (listEffects[i]->GetState() == STATE_DESTROYED) {
 
@@ -682,7 +699,7 @@ void CPlayScene::Update(DWORD dt)
 	
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return; 
-
+#pragma endregion
 
 #pragma region CAMERA UPDATE FOLLOW PLAYER
 	// Update camera to follow mario
@@ -743,12 +760,9 @@ void CPlayScene::Render()
 		listEffects.at(i)->Render();
 
 	player->Render();
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, 300, this->id);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, this->remainingTime, this->id);
 }
 
-/*
-	Unload current scene
-*/
 void CPlayScene::Unload()
 {
 	for (int i = 0; i < listObjects.size(); i++)

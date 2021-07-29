@@ -70,15 +70,15 @@ void Grid::GetObjFromGrid(vector<LPGAMEOBJECT>& objects) {
 	int firstCol = (int)(CGame::GetInstance()->GetCamPosX() / (CELL_WIDTH * BRICK_BBOX_SIZE));
 	int lastCol = ceil((CGame::GetInstance()->GetCamPosX() + SCREEN_WIDTH) / (CELL_WIDTH * BRICK_BBOX_SIZE));
 	
-	DebugOut(L"first Col 1 -======== = %d \n", firstCol);
-	DebugOut(L"last Col 1 -======== = %d \n", lastCol);
+	//DebugOut(L"first Col 1 -======== = %d \n", firstCol);
+	//DebugOut(L"last Col 1 -======== = %d \n", lastCol);
 
 	// check firstCol co nam o dau map? ( 1 : 0) 
 	firstCol = (firstCol >= 1) ? firstCol - 1 : firstCol;
 	lastCol = (lastCol < num_col) ? lastCol + 1 : lastCol;
 
-	DebugOut(L"first Col 2 -======== = %d \n", firstCol);
-	DebugOut(L"last Col 2 -======== = %d \n", lastCol);
+	//DebugOut(L"first Col 2 -======== = %d \n", firstCol);
+	//DebugOut(L"last Col 2 -======== = %d \n", lastCol);
 
 	for (int i = 0; i < num_row; i++) {
 		for (int j = firstCol; j < lastCol; j++) {

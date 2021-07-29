@@ -30,7 +30,7 @@ class CBrick : public CGameObject
 {
 public:
 	int brickType;	// 1=normal 	2=question	3=question_broken	4=bronze
-	int typeItem;	// 0=none 1= superLeaf 2=coin 3=p_switch 4=mushroom
+	int typeItem;	// 0=none 1= superLeaf||red mushroom 2=coin 3=p_switch 4=green_mushroom
 	int count;		//number of item 
 
 	bool isBroken = false; // if mario attack -> true

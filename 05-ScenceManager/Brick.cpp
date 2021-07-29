@@ -41,7 +41,7 @@ void CBrick::SetState(int state) {
 	CGameObject::SetState(state);
 	switch (state) {
 	case BRICK_STATE_BOUNDING:
-		if ((typeItem == CONTAIN_ITEM_UP || typeItem == CONTAIN_GREEN_MUSHROOM) && count == 1)
+		if ((GetTypeItem() == CONTAIN_ITEM_UP || GetTypeItem() == CONTAIN_GREEN_MUSHROOM) && count == 1)
 			isFallingItem = true;
 		vy = -0.2f;
 		DebugOut(L"CONTAIN: %d \n", count);
@@ -59,7 +59,6 @@ void CBrick::SetState(int state) {
 		break;
 	}
 }
-
 
 void CBrick::Render()
 {

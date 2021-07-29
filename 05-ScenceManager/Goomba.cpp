@@ -33,15 +33,12 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		}
 	}
 
-	if (state == ENEMY_STATE_DIE_BY_ATTACK && isOutOfCam()) {
-		SetState(STATE_DESTROYED);
-	}
-
-
 	// Die -> disappear
-	if (timeDisappear->IsTimeUp()) {
+	if (GetState()==ENEMY_STATE_DAMAGE && timeDisappear->IsTimeUp()) {
 		timeDisappear->Stop();
+		SetState(STATE_DESTROYED);
 		// Xu ly khong ve nua -> xu ly ben playScence
+	
 	}
 
 	if (isWing) {
@@ -163,7 +160,7 @@ void CGoomba::Render()
 
 	animation_set->at(ani)->Render(x,y);
 
-	RenderBoundingBox();
+	// RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)
@@ -180,7 +177,7 @@ void CGoomba::SetState(int state)
 			timeDisappear->Start(); // bd tinh gio disappear
 			y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
 			vx = 0;
-			vy = 0;
+			vy = -GOOMBA_DIE_DEFLECT_SPEED;
 			break;
 
 		case ENEMY_STATE_DIE_BY_ATTACK: // by weapon -> out of map -> xoa

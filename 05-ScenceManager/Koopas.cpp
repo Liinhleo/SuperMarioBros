@@ -2,11 +2,11 @@
 #include "Ground.h"
 #include "Brick.h"
 
-CKoopas::CKoopas() {
-	this->type = ObjectType::KOOPA;
-	SetState(KOOPAS_STATE_SHELL_IDLE);
-	
-}
+//CKoopas::CKoopas() {
+//	this->type = ObjectType::KOOPA;
+//	SetState(KOOPAS_STATE_SHELL_IDLE);
+//	
+//}
 
 CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 {
@@ -31,8 +31,6 @@ CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 			SetState(KOOPAS_STATE_WALKING);
 		}
 	}
-
-
 }
 
 
@@ -41,8 +39,25 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	CGameObject::Update(dt, coObjects);
 	vy += MARIO_GRAVITY * dt;
 
+	if (GetState() == KOOPAS_STATE_SHELL_IDLE && idleTimer->IsTimeUp())
+	{
+		idleTimer->Stop();
+		isRelife = false;
+		SetState(KOOPAS_STATE_SHAKING);
+
+		if (isBeingHeld)
+			isBeingHeld = false;
+	}
+
+	if (startRelifeTimer->IsTimeUp() && !idleTimer->IsTimeUp())
+	{
+		startRelifeTimer->Stop();
+		isRelife = true;
+		SetState(KOOPAS_STATE_WALKING);
+	}
+
 	// mario nhay len dau
-	if (state == ENEMY_STATE_DAMAGE) {
+	if (GetState() == ENEMY_STATE_DAMAGE) {
 		if (isWing) {
 			isWing = false;
 			SetState(KOOPAS_STATE_WALKING);
@@ -195,7 +210,7 @@ void CKoopas::Render()
 	}
 	animation_set->at(ani)->Render(x, y);
 
-	RenderBoundingBox();
+	// RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -244,6 +259,7 @@ void CKoopas::SetState(int state)
 		isOnGround = true;
 		break;
 	case KOOPAS_STATE_SHAKING:
+		startRelifeTimer->Start();
 		vx = 0;
 		isOnGround = true;
 		break;

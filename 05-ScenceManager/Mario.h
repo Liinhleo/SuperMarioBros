@@ -7,7 +7,7 @@
 #include "MarioTail.h"
 #include "Koopas.h"
 
-#define MARIO_TIME_ATTACK	400
+#define MARIO_TIME_ATTACK	1000
 
 class CMario : public CGameObject
 {
@@ -32,7 +32,7 @@ public:
 		return bullet;
 	}
 	MarioTail* tail; // mario has a tail when level = RACOON
-	CKoopas* shell = new CKoopas();
+	//CKoopas* shell;
 
 	// XET THOI GIAN
 	Timer* flyTime = new Timer(TIME_FLY);
@@ -105,7 +105,8 @@ public:
 	void Reset();
 	void Relife();
 
-	void CollideWithItem(vector<LPGAMEOBJECT>* Item);
+	void CollideWithItem(vector<LPGAMEOBJECT>* Items);
+	void CollideWithObject(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT>* listEffect);
 
 	void ToRight();
 	void ToLeft();

@@ -64,7 +64,7 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 				}
 			}
 
-			else if (e->obj->GetType() == ObjectType::BRICK || e->obj->GetType() == ObjectType::PIPE) {
+			else if (e->obj->GetType() == ObjectType::BRICK) {
 				if (e->nx != 0){ // va cham theo phuong x
 					//this->state = STATE_DESTROYED; // va cham-> not render bullet
 
@@ -77,6 +77,11 @@ void Bullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 					}
 					this->state = STATE_DESTROYED; // va cham-> not render bullet
 
+				}
+			}
+			else if (e->obj->GetType() == ObjectType::PIPE) {
+				if (e->nx != 0) { // va cham theo phuong x
+					this->state = STATE_DESTROYED; // va cham-> not render bullet
 				}
 			}
 			else if (e->obj->GetType() == ObjectType::PIRANHA_FLOWER || e->obj->GetType() == ObjectType::FIRE_FLOWER) {

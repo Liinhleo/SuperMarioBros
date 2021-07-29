@@ -14,9 +14,11 @@ MarioTail::MarioTail(float& x, float& y, int& nx){
 
 void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	
-	// chi xet va cham khi tail o frame 2 va 4
-	if (animation_set->at(ani)->getCurrentFrame() >= 2 
-		|| animation_set->at(ani)->getCurrentFrame() >= 4) {
+	// chi xet va cham khi tail o frame 0 || 2 || 4
+	
+	if (animation_set->at(ani)->getCurrentFrame() == 0
+		||animation_set->at(ani)->getCurrentFrame() == 2
+		|| animation_set->at(ani)->getCurrentFrame() == 4) {
 
 		for (UINT i = 0; i < coObjects->size(); i++)
 		{

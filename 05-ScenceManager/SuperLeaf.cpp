@@ -4,16 +4,16 @@
 SuperLeaf::SuperLeaf(D3DXVECTOR2 position) {
 	this->x = position.x;
 	this->y = position.y;
-	isFalling = false;
 
-	left = start_x - BRICK_BBOX_SIZE;
-	right = start_x + BRICK_BBOX_SIZE;
+	this->GetPosition(start_x, start_y);
+	this->left = start_x - BRICK_BBOX_SIZE;
+	this->right = start_x + BRICK_BBOX_SIZE;
 
-	ItemType = ITEM_SUPERLEAF;
-	vy = -LEAF_SPEED_Y;
-	this->type = ObjectType::ITEM;
-	//DebugOut(L"SuperLeaf x %f \n", x);
-	//DebugOut(L"SuperLeaf y %f \n", y);
+	this->ItemType = ITEM_SUPERLEAF;
+	this->vy = -ITEM_SPEED_Y;
+ 	this->type = ObjectType::ITEM;
+	DebugOut(L"left============ x %f \n", left);
+	DebugOut(L"right======== y %f \n", left);
 }
 
 void SuperLeaf::Render()
@@ -27,6 +27,12 @@ void SuperLeaf::Render()
 
 void SuperLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	DebugOut(L"SuperLeafleft======= x %f \n", left);
+	DebugOut(L"SuperLeafright========== y %f \n", right);
+
+	DebugOut(L"SuperLeaf ======x %f \n", x);
+	DebugOut(L"SuperLeaf========== y %f \n", y);
+
 	Item::Update(dt, coObjects);
 
 	x += dx;
@@ -58,4 +64,7 @@ void SuperLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			x = right;
 		}
 	}
+
+	DebugOut(L"Roi xuong x %f \n", x);
+	DebugOut(L"Roi xuong y %f \n", y);
 }

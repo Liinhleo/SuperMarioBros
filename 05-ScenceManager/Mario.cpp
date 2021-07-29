@@ -105,7 +105,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 
 			if (this->IsCollidingWithObjectNx(point) || this->IsCollidingWithObjectNy(point)) {
 				SetState(MARIO_STATE_IDLE_GREENLAND);
-				//SetState(MARIO_STATE_IDLE);
 
 				this->x = point->x;
 				this->y = point->y;
@@ -123,19 +122,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 				this->canWalkUp = point->canMoveUp;
 				this->canWalkDown = point->canMoveDown;
 
-
-				//DebugOut(L"canWalkLeft = %d \n", canWalkLeft);
-				//DebugOut(L"point->canMoveLeft = %d \n", point->canMoveLeft);
-				//
-				//DebugOut(L"point->canMoveRight = %d \n", point->canMoveRight);
-				//DebugOut(L"canWalkRight = %d \n", canWalkLeft);
-
-				//DebugOut(L"canWalkUp = %d \n", canWalkLeft);
-				//DebugOut(L"point->canMoveUp = %d \n", point->canMoveUp);
-
-				//DebugOut(L"canWalkDown = %d \n", canWalkLeft);
-				//DebugOut(L" point->canMoveDown = %d \n", point->canMoveDown);
-
 				SetWorldMapPosition(point->start_x, point->start_y);
 
 				if (canSwitchScene) {
@@ -149,6 +135,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect) {
+
 
 	UpdateSpeed(dt);
 
@@ -176,11 +163,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 	if (level == MARIO_LEVEL_RACOON) {
 		if (isAttack && !attackStart->IsTimeUp()) {
 			this->state = MARIO_STATE_ATTACK;
-
 			tail->SetState(TAIL_STATE_HIT);
-			tail->SetPosition(x, y);
-			tail->nx;
-			tail->Update(dt, coObjects);
+
+			if (animation_set->at(ani)->getCurrentFrame() == 0
+				|| animation_set->at(ani)->getCurrentFrame() == 2
+				|| animation_set->at(ani)->getCurrentFrame() == 4) {
+				this->nx = -nx;
+				tail->SetPosition(x, y);
+				tail->nx;
+				tail->Update(dt, coObjects);
+			}
 		}
 		else {
 			if (!isOnGround) {
@@ -231,6 +223,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		}
 	}
 	
+	CollideWithObject(coObjects, listEffect);
+
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -271,116 +265,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 			//DebugOut(L"on ground NY=: %d \n", ny);
 		}
 
-
-#pragma region COLLIDE WITH OBJECT
-		for (int i = 0; i < coObjects->size(); i++)
-		{
-			switch (coObjects->at(i)->GetType()) {
-			case ObjectType::GROUND:
-			case ObjectType::PIPE:
-			case ObjectType::BRICK:
-				break;
-			case ObjectType::PIRANHA_FLOWER:
-			case ObjectType::FIRE_FLOWER:
-			case ObjectType::FIRE_BALL:
-				if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
-					if (this->IsCollidingWithObject(coObjects->at(i))) {
-						this->isDamaged(); // xu ly mario bi thuong
-					}
-				}
-				break;
-			case ObjectType::P_SWITCH:
-				if (this->IsCollidingWithObjectNy(coObjects->at(i)))
-					coObjects->at(i)->SetState(SWITCH_STATE_OFF);
-				break;
-			case ObjectType::GOOMBA:
-				if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
-					if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) {
-						if (coObjects->at(i)->GetState() != STATE_DESTROYED
-							&& coObjects->at(i)->GetState() != ENEMY_STATE_DAMAGE
-							&& coObjects->at(i)->GetState() != ENEMY_STATE_DIE_BY_ATTACK)
-						{
-							CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
-							goomba->damageOnTop();
-							//this->vy = -MARIO_JUMP_DEFLECT_SPEED;
-
-							// them effect
-							this->AddScore(100);
-							float g_x, g_y;
-							goomba->GetPosition(g_x, g_y);
-							CGameObject* effect = new ScoreEffect({ g_x, g_y }, 100);
-							listEffect->push_back(effect);
-						}
-					}
-					else if (isAABB(coObjects->at(i))) {
-						this->isDamaged(); // xu ly mario bi thuong
-					}
-				}
-				break;
-				case ObjectType::KOOPA:
-					if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
-						if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) { // jump on top
-							CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
-
-							if (koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
-								koopa->damageOnTop();
-								this->vy = -MARIO_JUMP_DEFLECT_SPEED;
-
-								// them effect
-								this->AddScore(100);
-								float k_x, k_y;
-								koopa->GetPosition(k_x, k_y);
-								CGameObject* effect = new ScoreEffect({ k_x, k_y }, 100);
-								listEffect->push_back(effect);
-
-							}
-							else{ // TH : KOOPA LA SHELL IDLE
-								this->GetPosition(x, y); // vi tri cua mario
-
-								float k_x, k_y; 
-								koopa->GetPosition(k_x, k_y); // vi tri cua shell
-								if ((k_x - this->x) > 0)
-									koopa->nx = -1;
-								else
-									koopa->nx = 1;
-								koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
-								this->vy = -MARIO_JUMP_DEFLECT_SPEED;
-
-							}
-						}
-						// Va cham theo phuong ngang
-						else if (this->IsCollidingWithObjectNx(coObjects->at(i))) {
-							CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
-							if (koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
-								koopa->vx = -koopa->vx; // di xuyen qua
-								this->isDamaged(); // xu ly mario bi thuong
-							}
-							else {
-								if (this->canHolding) {
-									this->shell = koopa;
-									koopa->isBeingHeld = true;
-								}
-								else {
-									koopa->nx = -this->nx;
-									koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
-								}
-							}
-						}
-					}
-					else if (isAABB(coObjects->at(i)) && !canHolding) {
-						this->isDamaged(); // xu ly mario bi thuong
-					}
-					break;
-
-			}
-		}
-
-#pragma endregion
-	
 		for (UINT i = 0; i < coEventsResult.size(); i++){
 			LPCOLLISIONEVENT e = coEventsResult[i];
-
-
 
 			//Mario can go through pipe if it has Portal
 			if (e->ny != 0) { // collide from 2 direct (up/down)
@@ -401,22 +287,24 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 				}
 			}
 
-
-			if (e->ny > 0) { // mario's head collide brick 
+			// MARIO'S HEAD COLLIDE WITH OBJECT // ny > 0
+			if (e->ny > 0) { 
 				// BRICK
 				if (e->obj->GetType() == ObjectType::BRICK) {
 					vy = 0;
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj); // if e->obj is Brick 
 					if (brick->GetBrickType()!= BRICK_BROKEN) {
-						if (brick->GetBrickType() == BRICK_GLASS 
-							|| brick->GetBrickType() == BRICK_QUESTION) {
-							if (!brick->isBroken) {
 
-								switch (brick->typeItem) {
+						// BRICK_GLASS
+						if (brick->GetBrickType() == BRICK_GLASS) {
+							
+							if (!brick->isBroken) {
+								brick->SetState(BRICK_STATE_BOUNDING);
+
+								switch (brick->GetTypeItem()) {
 								case CONTAIN_NONE:
 									{
-										brick->SetState(BRICK_STATE_BOUNDING);
-
+										//brick->SetState(BRICK_STATE_BOUNDING);
 										if (brick->GetCountItem() == 0)
 											brick->SetState(BRICK_STATE_BROKEN);
 										break;
@@ -424,9 +312,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 									
 								case CONTAIN_ITEM_UP:
 									{
-										brick->SetState(BRICK_STATE_BOUNDING);
-										AddScore(1000);
-										AddCoin();
+										//brick->SetState(BRICK_STATE_BOUNDING);
 										if (brick->GetCountItem() > 0)
 											brick->count--;
 										if (brick->GetCountItem() == 0)
@@ -436,9 +322,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 									
 								case CONTAIN_COIN: 
 									{
-										brick->SetState(BRICK_STATE_BOUNDING);
+										//brick->SetState(BRICK_STATE_BOUNDING);
 										AddScore(100);
 										AddCoin();
+
 										float b_x, b_y;
 										brick->GetPosition(b_x, b_y); // vi tri cua brick
 										CGameObject* effect = new CoinEffect({ b_x,b_y });
@@ -458,13 +345,36 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 										brick->SetState(BRICK_STATE_BOUNDING);
 										break;
 									}
+								default:
+									break;
 								}
+								
 							}
+						}
+						// BRICK_QUESTION
+						else {
+							if (brick->GetCountItem() == 1) {
+								if (brick->GetBrickType() == BRICK_QUESTION)
+									brick->SetBrickType(BRICK_BROKEN);
+							}
+							if (brick->GetTypeItem() == CONTAIN_COIN) {
+								AddScore(100);
+								AddCoin();
+
+								float b_x, b_y;
+								brick->GetPosition(b_x, b_y); // vi tri cua brick
+								CGameObject* effect = new CoinEffect({ b_x,b_y });
+								listEffect->push_back(effect);
+							}
+							brick->SetState(BRICK_STATE_BOUNDING);
+							if (brick->GetCountItem() > 0)
+								brick->count--;
 						}
 					}
 
 				}
-				// GROUND
+				
+				// GROUND (color box)
 				if (e->obj->GetType() == ObjectType::GROUND) {
 					CGround* ground = dynamic_cast<CGround*>(e->obj); // if e->obj is Ground 
 					if (ground->isInteract) {
@@ -474,7 +384,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 				}
 			}
 
-			if (e->nx != 0) { //va cham theo phuong x
+			// MARIO COLLIDE WITH OBJECT THEO PHUONG X
+			if (e->nx != 0) {
 				if (e->obj->GetType() == ObjectType::GROUND) {
 					CGround* ground = dynamic_cast<CGround*>(e->obj); // if e->obj is Ground 
 					if (ground->isInteract) {
@@ -483,67 +394,145 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 					else {
 						if (state == MARIO_STATE_RUN) { // dang chay va cham tuong thi di bo
 							if (vx > 0)
-								state = MARIO_STATE_WALKING_RIGHT;
+								SetAccelerate(0);
 							else
-								state = MARIO_STATE_WALKING_LEFT;
+								SetAccelerate(0);
 						}
 					}
 				}
+				else {
+					if (state == MARIO_STATE_RUN) { // dang chay va cham tuong thi di bo
+						if (vx > 0)
+							SetAccelerate(0);
+						else
+							SetAccelerate(0);
+					}
+				}
 			}
-
-#pragma region COLLISION WITH GOOMBA
-
-			//if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
-			//{
-			//	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-
-			//	// jump on top >> kill Goomba and deflect a bit 
-			//	if (e->ny < 0) { // xet mario va cham theo phuong y -> nhay len dau -> Goomba die
-			//		if (goomba->isWing && goomba->GetState() != ENEMY_STATE_DAMAGE) {
-			//			goomba->SetState(GOOMBA_STATE_WALKING);
-			//		}
-			//		if (goomba->GetState() != GOOMBA_STATE_WALKING && goomba->GetState() != ENEMY_STATE_DAMAGE){
-			//			goomba->SetState(ENEMY_STATE_DAMAGE);
-			//			vy = -MARIO_JUMP_DEFLECT_SPEED;
-			//		}
-			//	}
-			//	else if (e->nx != 0) {	// xet mario va cham theo phuong x -> mario die
-			//		if (untouchable == 0){
-			//			if (goomba->GetState() != ENEMY_STATE_DAMAGE){
-			//				isDamaged(); // xu ly mario bi thuong
-			//			}
-			//		}
-			//	}
-			//} // if Goomba
-
-#pragma endregion
-
-
-#pragma region COLLISION WITH PORTAL
-			/*if (dynamic_cast<CPortal*>(e->obj))
-			{
-				CPortal* p = dynamic_cast<CPortal*>(e->obj);
-				CGame::GetInstance()->SwitchScene(p->GetSceneId());
-			}*/
-#pragma endregion
-
 		}
 	}
-
-	//// han che lap frame attack
-	//if (level == MARIO_LEVEL_RACOON && isAttack 
-	//	&& animation_set->at(ani)->getCurrentFrame() >= 4) {
-	//	isAttack = false;
-	//}
-
-
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) 
 		delete coEvents[i];
+
+	CollideWithItem(coItem);
+}
+
+void CMario::CollideWithObject(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT>* listEffect) {
+
+	for (int i = 0; i < coObjects->size(); i++)
+	{
+		switch (coObjects->at(i)->GetType()) {
+		case ObjectType::GROUND:
+		case ObjectType::PIPE:
+		case ObjectType::BRICK:
+			break;
+		case ObjectType::PIRANHA_FLOWER:
+		case ObjectType::FIRE_FLOWER:
+		case ObjectType::FIRE_BALL:
+			if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+				if (this->IsCollidingWithObject(coObjects->at(i))) {
+					this->isDamaged(); // xu ly mario bi thuong
+				}
+			}
+			break;
+		case ObjectType::P_SWITCH:
+			if (this->IsCollidingWithObjectNy(coObjects->at(i)))
+				coObjects->at(i)->SetState(SWITCH_STATE_OFF);
+			break;
+		case ObjectType::GOOMBA:
+			if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+				if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) {
+					CGoomba* goomba = dynamic_cast<CGoomba*>(coObjects->at(i));
+
+					if (goomba->GetState() != STATE_DESTROYED
+						&& goomba->GetState() != ENEMY_STATE_DAMAGE
+						&& goomba->GetState() != ENEMY_STATE_DIE_BY_ATTACK)
+					{
+						goomba->damageOnTop();
+						this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+
+						// them effect
+						this->AddScore(100);
+						float g_x, g_y;
+						goomba->GetPosition(g_x, g_y);
+						CGameObject* effect = new ScoreEffect({ g_x, g_y }, 100);
+						listEffect->push_back(effect);
+					}
+				}
+				else if (isAABB(coObjects->at(i))) {
+					this->isDamaged(); // xu ly mario bi thuong
+				}
+			}
+			break;
+		case ObjectType::KOOPA:
+			if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+				if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) { // jump on top
+					CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
+
+					if (koopa->GetState() != STATE_DESTROYED
+						&& koopa->GetState() != ENEMY_STATE_DAMAGE
+						&& koopa->GetState() != ENEMY_STATE_DIE_BY_ATTACK) 
+					{
+
+						koopa->damageOnTop();
+						this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+
+						// them effect
+						this->AddScore(100);
+						float k_x, k_y;
+						koopa->GetPosition(k_x, k_y);
+						CGameObject* effect = new ScoreEffect({ k_x, k_y }, 100);
+						listEffect->push_back(effect);
+
+					}
+					else { // TH : KOOPA LA SHELL IDLE
+						this->GetPosition(x, y); // vi tri cua mario
+
+						float k_x, k_y;
+						koopa->GetPosition(k_x, k_y); // vi tri cua shell
+						if ((k_x - this->x) > 0)
+							koopa->nx = -1;
+						else
+							koopa->nx = 1;
+						koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
+						this->vy = -MARIO_JUMP_DEFLECT_SPEED;
+
+					}
+				}
+				// Va cham theo phuong ngang
+				else if (this->IsCollidingWithObjectNx(coObjects->at(i))) {
+					CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
+					if (koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
+						koopa->vx = -koopa->vx; // di xuyen qua
+						this->isDamaged(); // xu ly mario bi thuong
+					}
+					else {
+						/*if (this->canHolding) {
+							shell = new CKoopas();
+						
+							this->shell = koopa;
+							koopa->isBeingHeld = true;
+						}
+						else {
+							koopa->nx = -this->nx;
+							koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
+						}*/
+					}
+				}
+			}
+			else if (isAABB(coObjects->at(i)) && !canHolding) {
+				this->isDamaged(); // xu ly mario bi thuong
+			}
+			break;
+		}
+	}
 }
 
 void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
+	
 	for (UINT i = 0; i < coItem->size(); i++) {
+		
 		if (isAABB(coItem->at(i))) {
 			if (coItem->at(i)->GetType() == ObjectType::LAST_ITEM)
 			{
@@ -551,12 +540,12 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 				SetState(MARIO_STATE_WALKING_RIGHT);
 				isAutoGo = true;
 			}
-			if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
+			else if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
 			{
 				AddScore(100);
 				AddCoin();
 			}
-			if (coItem->at(i)->GetType() == ObjectType::COIN)//brick khi chuyen thanh tien
+			else if (coItem->at(i)->GetType() == ObjectType::COIN)//brick khi chuyen thanh tien
 			{
 				AddScore(100);
 				AddCoin();
@@ -565,8 +554,8 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 				Item* item = dynamic_cast<Item*>(coItem->at(i));
 				switch (item->GetItemType())
 				{
-				case ITEM_GREEN_MUSHROOM: 
-					if(GetLevel() == MARIO_LEVEL_SMALL)
+				case ITEM_GREEN_MUSHROOM:
+					// up effect?
 					break;
 				case ITEM_SUPERLEAF:
 					this->SetPosition(x, y - 1.0f);
