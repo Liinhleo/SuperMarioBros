@@ -12,7 +12,7 @@ CardItemEffect::CardItemEffect(D3DXVECTOR2 position)
 
 void CardItemEffect::GetBoundingBox(float& l, float& t, float& r, float& b) {}
 
-void CardItemEffect::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
+void CardItemEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 
@@ -22,7 +22,7 @@ void CardItemEffect::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CardItemEffect::Render()
 {
-	// animation_set->at(ani)->Render(x, y);
+	animation_set->at(ani)->Render(x, y);
 
 	if (animation_set->at(ani)->getCurrentFrame() == 1)
 	{

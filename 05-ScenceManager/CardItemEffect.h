@@ -10,9 +10,9 @@ public:
 	CardItemEffect(D3DXVECTOR2 position);
 	~CardItemEffect() {};
 
-	Timer* effectTimer = new Timer(400);
+	Timer* effectTimer = new Timer(3000);
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
 };
 

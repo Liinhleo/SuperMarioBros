@@ -45,15 +45,16 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 				{
 					CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
 
-					if (brick->GetBrickType() != BRICK_BROKEN) {
+					if (brick->GetBrickType() != BRICK_BROKEN 
+						&& brick->GetBrickType() != BRICK_MUSIC) {
 
 						// QUESTION BRICK
 						if (brick->GetCountItem() == 1 && brick->GetBrickType() == BRICK_QUESTION)
 							brick->SetBrickType(BRICK_BROKEN);
 
-						else if (brick->GetBrickType() != BRICK_GLASS)
-							brick->SetState(BRICK_STATE_BOUNDING);
-
+						/*else if (brick->GetBrickType() != BRICK_GLASS)
+							brick->SetState(BRICK_STATE_BOUNDING);*/
+						
 						// GLASS BRICK
 						else {
 							if (!brick->isBroken) {
@@ -66,6 +67,7 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 									brick->SetState(BRICK_STATE_BROKEN);
 								CMario::GetInstance()->AddScore(100);
 							}
+							
 															
 						}
 						// chua nhieu coin

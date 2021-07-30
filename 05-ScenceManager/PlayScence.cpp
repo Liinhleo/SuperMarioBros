@@ -167,6 +167,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj = CMario::GetInstance();
 			obj->SetPosition(x, y);
 			obj->SetAnimationSet(ani_set);
+			if (CMario::GetInstance()->tail)
+				CMario::GetInstance()->tail->SetAnimationSet(CAnimationSets::GetInstance()->Get(2));
 
 			player = (CMario*)obj;
 			float px, py;
@@ -206,7 +208,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int bot = atoi(tokens[5].c_str());
 		int left = atoi(tokens[6].c_str());
 		int right = atoi(tokens[7].c_str());
-		obj = new Ninja();
+		obj = new Ninja({x,y});
 
 		// General object setup
 		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
@@ -881,8 +883,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	
 	// get pipe down
 	case DIK_5:
-		mario->SetPosition(2608, 0);
-		CGame::GetInstance()->cam_x = 2608;
+		mario->SetPosition(1800, mario->y);
+		CGame::GetInstance()->cam_x = 1800;
 		break;
 
 
@@ -1045,7 +1047,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 		// SIT
 		else if (game->IsKeyDown(DIK_DOWN)) {
-			if (!mario->GetLevel() == MARIO_LEVEL_SMALL && !mario->isHolding) {
+			if (mario->GetLevel() != MARIO_LEVEL_SMALL && !mario->isHolding) {
 				mario->SetState(MARIO_STATE_SIT);
 			}
 			else

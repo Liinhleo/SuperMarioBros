@@ -150,7 +150,6 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 			player = (CMario*)obj;
 			player->SetStage(this->id);  // lay scene id 
 			player->RefreshState();
-			DebugOut(L"Get stage hien tai: %d \n", player->GetStage());
 
 			// lay vi tri moi cua mario
 			float px, py;
