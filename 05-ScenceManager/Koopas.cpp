@@ -2,6 +2,7 @@
 #include "Ground.h"
 #include "Brick.h"
 #include "Enemy.h"
+#include "Utils.h"
 
 #define DISTANCE_START_X		5.0f // kc 2 dau tru bot de rua k rot
 
@@ -37,6 +38,11 @@ CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
+
+	DebugOut(L"ANI CUA koopa: %d \n ", ani);
+	DebugOut(L"GetTickCount64 ==== %d ", GetTickCount64());
+	DebugOut(L"startTime ==== %d ", idleTimer->GetStartTime());
+	DebugOut(L"check endtime ==== %d \n ", GetTickCount64() - idleTimer->GetStartTime());
 
 
 	if (GetState() == KOOPAS_STATE_SHELL_IDLE && idleTimer->IsTimeUp())
@@ -341,22 +347,24 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 #pragma endregion
+	DebugOut(L"ANI CUA koopa222222222====: %d \n ", ani);
 
 }
 
 
 void CKoopas::Render()
 {
+	DebugOut(L"ANI CUA Render111===: %d \n ", ani);
+
 	int KType = GetKoopaType();
 
 	if (state == STATE_DESTROYED)
 		return;
 
-	// if (isShellUp) -> ani SHELL UP
-
 	if (GetKoopaType() == KOOPAS_TYPE_RED) {
 		switch (state) {
 		case KOOPAS_STATE_SHELL_IDLE: // mario jump on
+			DebugOut(L"VE VE VE ");
 			ani = KOOPAS_ANI_RED_SHELL_DOWN_IDLE;
 			break;
 
@@ -414,6 +422,7 @@ void CKoopas::Render()
 		}
 	}
 	animation_set->at(ani)->Render(x, y);
+	DebugOut(L"ANI CUA Render222222==: %d \n ", ani);
 
 	// RenderBoundingBox();
 }
@@ -450,6 +459,7 @@ void CKoopas::SetState(int state)
 		vx = -KOOPAS_WALKING_SPEED;
 		break;
 	case KOOPAS_STATE_SHELL_IDLE:
+		DebugOut(L"VO DAY NE");
 		idleTimer->Start(); // bd tinh gio dung yen
 		vx = 0;
 		break;

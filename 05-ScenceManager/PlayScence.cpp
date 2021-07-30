@@ -19,7 +19,7 @@
 #include "Pswitch.h"
 #include "Ninja.h"
 #include "ScoreEffect.h"
-
+#include "CardItemEffect.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
@@ -620,6 +620,13 @@ void CPlayScene::Update(DWORD dt)
 			CGameObject* score = new ScoreEffect({ c_x, c_y}, 100);
 			listEffects.push_back(score);
 		}
+		// effect add card 
+		if (dynamic_cast<CardItemEffect*>(listEffects[i]))
+		{
+			CardItemEffect* card = dynamic_cast<CardItemEffect*>(listEffects[i]);
+			if (card->GetState() == STATE_DESTROYED)
+				player->canSwitchScene = true;
+		}
 	}
 
 	// mario
@@ -734,6 +741,17 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 #pragma endregion
+
+	// Effect endscene
+	if (player->isAutoGo && player->isOutOfCam())
+	{
+		CGameObject* effect;
+		if (!player->isInHiddenMap)
+			effect = new CardItemEffect({ map->startHiddenMap_x - (SCREEN_WIDTH / 2) - 68.0f, 270 });
+		else
+			effect = new CardItemEffect({ map->heightMap - (SCREEN_WIDTH / 2) - 68.0f, 270 });
+		listEffects.push_back(effect);
+	}
 
 	// Update cac doi moving list (case: enemy di ra khoi grid)
 	gridMoving->UpdateGrid(listMoving);

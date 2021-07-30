@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-
+#include "Utils.h"
 class Timer
 {
 	DWORD startTime;
@@ -12,7 +12,9 @@ public:
 	void Reset() { startTime = GetTickCount64(); }
 	void Stop() { startTime = 0; }
 
-	bool IsTimeUp() { return GetTickCount64() - startTime > endTime; }
+	bool IsTimeUp() { 
+
+		return GetTickCount64() - startTime > endTime; }
 
 	DWORD GetStartTime() { return startTime; }
 	DWORD GetLimitedTime() { return endTime; }
