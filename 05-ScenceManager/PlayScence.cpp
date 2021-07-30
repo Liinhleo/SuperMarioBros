@@ -20,6 +20,8 @@
 #include "Ninja.h"
 #include "ScoreEffect.h"
 #include "CardItemEffect.h"
+#include "LastItem.h"
+
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath):CScene(id, filePath)
@@ -384,7 +386,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int left = atoi(tokens[6].c_str());
 		int right = atoi(tokens[7].c_str());
 
-		obj = new Coin();
+		obj = new LastItem();
 
 		// General object setup
 		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
@@ -598,6 +600,11 @@ void CPlayScene::Update(DWORD dt)
 			Pswitch* p_switch = dynamic_cast<Pswitch*>(listObjects[i]);
 			p_switch->Update(dt, &listObjects, &listItems);
 		}
+
+		//else if (listObjects[i]->GetType() == ObjectType::NINJA) {
+		//	Ninja* ninja = dynamic_cast<Ninja*>(listObjects[i]);
+		//	ninja->Update(dt, &listObjects);
+		//}
 		else {
 			listObjects[i]->Update(dt, &listObjects);
 		}

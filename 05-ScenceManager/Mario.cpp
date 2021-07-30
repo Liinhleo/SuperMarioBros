@@ -623,7 +623,7 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 		if (isAABB(coItem->at(i))) {
 			if (coItem->at(i)->GetType() == ObjectType::LAST_ITEM)
 			{
-				cards.push_back(coItem->at(i)->animation_set->at(ani)->getCurrentFrame());
+				cards.push_back(coItem->at(i)->animation_set->at(0)->getCurrentFrame());
 				SetState(MARIO_STATE_WALKING_RIGHT);
 				isAutoGo = true;
 			}

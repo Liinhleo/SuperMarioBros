@@ -7,13 +7,12 @@ Ninja::Ninja() {
 	this->type = ObjectType::NINJA;
 	this->start_x = x;
 	this->start_y = y;
-	//this->nx = - 1; // trai
+
 	SetState(NINJA_STATE_WALKING);
 	isAttacking = false;
 	timeWaitAttack->Start();
 
 }
-
 
 void Ninja::GetBoundingBox(float& left, float& top, float& right, float& bottom) {
 	if (state == STATE_DESTROYED || state == ENEMY_STATE_DAMAGE || state == ENEMY_STATE_DIE_BY_ATTACK)
@@ -29,68 +28,70 @@ void Ninja::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void Ninja::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	CGameObject::Update(dt);
+	
 	vy += MARIO_GRAVITY * dt;
+	
+	DebugOut(L"Ninja POS=== %f \n", start_x);
+	DebugOut(L"Ninja POS=== %f \n", start_y);
 
-	//int m_x = CMario::GetInstance()->x;
-	//if (m_x < this->x) {
-	//	this->nx = -1;
+	//float m_x = CMario::GetInstance()->x;
+	//// Lay huong cua mario de xet huong cua Ninja
+	////if (CMario.x < this->start_x) { //mario o ben trai
+	////	this->nx = 1;
+	////}
+	////else {
+	////	this->nx = -1;
+	////}
+
+	////if (listBoomerang.size() == 0) {
+	////	if (isAttacking && timeWaitAttack->GetStartTime() == 0) {
+	////		timeWaitAttack->Start();
+	////		isAttacking = false;
+	////	}
+	////}
+
+	//// XET VI TRI DI CHUYEN QUA LAI LIMIT POSITION
+	//if (x > start_x + LIMIT_POSITION) 
+	//{
+	//	x = start_x + LIMIT_POSITION;
+	//	SetState(NINJA_STATE_IDLE);
 	//}
-	//else {
-	//	this->nx = 1;
+	//if (x < start_x)
+	//{
+	//	x = start_x;
+	//	SetState(NINJA_STATE_IDLE);
 	//}
 
-	if (listBoomerang.size() == 0) {
-		if (isAttacking && timeWaitAttack->GetStartTime() == 0) {
-			timeWaitAttack->Start();
-			isAttacking = false;
-		}
-	}
+	//// XET THOI GIAN CHANGE STATE IDLE -> WALKING
+	//if (timeIdle->GetStartTime() && timeIdle->IsTimeUp()) {
+	//	timeIdle->Stop();
+	//	SetState(NINJA_STATE_WALKING);
+	//}
 
-	// XET VI TRI DI CHUYEN QUA LAI LIMIT POSITION
-	if (x > start_x + LIMIT_POSITION)
-	{
-		x = start_x + LIMIT_POSITION;
-		nx = -1;
-		SetState(NINJA_STATE_IDLE);
-	}
-	if (x < start_x)
-	{
-		x = start_x;
-		nx = 1;
-		SetState(NINJA_STATE_IDLE);
-	}
+	//// XET THOI GIAN ATTACK WITH BOOMERANG
+	//if (timeWaitAttack->GetStartTime() && timeWaitAttack->IsTimeUp()) { 
+	//	isAttacking = true;
+	//	timeWaitAttack->Stop();
 
-	// XET THOI GIAN CHANGE STATE IDLE -> WALKING
-	if (timeIdle->GetStartTime() && timeIdle->IsTimeUp()) {
-		timeIdle->Stop();
-		SetState(NINJA_STATE_WALKING);
-	}
+	//	if (listBoomerang.size() < 2) {
+	//		if (player.x > this->x)
+	//			player.x = 1;
+	//		else
+	//			player.x = 0;
+	//		// DANH THEO HUONG CO MARIO
+	//		listBoomerang.push_back(CreateBoomerang(this->x, this->y, player.x));
+	//	}
 
-	// XET THOI GIAN ATTACK WITH BOOMERANG
-	if (timeWaitAttack->GetStartTime() && timeWaitAttack->IsTimeUp()) { 
-		isAttacking = true;
-		timeWaitAttack->Stop();
+	//	// XOA BOOMERANG NEU VA CHAM NINJA
+	//	for (size_t i = 0; i < listBoomerang.size(); i++)
+	//	{
+	//		listBoomerang[i]->Update(dt, coObjects);
+	//		if (this->IsCollidingWithObjectNx(listBoomerang[i]) 
+	//			|| this->IsCollidingWithObjectNy(listBoomerang[i]))
 
-		if (listBoomerang.size() < 2) {
-			int mario_x = CMario::GetInstance()->x;
-			if (mario_x > this->x)
-				mario_x = 1;
-			else
-				mario_x = 0;
-			// DANH THEO HUONG CO MARIO
-			listBoomerang.push_back(CreateBoomerang(this->x, this->y, mario_x));
-		}
-
-		// XOA BOOMERANG NEU VA CHAM NINJA
-		for (size_t i = 0; i < listBoomerang.size(); i++)
-		{
-			listBoomerang[i]->Update(dt, coObjects);
-			if (this->IsCollidingWithObjectNx(listBoomerang[i]) 
-				|| this->IsCollidingWithObjectNy(listBoomerang[i]))
-
-				listBoomerang[i]->SetState(STATE_DESTROYED);
-		}
-	}
+	//			listBoomerang[i]->SetState(STATE_DESTROYED);
+	//	}
+	//}
 
 
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -147,11 +148,11 @@ void Ninja::Render() {
 		ani = NINJA_ANI_DIE;
 	}
 	if (state == NINJA_STATE_WALKING) {
-		if (vx < 0)	ani = NINJA_ANI_WALKING_RIGHT;
+		if (nx > 0)	ani = NINJA_ANI_WALKING_RIGHT;
 		else ani = NINJA_ANI_WALKING_LEFT;
 	}
 	if (state == NINJA_STATE_IDLE) {
-		if (vx < 0)	ani = NINJA_ANI_IDLE_RIGHT;
+		if (nx > 0)	ani = NINJA_ANI_IDLE_RIGHT;
 		else ani = NINJA_ANI_WALKING_LEFT;
 	}
 
@@ -173,23 +174,16 @@ void Ninja::SetState(int state) {
 		break;
 	case ENEMY_STATE_DAMAGE:
 	case ENEMY_STATE_DIE_BY_ATTACK:
-		vy = -0.05f;
-
-		if (nx > 0)
-		{
-			vx = 0.05f;
-		}
-		else
-		{
-			vx = -0.05f;
-		}
+		vy = -0.15f;
+		vx = nx * 0.05f;
 		break;
+
 	case NINJA_STATE_IDLE:
 		vx = 0;
 		timeIdle->Start();
 		break;
 	case NINJA_STATE_WALKING:
-		vx = nx * 0.05f;
+		vx = -0.05f;
 		break;
 	}
 }
