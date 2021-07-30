@@ -33,8 +33,12 @@ public:
 	int typeItem;	// 0=none 1= superLeaf||red mushroom 2=coin 3=p_switch 4=green_mushroom
 	int count;		//number of item 
 
-	bool isBroken = false; // if mario attack -> true
+	bool isHidden; // bien check state hidden cho music brick -> xet va cham ny > 0 -> setstate(BRICK_STATE_ACTIVE)
+
+	bool isBroken = false; // if mario attack (glass brick) -> true
 	bool isFallingItem = false;
+
+	vector<LPGAMEOBJECT> listPiece; // chua gach vo
 
 	CBrick(float x, float y,int typeBrick, int typeItem, int count);
 	~CBrick() {};

@@ -1,26 +1,17 @@
 #include "Ninja.h"
 #include "Ground.h"
-
-#define NINJA_STATE_IDLE	0
-#define NINJA_STATE_WALKING	100
-#define NINJA_STATE_ATTACK	200
-
-#define NINJA_ANI_WALKING_RIGHT		0
-#define NINJA_ANI_WALKING_LEFT		1
-#define NINJA_ANI_DIE				2
-
-#define LIMIT_POSITION				32 // gioi han vi tri di chuyen
-
-#define NINJA_BBOX_WIDTH	16
-#define NINJA_BBOX_HEIGHT	24
+#include "Mario.h"
 
 
 Ninja::Ninja() {
 	this->type = ObjectType::NINJA;
 	this->start_x = x;
 	this->start_y = y;
-	this->nx = 1;
+	//this->nx = - 1; // trai
 	SetState(NINJA_STATE_WALKING);
+	isAttacking = false;
+	timeWaitAttack->Start();
+
 }
 
 
@@ -40,12 +31,22 @@ void Ninja::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	CGameObject::Update(dt);
 	vy += MARIO_GRAVITY * dt;
 
-	// turn off collision when die 
-	if (state == ENEMY_STATE_DIE_BY_ATTACK || state == ENEMY_STATE_DAMAGE) {
-		x += dx;
-		y += dy;
+	//int m_x = CMario::GetInstance()->x;
+	//if (m_x < this->x) {
+	//	this->nx = -1;
+	//}
+	//else {
+	//	this->nx = 1;
+	//}
+
+	if (listBoomerang.size() == 0) {
+		if (isAttacking && timeWaitAttack->GetStartTime() == 0) {
+			timeWaitAttack->Start();
+			isAttacking = false;
+		}
 	}
 
+	// XET VI TRI DI CHUYEN QUA LAI LIMIT POSITION
 	if (x > start_x + LIMIT_POSITION)
 	{
 		x = start_x + LIMIT_POSITION;
@@ -59,13 +60,43 @@ void Ninja::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 		SetState(NINJA_STATE_IDLE);
 	}
 
+	// XET THOI GIAN CHANGE STATE IDLE -> WALKING
+	if (timeIdle->GetStartTime() && timeIdle->IsTimeUp()) {
+		timeIdle->Stop();
+		SetState(NINJA_STATE_WALKING);
+	}
+
+	// XET THOI GIAN ATTACK WITH BOOMERANG
+	if (timeWaitAttack->GetStartTime() && timeWaitAttack->IsTimeUp()) { 
+		isAttacking = true;
+		timeWaitAttack->Stop();
+
+		if (listBoomerang.size() < 2) {
+			int mario_x = CMario::GetInstance()->x;
+			if (mario_x > this->x)
+				mario_x = 1;
+			else
+				mario_x = 0;
+			// DANH THEO HUONG CO MARIO
+			listBoomerang.push_back(CreateBoomerang(this->x, this->y, mario_x));
+		}
+
+		// XOA BOOMERANG NEU VA CHAM NINJA
+		for (size_t i = 0; i < listBoomerang.size(); i++)
+		{
+			listBoomerang[i]->Update(dt, coObjects);
+			if (this->IsCollidingWithObjectNx(listBoomerang[i]) 
+				|| this->IsCollidingWithObjectNy(listBoomerang[i]))
+
+				listBoomerang[i]->SetState(STATE_DESTROYED);
+		}
+	}
+
+
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-
-
-
 
 	CalcPotentialCollisions(coObjects, coEvents);
 
@@ -105,7 +136,6 @@ void Ninja::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 			}
 		}
 	}
-
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
 	
@@ -120,6 +150,13 @@ void Ninja::Render() {
 		if (vx < 0)	ani = NINJA_ANI_WALKING_RIGHT;
 		else ani = NINJA_ANI_WALKING_LEFT;
 	}
+	if (state == NINJA_STATE_IDLE) {
+		if (vx < 0)	ani = NINJA_ANI_IDLE_RIGHT;
+		else ani = NINJA_ANI_WALKING_LEFT;
+	}
+
+	for (size_t i = 0; i < listBoomerang.size(); i++)
+		listBoomerang[i]->Render();
 
 	animation_set->at(ani)->Render(x, y);
 
@@ -148,10 +185,11 @@ void Ninja::SetState(int state) {
 		}
 		break;
 	case NINJA_STATE_IDLE:
-		vx = nx * 0.003f;
+		vx = 0;
+		timeIdle->Start();
 		break;
 	case NINJA_STATE_WALKING:
-		vx = nx * 0.003f;
+		vx = nx * 0.05f;
 		break;
 	}
 }

@@ -173,6 +173,9 @@
     <ClCompile Include="LastItem.cpp">
       <Filter>Items</Filter>
     </ClCompile>
+    <ClCompile Include="BrickBrokenEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -315,6 +318,9 @@
     </ClInclude>
     <ClInclude Include="LastItem.h">
       <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="BrickBrokenEffect.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

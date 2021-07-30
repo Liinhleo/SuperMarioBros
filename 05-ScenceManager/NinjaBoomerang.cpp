@@ -8,8 +8,8 @@ NinjaBoomerang::NinjaBoomerang(D3DXVECTOR2 position, int nx)
 	this->start_x = x;
 	this->nx = nx;
 
-	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(58));
-	//SetState(BOOMERANG_STATE_NORMAL);
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(11));
+	SetState(BOOMERANG_STATE_ACTIVE);
 }
 
 void NinjaBoomerang::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -63,7 +63,7 @@ void NinjaBoomerang::SetState(int state)
 		vx = vy = 0;
 		break;
 
-	case BOOMERANG_ANI_ACTIVE:
+	case BOOMERANG_STATE_ACTIVE:
 		vx = nx * BOOMERANG_SPEED_X;
 		vy = -BOOMERANG_SPEED_Y;
 		break;

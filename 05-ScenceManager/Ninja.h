@@ -2,6 +2,21 @@
 #include "Enemy.h"
 #include "NinjaBoomerang.h"
 
+#define NINJA_STATE_IDLE	0
+#define NINJA_STATE_WALKING	100
+#define NINJA_STATE_ATTACK	200
+
+#define NINJA_ANI_IDLE_RIGHT		0
+#define NINJA_ANI_IDLE_LEFT			1
+#define NINJA_ANI_WALKING_RIGHT		2
+#define NINJA_ANI_WALKING_LEFT		3
+#define NINJA_ANI_DIE				4
+
+#define LIMIT_POSITION				68 // gioi han vi tri di chuyen (2 brick)
+
+#define NINJA_BBOX_WIDTH	16
+#define NINJA_BBOX_HEIGHT	24
+
 class Ninja :
     public Enemy
 {
@@ -13,10 +28,11 @@ public:
 		return boomerang;
 	}
 
-	Timer* timeAttacking = new Timer(3000);
+	Timer* timeIdle = new Timer(300); 
+	Timer* timeAttacking = new Timer(1200);
+	Timer* timeWaitAttack = new Timer(1000); // thoi gian cho truoc khi attack lai
 
-	bool isWing; // 0: non -> state walk || 1: wing ->state fly
-	bool isOnGround = false;
+	bool isAttacking;
 
 	Ninja();
 

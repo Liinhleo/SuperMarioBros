@@ -232,11 +232,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							x += dx;
 							y += dy;
 						}
-						if (state == KOOPAS_STATE_SHELL_RUNNING
-							&& brick->GetBrickType() == BRICK_GLASS
-							&& brick->GetState() == BRICK_STATE_HIDDEN) {
-							brick->SetState(BRICK_STATE_BROKEN);
-						}
 					}
 
 					// CASE KOOPA BI ROT XUONG GACH BEN DUOI (VA CHAM NX CUA GACH KHAC)
@@ -249,6 +244,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							&& brick->GetState() != BRICK_STATE_HIDDEN)
 						{
 							brick->SetState(BRICK_STATE_BROKEN);
+						}
+						else if (state == KOOPAS_STATE_SHELL_RUNNING
+							&& brick->GetBrickType() == BRICK_MUSIC
+							&& brick->GetState() != BRICK_STATE_HIDDEN) {
+							brick->SetState(BRICK_STATE_BOUNDING);
+							this->vx = -this->vx; //doi chieu 
 						}
 						else if (brick->GetBrickType() == BRICK_QUESTION) {
 

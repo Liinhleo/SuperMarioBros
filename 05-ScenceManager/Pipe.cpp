@@ -17,7 +17,7 @@ void Pipe::Render() {
 		else ani = PIPE_ANI_SHORT;
 	}
 	animation_set->at(ani)->Render(x, y);
-	 RenderBoundingBox();
+	RenderBoundingBox();
 }
 void Pipe::GetBoundingBox(float& left, float& top, float& right, float& bottom) {
 	left = x;

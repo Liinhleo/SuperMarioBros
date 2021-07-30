@@ -7,7 +7,7 @@
 #include "MarioTail.h"
 #include "Koopas.h"
 
-#define MARIO_TIME_ATTACK	500
+#define MARIO_TIME_ATTACK	400
 class CMario : public CGameObject
 {
 	static CMario* __instance;
@@ -20,6 +20,7 @@ class CMario : public CGameObject
 	int level;
 	int untouchable;
 	DWORD untouchable_start;
+	//DWORD attackStart;
 
 public: 
 	static CMario* GetInstance();
@@ -40,7 +41,8 @@ public:
 	LPGAMEOBJECT collideGround; // chua ground (doi tuong va cham theo truc y)
 	
 	float a; // accelerate
-	
+	int changeNx = 0;
+
 	bool isOnGround = false;
 	bool isAttack = false;
 	bool isFlying = false;

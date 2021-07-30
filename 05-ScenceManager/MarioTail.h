@@ -19,7 +19,7 @@ public:
 	MarioTail();
 	~MarioTail() {}
 
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx);
 	
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void Render();

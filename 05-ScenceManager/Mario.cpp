@@ -37,7 +37,6 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->a = 0;
 }
 
-
 void CMario::UpdateSpeed(DWORD dt) {
 	//DebugOut(L"cur a: %f \n", a);
 
@@ -52,6 +51,7 @@ void CMario::UpdateSpeed(DWORD dt) {
 		}
 	}
 }
+
 void CMario::DecreaseSpeed() {
 	if (abs(vx) > MARIO_WALKING_SPEED) { //RUN
 		if (vx > 0) { // right
@@ -196,15 +196,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 	}
 
 	if (level == MARIO_LEVEL_RACOON) {
-		if (isAttack && !attackStart->IsTimeUp()) {
+		if (isAttack && GetTickCount64() - attackStart->GetStartTime() <= MARIO_TIME_ATTACK) {
 			this->state = MARIO_STATE_ATTACK;
 			tail->SetState(TAIL_STATE_HIT);
+
 			// Xet lai huong cho tail khi o frame 2
-			if (animation_set->at(ani)->getCurrentFrame() == 2) {
-				this->nx = -CMario::GetInstance()->nx;
+			if (GetTickCount64() - attackStart->GetStartTime() < MARIO_TIME_ATTACK / 2 && changeNx == 0) {
+				nx = -nx;
+				changeNx++;
+			}
+			if (GetTickCount64() - attackStart->GetStartTime() >= MARIO_TIME_ATTACK / 2 && changeNx == 1) {
+				changeNx = 0;
+				nx = -nx;
 			}
 			tail->SetPosition(x, y);
-
 		}
 		else {
 			if (!isOnGround) {
@@ -220,11 +225,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 			attackStart->Stop();
 		}
 	}
-	
-	
 
 	//update listBullet
-	tail->Update(dt, coObjects);
+	tail->Update(dt, coObjects, {x,y},nx);
 
 	for (size_t i = 0; i < listBullet.size(); i++)
 	{
@@ -299,7 +302,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 				if (e->obj->GetType() == ObjectType::PIPE) {
 					Pipe* pipe = dynamic_cast<Pipe*>(e->obj); // if e->obj is Pipe 
 					if (pipe->IsHasPortal()) {
-						if (pipe->GetDirection()&& this->canGoThroughPipe_up) {
+						if (pipe->GetDirection()/*&& this->canGoThroughPipe_up*/) {
 
 							this->isInHiddenMap = !this->isInHiddenMap;
 							this->SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);
@@ -313,13 +316,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 				}
 			}
 
-			// MARIO'S HEAD COLLIDE WITH OBJECT // ny > 0
+			// MARIO'S HEAD  ( ny > 0 )
 			if (e->ny > 0) { 
-				// BRICK
+				
+				// XET VA CHAM MARIO'HEAD VS BRICK
 				if (e->obj->GetType() == ObjectType::BRICK) {
 					vy = 0;
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj); // if e->obj is Brick 
-					if (brick->GetBrickType()!= BRICK_BROKEN) {
+					// BRICK GLASS & QUESTION
+					if (brick->GetBrickType()!= BRICK_BROKEN && brick->GetBrickType() != BRICK_MUSIC) {
 
 						// BRICK_GLASS
 						if (brick->GetBrickType() == BRICK_GLASS) {
@@ -330,7 +335,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 								switch (brick->GetTypeItem()) {
 								case CONTAIN_NONE:
 									{
-										//brick->SetState(BRICK_STATE_BOUNDING);
 										if (brick->GetCountItem() == 0)
 											brick->SetState(BRICK_STATE_BROKEN);
 										break;
@@ -338,7 +342,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 									
 								case CONTAIN_ITEM_UP:
 									{
-										//brick->SetState(BRICK_STATE_BOUNDING);
 										if (brick->GetCountItem() > 0)
 											brick->count--;
 										if (brick->GetCountItem() == 0)
@@ -348,7 +351,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 									
 								case CONTAIN_COIN: 
 									{
-										//brick->SetState(BRICK_STATE_BOUNDING);
 										AddScore(100);
 										AddCoin();
 
@@ -365,7 +367,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 									}
 								case CONTAIN_PSWITCH:
 									{
-										CGameObject* pswitch = new Pswitch(brick->start_x, brick->start_y - 16);
+										CGameObject* pswitch = new Pswitch(brick->start_x, brick->start_y - BRICK_BBOX_SIZE);
 										coObjects->push_back(pswitch);
 										brick->SetBrickType(BRICK_BROKEN);
 										brick->SetState(BRICK_STATE_BOUNDING);
@@ -378,7 +380,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 							}
 						}
 						// BRICK_QUESTION
-						else {
+						else if (brick->GetBrickType() == BRICK_QUESTION) {
 							if (brick->GetCountItem() == 1) {
 								if (brick->GetBrickType() == BRICK_QUESTION)
 									brick->SetBrickType(BRICK_BROKEN);
@@ -396,16 +398,37 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 							if (brick->GetCountItem() > 0)
 								brick->count--;
 						}
+						
+					}
+
+					// BRICK_MUSIC
+					else if (brick->GetBrickType() == BRICK_MUSIC) {
+						if (brick->GetState() == BRICK_STATE_HIDDEN && brick->GetState() != BRICK_STATE_ACTIVE) {
+							brick->SetState(BRICK_STATE_ACTIVE);
+						}
 					}
 
 				}
 				
-				// GROUND (color box)
+				// XET VA CHAM MARIO'HEAD VS GROUND (COLOR BOX)
 				if (e->obj->GetType() == ObjectType::GROUND) {
 					CGround* ground = dynamic_cast<CGround*>(e->obj); // if e->obj is Ground 
 					if (ground->isInteract) {
 						x += dx;
 						y += dy;
+					}
+				}
+			}
+
+			// MARIO'S LEG  ( ny > 0 ) -> MUSIC BRICK -> 
+			if (e->ny < 0) {
+				if (e->obj->GetType() == ObjectType::BRICK) {
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj); // if e->obj is Brick 
+					if (brick->GetBrickType() == BRICK_MUSIC) {
+						this->vy = -MARIO_JUMP_SPEED_Y; // mario bi push cao len
+						this->y -= 5;
+						this->isOnGround = false;
+						brick->SetState(BRICK_STATE_BOUNDING);
 					}
 				}
 			}
@@ -1007,7 +1030,7 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_ATTACK:
 		isAttack = true;
-		attackStart->Start(); //bd tinh gio danh
+		attackStart->Start();
 		break;
 	}
 }
@@ -1124,7 +1147,7 @@ void  CMario::RefreshState() {
 }
 void CMario::StartUntouchable() {
 	this->untouchable = 1;
-	this->untouchable_start = GetTickCount64();
+	this->untouchable_start = GetTickCount();
 }
 
 void CMario::ToRight() {
