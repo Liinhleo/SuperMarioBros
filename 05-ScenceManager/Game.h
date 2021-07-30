@@ -40,12 +40,12 @@ class CGame
 	int screen_height; 
 
 	unordered_map<int, LPSCENE> scenes;
-	int current_scene; 
 
 	void _ParseSection_SETTINGS(string line);
 	void _ParseSection_SCENES(string line);
 
 public:
+	int current_scene;
 
 	float cam_x = 0.0f;
 	float cam_y = 0.0f;

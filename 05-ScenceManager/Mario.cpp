@@ -153,13 +153,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		shell->nx = -this->nx;
 		if (this->GetLevel() == MARIO_LEVEL_SMALL) {
 			if (nx < 0)
-				shell->SetPosition(x - 12, y - 12);
+				shell->SetPosition(x - 15, y - 12);
 			else
 				shell->SetPosition(x + 12, y - 12);
 		}
 		else if (this->GetLevel() == MARIO_LEVEL_RACOON) {
 			if (nx < 0)
-				shell->SetPosition(x - 5, y);
+				shell->SetPosition(x - 15, y);
 			else
 				shell->SetPosition(x + 19, y);
 		}
@@ -375,12 +375,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 								
 							}
 						}
-						// BRICK_QUESTION
-						if (brick->GetBrickType() == BRICK_QUESTION) {
-							brick->SetState(BRICK_STATE_BOUNDING);
-							if(brick->GetCountItem() == 1)
-								brick->SetBrickType(BRICK_BROKEN);
+						else {
 
+							if (brick->GetCountItem() == 1) {
+								if (brick->GetBrickType() == BRICK_QUESTION)
+									brick->SetBrickType(BRICK_BROKEN);
+							}
 							if (brick->GetTypeItem() == CONTAIN_COIN) {
 								AddScore(100);
 								AddCoin();
@@ -390,15 +390,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 								CGameObject* effect = new CoinEffect({ b_x,b_y });
 								listEffect->push_back(effect);
 							}
+							brick->SetState(BRICK_STATE_BOUNDING);
+
 							if (brick->GetCountItem() > 0)
 								brick->count--;
 						}
-						// BRICK_MUSIC
-						else if (brick->GetBrickType() == BRICK_MUSIC) {
-							if (brick->GetState() == BRICK_STATE_HIDDEN
-								&& brick->GetState() != BRICK_STATE_ACTIVE) {
-								brick->SetState(BRICK_STATE_ACTIVE);
-							}
+					}
+					// BRICK_MUSIC
+					if (brick->GetBrickType() == BRICK_MUSIC) {
+						if (brick->GetState() == BRICK_STATE_HIDDEN
+							&& brick->GetState() != BRICK_STATE_ACTIVE) {
+							brick->SetState(BRICK_STATE_ACTIVE);
 						}
 					}
 				}
@@ -510,13 +512,21 @@ void CMario::CollideWithObject(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJ
 			}
 			break;
 		case ObjectType::NINJA:
-			
-			// CHUA XU LY BOOMERANG
+		{
+			Ninja* ninja = dynamic_cast<Ninja*>(coObjects->at(i));
+
+			for (size_t i = 0; i < ninja->listBoomerang.size(); i++) {
+				if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
+					if (this->isAABB(ninja->listBoomerang[i])) {
+						this->isDamaged();
+						ninja->listBoomerang[i]->Update(dt, coObjects);
+					}
+				}
+			}
 
 			if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
 				if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) {
-					Ninja* ninja = dynamic_cast<Ninja*>(coObjects->at(i));
-
+					
 					if (ninja->GetState() != STATE_DESTROYED
 						&& ninja->GetState() != ENEMY_STATE_DAMAGE
 						&& ninja->GetState() != ENEMY_STATE_DIE_BY_ATTACK)
@@ -536,7 +546,9 @@ void CMario::CollideWithObject(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJ
 					this->isDamaged(); // xu ly mario bi thuong
 				}
 			}
-			break;
+		}
+		break;
+
 		case ObjectType::KOOPA:
 			if (untouchable == 0 && GetState() != MARIO_STATE_DIE) {
 				if (this->IsCollidingWithObjectNy_1(coObjects->at(i))) { // jump on top
@@ -1223,7 +1235,7 @@ void  CMario::RefreshState() {
 }
 void CMario::StartUntouchable() {
 	this->untouchable = 1;
-	this->untouchable_start = GetTickCount();
+	this->untouchable_start = GetTickCount64();
 }
 
 void CMario::ToRight() {

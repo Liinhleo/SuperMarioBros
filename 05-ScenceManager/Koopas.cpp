@@ -259,7 +259,8 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							&& brick->GetBrickType() == BRICK_MUSIC
 							&& brick->GetState() != BRICK_STATE_HIDDEN) {
 							brick->SetState(BRICK_STATE_BOUNDING);
-							this->vx = -this->vx; //doi chieu 
+							this->vx = -this->vx; //doi chieu
+							this->y += 5;
 						}
 						else if (brick->GetBrickType() == BRICK_QUESTION) {
 							brick->SetBrickType(BRICK_BROKEN);

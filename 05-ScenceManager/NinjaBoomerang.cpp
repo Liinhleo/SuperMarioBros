@@ -20,9 +20,7 @@ void NinjaBoomerang::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (x > start_x + DISTANCE_TO_RETURN_X)
 		SetState(BOOMERANG_STATE_RETURN);
-	if (state == BOOMERANG_STATE_ACTIVE)
-	{
-	}
+
 	if (state == BOOMERANG_STATE_RETURN)
 	{
 		if (abs(vx) <= abs(nx * BOOMERANG_SPEED_X))

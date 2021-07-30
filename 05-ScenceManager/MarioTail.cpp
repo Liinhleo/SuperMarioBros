@@ -165,7 +165,6 @@ void MarioTail::Render() {
 		if (nx > 0) ani = TAIL_ANI_RIGHT;
 		else ani = TAIL_ANI_LEFT;
 	}
-	RenderBoundingBox();
 }
 
 void MarioTail::SetState(int state) {

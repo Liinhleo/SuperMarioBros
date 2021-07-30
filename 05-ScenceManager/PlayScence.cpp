@@ -881,24 +881,26 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->Reset();
 		break;
 	
-	// get pipe down
-	case DIK_5:
-		mario->SetPosition(1800, mario->y);
-		CGame::GetInstance()->cam_x = 1800;
+	case DIK_5:		
+		if (CGame::GetInstance()->current_scene != ID_SCENE_1) {
+			CGame::GetInstance()->SwitchScene(ID_SCENE_1);
+			mario->RefreshState();
+		}
 		break;
 
-
-	// get pipe up
 	case DIK_6:
-		mario->SetPosition(1900, mario->y);
-		CGame::GetInstance()->cam_x = 1900;
+		if (CGame::GetInstance()->current_scene != ID_SCENE_3) {
+			CGame::GetInstance()->SwitchScene(ID_SCENE_3);
+			mario->RefreshState();
+		}
 		break;
 
-
-	// go to Hidden map
 	case DIK_7:
+		if (CGame::GetInstance()->current_scene != ID_SCENE_GREENLAND) {
+			CGame::GetInstance()->SwitchScene(ID_SCENE_GREENLAND);
+			mario->RefreshState();
+		}
 		break;
-
 	}
 }
 
@@ -975,6 +977,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	}
 
 	if (mario->isOnGround) {
+		if ((game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_RIGHT) && game->IsKeyDown(DIK_A))
+			|| game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_RIGHT) 
+			|| (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_UP)))
+		{
+			mario->SetState(MARIO_STATE_IDLE);
+		}
+
 		// RUN RIGHT
 		if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT)) {
 			if (mario->state == MARIO_STATE_SIT)

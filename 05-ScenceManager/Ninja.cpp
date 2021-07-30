@@ -95,8 +95,7 @@ void Ninja::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	}
 
 	//// XET THOI GIAN ATTACK WITH BOOMERANG
-
-	if (timeWaitAttack->GetStartTime() && timeWaitAttack->IsTimeUp())
+		if (timeWaitAttack->GetStartTime() && timeWaitAttack->IsTimeUp())
 	{
 		isAttacking = true;
 		timeWaitAttack->Stop();
