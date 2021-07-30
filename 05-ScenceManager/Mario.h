@@ -31,7 +31,7 @@ public:
 		return bullet;
 	}
 	MarioTail* tail = MarioTail::GetInstance(); // mario has a tail when level = RACOON
-	CKoopas* shell;
+	CKoopas* shell = new CKoopas();
 
 	// XET THOI GIAN
 	Timer* flyTime = new Timer(TIME_FLY);
@@ -44,8 +44,14 @@ public:
 	bool isOnGround = false;
 	bool isAttack = false;
 	bool isFlying = false;
-	bool canHolding = false;
 	bool isAutoGo = false;
+	bool isHolding = false;
+
+	bool canHolding = false;
+
+	CMario(float x = 0.0f, float y = 0.0f);
+	~CMario() {};
+
 
 	// GREEN LAND SOLVING
 	bool canWalkLeft = false;
@@ -69,9 +75,6 @@ public:
 	bool isInHiddenMap = false;
 	bool canGoThroughPipe_up = false;
 	bool canGoThroughPipe_down = false;
-
-	CMario(float x = 0.0f, float y = 0.0f);
-	~CMario() {};
 
 	// Van toc
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }

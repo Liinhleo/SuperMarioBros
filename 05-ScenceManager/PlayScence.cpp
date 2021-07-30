@@ -552,7 +552,8 @@ void CPlayScene::Update(DWORD dt)
 		if (listObjects[i]->GetType() == ObjectType::BRICK) {
 			CBrick* brick = dynamic_cast<CBrick*>(listObjects[i]);
 			
-			if (brick->GetBrickType() == BRICK_GLASS && brick->GetState() == BRICK_STATE_HIDDEN) {
+			if (brick->GetBrickType() == BRICK_GLASS 
+				&& brick->GetState() == BRICK_STATE_HIDDEN) {
 				listObjects.erase(listObjects.begin() + i); // xoa bat dau tai vi tri thu i
 				i--;
 			}
@@ -621,12 +622,12 @@ void CPlayScene::Update(DWORD dt)
 			listEffects.push_back(score);
 		}
 		// effect add card 
-		if (dynamic_cast<CardItemEffect*>(listEffects[i]))
+		/*if (dynamic_cast<CardItemEffect*>(listEffects[i]))
 		{
 			CardItemEffect* card = dynamic_cast<CardItemEffect*>(listEffects[i]);
 			if (card->GetState() == STATE_DESTROYED)
 				player->canSwitchScene = true;
-		}
+		}*/
 	}
 
 	// mario
@@ -742,16 +743,16 @@ void CPlayScene::Update(DWORD dt)
 	}
 #pragma endregion
 
-	// Effect endscene
-	if (player->isAutoGo && player->isOutOfCam())
-	{
-		CGameObject* effect;
-		if (!player->isInHiddenMap)
-			effect = new CardItemEffect({ map->startHiddenMap_x - (SCREEN_WIDTH / 2) - 68.0f, 270 });
-		else
-			effect = new CardItemEffect({ map->heightMap - (SCREEN_WIDTH / 2) - 68.0f, 270 });
-		listEffects.push_back(effect);
-	}
+	//// Effect endscene
+	//if (player->isAutoGo && player->isOutOfCam())
+	//{
+	//	CGameObject* effect;
+	//	if (!player->isInHiddenMap)
+	//		effect = new CardItemEffect({ map->startHiddenMap_x - (SCREEN_WIDTH / 2) - 68.0f, 270 });
+	//	else
+	//		effect = new CardItemEffect({ map->heightMap - (SCREEN_WIDTH / 2) - 68.0f, 270 });
+	//	listEffects.push_back(effect);
+	//}
 
 	// Update cac doi moving list (case: enemy di ra khoi grid)
 	gridMoving->UpdateGrid(listMoving);
@@ -1033,9 +1034,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 		// SIT
 		else if (game->IsKeyDown(DIK_DOWN)) {
-			if (mario->GetLevel() == MARIO_LEVEL_BIG
-				|| mario->GetLevel() == MARIO_LEVEL_RACOON
-				|| mario->GetLevel() == MARIO_LEVEL_FIRE) {
+			if (!mario->GetLevel() == MARIO_LEVEL_SMALL && !mario->isHolding) {
 				mario->SetState(MARIO_STATE_SIT);
 			}
 			else

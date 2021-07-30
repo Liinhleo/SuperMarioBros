@@ -35,8 +35,6 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->y = y;
 
 	this->a = 0;
-
-	tail = new MarioTail();
 }
 
 
@@ -152,6 +150,40 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 		tail->SetState(STATE_DESTROYED);
 	}
 
+	// XU LY HOLDING SHELL
+	if (isHolding) {
+		if (!shell->isBeingHeld || shell->GetState()== ENEMY_STATE_DIE_BY_ATTACK) {
+			isHolding = false;
+		}
+		shell->nx = -this->nx;
+		if (this->GetLevel() == MARIO_LEVEL_SMALL) {
+			if (nx < 0)
+				shell->SetPosition(x - 12, y - 12);
+			else
+				shell->SetPosition(x + 12, y - 12);
+		}
+		else if (this->GetLevel() == MARIO_LEVEL_RACOON) {
+			if (nx < 0)
+				shell->SetPosition(x - 5, y);
+			else
+				shell->SetPosition(x + 19, y);
+		}
+		else {
+			if (nx < 0)
+				shell->SetPosition(x - 12, y);
+			else
+				shell->SetPosition(x + 12, y);
+		}
+	}
+
+	if (!this->canHolding && this->isHolding)
+	{
+		shell->SetState(KOOPAS_STATE_SHELL_RUNNING);
+		this->isHolding = false;
+		shell->isBeingHeld = false;
+	}
+
+	// XU LY STATE ATTACK, FLYING
 	if (level == MARIO_LEVEL_FIRE && isAttack) {
 		// Tao bullet
 		if (listBullet.size() < 2) {
@@ -171,6 +203,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 			if (animation_set->at(ani)->getCurrentFrame() == 2) {
 				this->nx = -CMario::GetInstance()->nx;
 			}
+			tail->SetPosition(x, y);
+
 		}
 		else {
 			if (!isOnGround) {
@@ -181,11 +215,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 					isFlying = false;
 					this->state = MARIO_STATE_JUMP;
 				}
-				isAttack = false;
-				attackStart->Stop();
 			}
+			isAttack = false;
+			attackStart->Stop();
 		}
 	}
+	
 	
 
 	//update listBullet
@@ -521,26 +556,27 @@ void CMario::CollideWithObject(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJ
 				}
 				// Va cham theo phuong ngang
 				else if (this->IsCollidingWithObjectNx(coObjects->at(i))) {
-					CKoopas* koopa_x = dynamic_cast<CKoopas*>(coObjects->at(i));
+					CKoopas* koopa = dynamic_cast<CKoopas*>(coObjects->at(i));
 					
-					if (koopa_x->GetState() == KOOPAS_STATE_SHELL_IDLE) {
+					if (koopa->GetState() == KOOPAS_STATE_SHELL_IDLE) {
 						if (canHolding) {
-							this->shell = koopa_x;
-							koopa_x->isBeingHeld = true;
+							this->shell = koopa;
+							koopa->isBeingHeld = true;
+							this->isHolding = true;
 					
 						}
 						else {
-							koopa_x->nx = -this->nx;
-							koopa_x->SetState(KOOPAS_STATE_SHELL_RUNNING);
+							koopa->nx = -this->nx;
+							koopa->SetState(KOOPAS_STATE_SHELL_RUNNING);
 						}
 					}
-					else if(koopa_x->GetState() != KOOPAS_STATE_SHELL_IDLE) {
-						koopa_x->vx = -koopa_x->vx; // di xuyen qua
+					else if(koopa->GetState() != KOOPAS_STATE_SHELL_IDLE) {
+						koopa->vx = -koopa->vx; // di xuyen qua
 						this->isDamaged(); // xu ly mario bi thuong
 					}
 				}
 			}
-			else if (isAABB(coObjects->at(i)) && !canHolding) {
+			else if (isAABB(coObjects->at(i)) && !isHolding) {
 				this->isDamaged(); // xu ly mario bi thuong
 			}
 			break;
@@ -558,6 +594,7 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 				cards.push_back(coItem->at(i)->animation_set->at(ani)->getCurrentFrame());
 				SetState(MARIO_STATE_WALKING_RIGHT);
 				isAutoGo = true;
+				//canSwitchScene = true;
 			}
 			else if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
 			{
@@ -1061,6 +1098,7 @@ void  CMario::RefreshState() {
 	isFlying = false;
 	canHolding = false;
 	isAutoGo = false;
+	isHolding = false;
 
 // GREEN LAND SOLVING
 	canWalkLeft = false;
