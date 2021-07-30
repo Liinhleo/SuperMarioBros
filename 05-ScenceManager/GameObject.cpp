@@ -15,6 +15,24 @@ CGameObject::CGameObject()
 	nx = 1;	
 }
 
+void CGameObject::RenderBoundingBox()
+{
+	D3DXVECTOR3 p(x, y, 0);
+	RECT rect;
+
+	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
+
+	float l, t, r, b;
+
+	GetBoundingBox(l, t, r, b);
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = (int)r - (int)l;
+	rect.bottom = (int)b - (int)t;
+
+	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 200);
+}
+
 void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
 	this->dt = dt;
@@ -81,6 +99,41 @@ void CGameObject::CalcPotentialCollisions(
 }
 
 void CGameObject::FilterCollision(
+	vector<LPCOLLISIONEVENT>& coEvents,
+	vector<LPCOLLISIONEVENT>& coEventsResult,
+	float& min_tx, float& min_ty,
+	float& nx, float& ny, float& rdx, float& rdy,
+	LPGAMEOBJECT& objx, 
+	LPGAMEOBJECT& objy)
+{
+	min_tx = 1.0f;
+	min_ty = 1.0f;
+	int min_ix = -1;
+	int min_iy = -1;
+
+	nx = 0.0f;
+	ny = 0.0f;
+
+	coEventsResult.clear();
+
+	for (UINT i = 0; i < coEvents.size(); i++)
+	{
+		LPCOLLISIONEVENT coEvent = coEvents[i];
+
+		if (coEvent->t < min_tx && coEvent->nx != 0) {
+			min_tx = coEvent->t; nx = coEvent->nx; min_ix = i; rdx = coEvent->dx; objx = coEvent->obj;
+		}
+
+		if (coEvent->t < min_ty && coEvent->ny != 0) {
+			min_ty = coEvent->t; ny = coEvent->ny; min_iy = i; rdy = coEvent->dy; objy = coEvent->obj;
+		}
+	}
+
+	if (min_ix >= 0) coEventsResult.push_back(coEvents[min_ix]);
+	if (min_iy >= 0) coEventsResult.push_back(coEvents[min_iy]);
+}
+
+void CGameObject::FilterCollision(
 	vector<LPCOLLISIONEVENT> &coEvents,
 	vector<LPCOLLISIONEVENT> &coEventsResult,
 	float &min_tx, float &min_ty, 
@@ -98,14 +151,14 @@ void CGameObject::FilterCollision(
 
 	for (UINT i = 0; i < coEvents.size(); i++)
 	{
-		LPCOLLISIONEVENT c = coEvents[i];
+		LPCOLLISIONEVENT coEvent = coEvents[i];
 
-		if (c->t < min_tx && c->nx != 0) {
-			min_tx = c->t; nx = c->nx; min_ix = i; rdx = c->dx;
+		if (coEvent->t < min_tx && coEvent->nx != 0) {
+			min_tx = coEvent->t; nx = coEvent->nx; min_ix = i; rdx = coEvent->dx;
 		}
 
-		if (c->t < min_ty  && c->ny != 0) {
-			min_ty = c->t; ny = c->ny; min_iy = i; rdy = c->dy;
+		if (coEvent->t < min_ty  && coEvent->ny != 0) {
+			min_ty = coEvent->t; ny = coEvent->ny; min_iy = i; rdy = coEvent->dy;
 		}
 	}
 
@@ -114,22 +167,113 @@ void CGameObject::FilterCollision(
 }
 
 
-void CGameObject::RenderBoundingBox()
+bool CGameObject::isOutOfCam() {
+	CGame* game = CGame::GetInstance();
+	return !(x >= game->GetCamPosX() && x < game->GetCamPosX() + (SCREEN_WIDTH) && y >= game->GetCamPosY() && y < game->GetCamPosY() + (SCREEN_HEIGHT));
+}
+
+bool CGameObject::CheckAABB(float left_a, float top_a, float right_a, float bottom_a, float left_b, float top_b, float right_b, float bottom_b){
+	return (left_a < right_b && right_a > left_b && top_a < bottom_b && bottom_a > top_b);
+}
+
+bool CGameObject::isAABB(LPGAMEOBJECT object)
 {
-	D3DXVECTOR3 p(x, y, 0);
-	RECT rect;
+	float left_a, top_a, right_a, bottom_a, left_b, top_b, right_b, bottom_b;
+	this->GetBoundingBox(left_a, top_a, right_a, bottom_a);
+	object->GetBoundingBox(left_b, top_b, right_b, bottom_b);
+	return CheckAABB(left_a, top_a, right_a, bottom_a, left_b, top_b, right_b, bottom_b);
+}
 
-	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
+bool CGameObject::IsCollidingWithObject(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	if (this->isAABB(object))
+		return true;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	delete e;
+	return res;
+}
 
-	float l,t,r,b; 
+bool CGameObject::IsCollidingWithObjectNy_1(LPGAMEOBJECT object) {
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->ny == -1)
+			return true;
+	delete e;
+	return false;
+}
 
-	GetBoundingBox(l, t, r, b);
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = (int)r - (int)l;
-	rect.bottom = (int)b - (int)t;
+bool CGameObject::IsCollidingWithObjectNy1(LPGAMEOBJECT object) {
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->ny == 1)
+			return true;
+	delete e;
+	return false;
+}
+bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object) {
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->ny != 0)
+			return true;
+	delete e;
+	return false;
+}
 
-	CGame::GetInstance()->Draw(x, y, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
+bool CGameObject::IsCollidingWithObjectNx_1(LPGAMEOBJECT object) {
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->nx == -1)
+			return true;
+	delete e;
+	return false;
+}
+
+bool CGameObject::IsCollidingWithObjectNx1(LPGAMEOBJECT object) {
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->nx == 1)
+			return true;
+	delete e;
+	return false;
+}
+
+//WORLD MAP
+bool CGameObject::IsCollidingWithObjectNx(LPGAMEOBJECT object) {
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision condition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->nx != 0)
+			return true;
+	delete e;
+	return false;
 }
 
 

@@ -1,24 +1,34 @@
 #include "Portal.h"
+#define POINT_DISTANCE	6
 
-
-CPortal::CPortal(float l, float t, float r, float b, int scene_id )
+CPortal::CPortal(bool hasPortal, int sceneID, bool l, bool r, bool u, bool d)
 {
-	this->scene_id = scene_id;
-	x = l; 
-	y = t;
-	width = r - l + 1;
-	height = b - t + 1;
+	this->type = ObjectType::PORTAL;
+	this->hasPortal = hasPortal;
+	this->scene_id = sceneID;
+	this->canMoveLeft = l;
+	this->canMoveRight = r;
+	this->canMoveUp = u;
+	this->canMoveDown = d;
 }
 
-void CPortal::Render()
+
+void CPortal::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
+	left = x + 10;
+	top = y + 10;
+	right = x + POINT_DISTANCE;
+	bottom = y + POINT_DISTANCE;
+}
+
+void CPortal::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects){
+	CGameObject::Update(dt);
+}
+
+void CPortal::SetState(int state) {
+	CGameObject::SetState(state);
+}
+
+void CPortal::Render() {
 	RenderBoundingBox();
-}
-
-void CPortal::GetBoundingBox(float &l, float &t, float &r, float &b)
-{
-	l = x;
-	t = y;
-	r = x + width;
-	b = y + height;
 }

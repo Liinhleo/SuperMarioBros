@@ -1,10 +1,11 @@
 #include <iostream>
 #include <fstream>
-
+#include "define.h"
 #include "Game.h"
 #include "Utils.h"
 
 #include "PlayScence.h"
+#include "GreeenLand.h"
 
 CGame * CGame::__instance = NULL;
 
@@ -319,6 +320,8 @@ CGame *CGame::GetInstance()
 #define GAME_FILE_SECTION_SETTINGS 1
 #define GAME_FILE_SECTION_SCENES 2
 
+
+
 void CGame::_ParseSection_SETTINGS(string line)
 {
 	vector<string> tokens = split(line);
@@ -338,7 +341,13 @@ void CGame::_ParseSection_SCENES(string line)
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);
 
-	LPSCENE scene = new CPlayScene(id, path);
+	LPSCENE scene = nullptr;
+	if (id == ID_SCENE_GREENLAND) {
+		scene = new GreenLand(id, path);
+	}
+	else if (id == ID_SCENE_1 || id == ID_SCENE_3) {
+		scene = new CPlayScene(id, path);
+	}
 	scenes[id] = scene;
 }
 

@@ -83,6 +83,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp14</LanguageStandard>
+      <DisableSpecificWarnings>4005;4996;4244;4018;4305;4101;4715;4067;26495;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3dx9.lib;d3d9.lib;dxguid.lib;dxerr.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -93,6 +94,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <DisableSpecificWarnings>4005;4996;4244;4018;4305;4101;4715;4067;26495;4005;4996;4244;4018;4305;4101;4715;4067;26495;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -124,11 +126,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationFrame.cpp" />
     <ClCompile Include="Animations.cpp" />
+    <ClCompile Include="AnimationSet.cpp" />
     <ClCompile Include="Brick.cpp" />
-    <ClCompile Include="define.cpp" />
+    <ClCompile Include="BrickBrokenEffect.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CardItemEffect.cpp" />
+    <ClCompile Include="Coin.cpp" />
+    <ClCompile Include="CoinEffect.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FireBallEffect.cpp" />
+    <ClCompile Include="FireFlower.cpp" />
+    <ClCompile Include="FireFlowerBall.cpp" />
+    <ClCompile Include="GreeenLand.cpp" />
+    <ClCompile Include="GreenLandObject.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="Hud.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="Koopas.cpp" />
+    <ClCompile Include="LastItem.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MarioTail.cpp" />
+    <ClCompile Include="Ninja.cpp" />
+    <ClCompile Include="NinjaBoomerang.cpp" />
+    <ClCompile Include="Pipe.cpp" />
+    <ClCompile Include="PiranhaFlower.cpp" />
+    <ClCompile Include="Plant.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="Pswitch.cpp" />
+    <ClCompile Include="ScoreEffect.cpp" />
+    <ClCompile Include="SpeedBar.cpp" />
+    <ClCompile Include="SuperLeaf.cpp" />
+    <ClCompile Include="SuperMushroom.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -141,16 +175,49 @@
     <ClCompile Include="Textures.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationFrame.h" />
     <ClInclude Include="Animations.h" />
+    <ClInclude Include="AnimationSet.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="BrickBrokenEffect.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CardItemEffect.h" />
+    <ClInclude Include="Coin.h" />
+    <ClInclude Include="CoinEffect.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FireBallEffect.h" />
+    <ClInclude Include="FireFlower.h" />
+    <ClInclude Include="FireFlowerBall.h" />
+    <ClInclude Include="GreeenLand.h" />
+    <ClInclude Include="GreenLandObject.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="Ground.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="Hud.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Koopas.h" />
+    <ClInclude Include="LastItem.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="MarioTail.h" />
+    <ClInclude Include="Ninja.h" />
+    <ClInclude Include="NinjaBoomerang.h" />
+    <ClInclude Include="Pipe.h" />
+    <ClInclude Include="PiranhaFlower.h" />
+    <ClInclude Include="Plant.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="Pswitch.h" />
+    <ClInclude Include="ScoreEffect.h" />
+    <ClInclude Include="SpeedBar.h" />
+    <ClInclude Include="SuperLeaf.h" />
+    <ClInclude Include="SuperMushroom.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Goomba.h" />
-    <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="PlayScence.h" />
     <ClInclude Include="Scence.h" />

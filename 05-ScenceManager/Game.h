@@ -35,21 +35,24 @@ class CGame
 
 	LPKEYEVENTHANDLER keyHandler;
 
-	float cam_x = 0.0f;
-	float cam_y = 0.0f;
 
 	int screen_width;
 	int screen_height; 
 
 	unordered_map<int, LPSCENE> scenes;
-	int current_scene; 
 
 	void _ParseSection_SETTINGS(string line);
 	void _ParseSection_SCENES(string line);
 
 public:
+	int current_scene;
+
+	float cam_x = 0.0f;
+	float cam_y = 0.0f;
+
 	void InitKeyboard();
 	void SetKeyHandler(LPKEYEVENTHANDLER handler) { keyHandler = handler; }
+
 	void Init(HWND hWnd);
 	void Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha = 255);
 
@@ -83,6 +86,11 @@ public:
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
 
 	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
+	void SetCamX(float x) { cam_x = x; }
+	void SetCamY(float y) { cam_y = y; }
+
+	float GetCamPosX() { return cam_x; }
+	float GetCamPosY() { return cam_y; }
 
 	static CGame * GetInstance();
 
