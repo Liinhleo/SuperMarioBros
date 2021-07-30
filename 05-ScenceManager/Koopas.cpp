@@ -37,7 +37,6 @@ CKoopas::CKoopas(int KoopaType, bool isWing, float x, float y)
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-
 	if (GetState() == KOOPAS_STATE_SHAKING && idleTimer->IsTimeUp())
 	{
 		idleTimer->Stop();
@@ -127,8 +126,8 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 											this->start.x = gl - DISTANCE_START_X;
 										}
 									}
-									//DebugOut(L"start===========: %f\n", start.x);
-									//DebugOut(L"end==========: %f\n", end.x);
+									DebugOut(L"start===========: %f\n", start.x);
+									DebugOut(L"end==========: %f\n", end.x);
 								}
 							}
 							// TRUONG HOP GACH CHI CO 1 CUC DUY NHAT
@@ -136,6 +135,8 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								this->start.x = gl - DISTANCE_START_X;
 								this->start.y = this->end.y = gb;
 								this->end.x = gr - DISTANCE_START_X;
+								DebugOut(L"1 start===========: %f\n", start.x);
+								DebugOut(L"1 end==========: %f\n", end.x);
 							}
 						}
 					}
@@ -149,9 +150,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// XET DOI HUONG CHO KOOPA NEU DI QUA START_X, END_X
 			if (kl < this->start.x || kl > this->end.x) {
 				if (kl < this->start.x)
-					this->x = gl - DISTANCE_START_X;
+					this->x = gl - DISTANCE_START_X +  1.0f;
 				else
-					this->x = gr - DISTANCE_START_X;
+					this->x = gr - DISTANCE_START_X - 1.5f;
 				this->vx = -vx;
 			}
 		}
@@ -418,7 +419,7 @@ void CKoopas::Render()
 		}
 	}
 	animation_set->at(ani)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)

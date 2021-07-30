@@ -403,7 +403,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 
 					// BRICK_MUSIC
 					else if (brick->GetBrickType() == BRICK_MUSIC) {
-						if (brick->GetState() == BRICK_STATE_HIDDEN && brick->GetState() != BRICK_STATE_ACTIVE) {
+						if (brick->GetState() == BRICK_STATE_HIDDEN 
+							&& brick->GetState() != BRICK_STATE_ACTIVE) {
 							brick->SetState(BRICK_STATE_ACTIVE);
 						}
 					}
@@ -425,10 +426,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 				if (e->obj->GetType() == ObjectType::BRICK) {
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj); // if e->obj is Brick 
 					if (brick->GetBrickType() == BRICK_MUSIC) {
-						this->vy = -MARIO_JUMP_SPEED_Y; // mario bi push cao len
-						this->y -= 5;
-						this->isOnGround = false;
 						brick->SetState(BRICK_STATE_BOUNDING);
+						if (brick->canPushUp) {
+							this->vy = -MARIO_JUMP_SPEED_Y * 2; // mario duoc push cao toi hidden pipe
+							this->y -= 5;
+							this->isOnGround = false;
+						}
+						else {
+							this->vy = -MARIO_JUMP_SPEED_Y; 
+							this->y -= 5;
+							this->isOnGround = false;
+						}
 					}
 				}
 			}
@@ -442,19 +450,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector <LPGAMEOBJ
 					}
 					else {
 						if (state == MARIO_STATE_RUN) { // dang chay va cham tuong thi di bo
-							if (vx > 0)
-								SetAccelerate(0);
-							else
-								SetAccelerate(0);
+							SetAccelerate(0);
 						}
+					}
+				}
+				// va cham voi MUSIC BRICK
+				else if (e->obj->GetType() == ObjectType::BRICK) {
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj); // if e->obj is Brick 
+					if (brick->GetBrickType() == BRICK_MUSIC) {
+						SetAccelerate(0);
 					}
 				}
 				else {
 					if (state == MARIO_STATE_RUN) { // dang chay va cham tuong thi di bo
-						if (vx > 0)
-							SetAccelerate(0);
-						else
-							SetAccelerate(0);
+						SetAccelerate(0);
 					}
 				}
 			}
@@ -617,7 +626,6 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem) {
 				cards.push_back(coItem->at(i)->animation_set->at(ani)->getCurrentFrame());
 				SetState(MARIO_STATE_WALKING_RIGHT);
 				isAutoGo = true;
-				//canSwitchScene = true;
 			}
 			else if (coItem->at(i)->GetType() == ObjectType::BRICK)//brick khi chuyen thanh tien
 			{
@@ -669,6 +677,7 @@ void CMario::Render()
 
 #pragma region SMALL MARIO
 		if (GetLevel() == MARIO_LEVEL_SMALL) {
+			if (isAutoGo) ani = MARIO_ANI_SMALL_WALKING_RIGHT;
 			switch (state) {
 			case MARIO_STATE_DIE:
 				ani = MARIO_ANI_DIE;
@@ -736,6 +745,7 @@ void CMario::Render()
 
 #pragma region BIG MARIO
 		if (GetLevel() == MARIO_LEVEL_BIG) {
+			if (isAutoGo) ani = MARIO_ANI_BIG_WALKING_RIGHT;
 			switch (state) {
 			case MARIO_STATE_STOP:
 				if (nx > 0) ani = MARIO_ANI_BIG_STOP_LEFT;
@@ -803,6 +813,7 @@ void CMario::Render()
 
 #pragma region RACOON MARIO
 		if (GetLevel() == MARIO_LEVEL_RACOON) {
+			if (isAutoGo) ani = MARIO_ANI_RACOON_WALKING_RIGHT;
 			switch (state) {
 			case MARIO_STATE_ATTACK:
 				if (nx > 0) ani = MARIO_ANI_RACOON_ATTACK_RIGHT;
@@ -874,6 +885,7 @@ void CMario::Render()
 
 #pragma region FIRE MARIO
 		if (GetLevel() == MARIO_LEVEL_FIRE) {
+			if (isAutoGo) ani = MARIO_ANI_FIRE_WALKING_RIGHT;
 			switch (state) {
 			case MARIO_STATE_ATTACK:
 				if (nx > 0) ani = MARIO_ANI_FIRE_ATTACK_RIGHT;

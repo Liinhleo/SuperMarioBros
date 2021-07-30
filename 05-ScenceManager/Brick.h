@@ -34,6 +34,7 @@ public:
 	int count;		//number of item 
 
 	bool isHidden; // bien check state hidden cho music brick -> xet va cham ny > 0 -> setstate(BRICK_STATE_ACTIVE)
+	bool canPushUp; // cho phep push mario vao hiddenmap
 
 	bool isBroken = false; // if mario attack (glass brick) -> true
 	bool isFallingItem = false;

@@ -23,7 +23,7 @@ void BrickBrokenEffect::GetBoundingBox(float& l, float& t, float& r, float& b)
 void BrickBrokenEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
-	vy += 0.00008f * dt;
+	vy += 0.0008f * dt;
 	x += dx;
 	y += dy;
 	if (this->isOutOfCam())

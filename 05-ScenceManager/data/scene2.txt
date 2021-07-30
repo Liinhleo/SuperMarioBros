@@ -1280,6 +1280,7 @@ GREEN_LEFT_UP
 5	1760	272	32	3	4	13	14
 5	1776	272	32	3	4	13	14
 
+
 #GROUND
 # type	x	y	ani_set_id	width	height	isInteract	t	b	l	r
 2	0	416	20	80	1	0	4	5	0	10
@@ -1356,9 +1357,7 @@ GREEN_LEFT_UP
 #PIPE
 # type	x	y	ani_set_id	type	hasPortal	des_x	des_y	direction	t	b	l	r
 #HIDDEN PIPE
-3	544	224	25	1	1	2576	384	1	2	3	4	5
-
-
+3	544	224	25	0	1	2576	384	1	2	2	4	5
 
 #SHORT PIPE
 3	3408	368	25	1	1	2096	144	0	3	4	26	27

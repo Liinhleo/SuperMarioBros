@@ -51,7 +51,7 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 						if (brick->GetCountItem() == 1 && brick->GetBrickType() == BRICK_QUESTION)
 							brick->SetBrickType(BRICK_BROKEN);
 
-						else if (brick->GetCountItem() != BRICK_GLASS)
+						else if (brick->GetBrickType() != BRICK_GLASS)
 							brick->SetState(BRICK_STATE_BOUNDING);
 
 						// GLASS BRICK
@@ -108,6 +108,7 @@ void MarioTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 					else
 						koopa->nx = 1;
 					koopa->SetState(ENEMY_STATE_DIE_BY_ATTACK);
+					koopa->vy = -0.2f;
 					CMario::GetInstance()->AddScore(100);
 
 					break;

@@ -21,6 +21,7 @@ CBrick::CBrick(float x, float y, int typeBrick, int typeItem, int count) {
 
 	if (isHidden) { // Check glass brick
 		SetState(BRICK_STATE_HIDDEN);
+		canPushUp = true;
 	}
 	else {
 		SetState(BRICK_STATE_ACTIVE);

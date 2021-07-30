@@ -622,6 +622,14 @@ void CPlayScene::Update(DWORD dt)
 			CGameObject* score = new ScoreEffect({ c_x, c_y}, 100);
 			listEffects.push_back(score);
 		}
+
+		// effect endscreen
+		if (dynamic_cast<CardItemEffect*>(listEffects[i])) {
+			CardItemEffect* effect = dynamic_cast<CardItemEffect*>(listEffects[i]);
+			if (effect->GetState() == STATE_DESTROYED)
+				player->canSwitchScene = true;
+		}
+
 	}
 #pragma endregion
 
@@ -718,6 +726,10 @@ void CPlayScene::Update(DWORD dt)
 		// ngan mario rot khoi map
 		if (player->x < 0)
 			player->SetPosition(0, cy);
+		
+		if (!player->isAutoGo && player->x > map->startHiddenMap_x - MARIO_BIG_BBOX_WIDTH) {
+			player->SetPosition(map->startHiddenMap_x - MARIO_BIG_BBOX_WIDTH, cy);
+		}
 	}
 
 	// Mario in hidden map
@@ -727,23 +739,21 @@ void CPlayScene::Update(DWORD dt)
 		// ngan mario rot khoi map
 		if (player->x < map->startHiddenMap_x)
 			player->SetPosition(map->startHiddenMap_x, cy);
-		if (player->x >= map->widthMap) {
+		if (!player->isAutoGo && player->x >= map->widthMap - MARIO_BIG_BBOX_WIDTH) {
 			cam->islockUpdate = true;
-			player->SetPosition(map->widthMap, cy);
+			player->SetPosition(map->widthMap - MARIO_BIG_BBOX_WIDTH, cy);
 		}
 	}
 #pragma endregion
 
-	//// Effect endscene
-	//if (player->isAutoGo && player->isOutOfCam())
-	//{
-	//	CGameObject* effect;
-	//	if (!player->isInHiddenMap)
-	//		effect = new CardItemEffect({ map->startHiddenMap_x - (SCREEN_WIDTH / 2) - 68.0f, 270 });
-	//	else
-	//		effect = new CardItemEffect({ map->heightMap - (SCREEN_WIDTH / 2) - 68.0f, 270 });
-	//	listEffects.push_back(effect);
-	//}
+	// Effect endscene
+	if (player->isAutoGo && player->isOutOfCam())
+	{
+		CGameObject* effect;
+		effect = new CardItemEffect({ map->startHiddenMap_x - (SCREEN_WIDTH / 2) - 68.0f, 270 });
+		
+		listEffects.push_back(effect);
+	}
 
 	// Update cac doi moving list (case: enemy di ra khoi grid)
 	gridMoving->UpdateGrid(listMoving);
@@ -864,13 +874,15 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	
 	// get pipe down
 	case DIK_5:
-		mario->SetPosition(1900, mario->y);
-		CGame::GetInstance()->cam_x = 1900;
+		mario->SetPosition(2608, 0);
+		CGame::GetInstance()->cam_x = 2608;
 		break;
 
 
 	// get pipe up
 	case DIK_6:
+		mario->SetPosition(1900, mario->y);
+		CGame::GetInstance()->cam_x = 1900;
 		break;
 
 
@@ -933,7 +945,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
-
+	if (mario->isAutoGo)
+		return;
 	if (game->IsKeyDown(DIK_A)) {
 		mario->canHolding = true;
 	}
@@ -1031,8 +1044,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			else
 				mario->SetState(MARIO_STATE_IDLE);
 		}
-		else
-			mario->SetState(MARIO_STATE_IDLE);
+		else if(!mario->isAutoGo) mario->SetState(MARIO_STATE_IDLE);
 					
 	}
 	else {
