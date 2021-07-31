@@ -3,13 +3,14 @@
 #include "GreeenLand.h"
 #include "Utils.h"
 
-GreenLandObject::GreenLandObject(int t)
+GreenLandObject::GreenLandObject(D3DXVECTOR2 position, int t)
 {
 	this->GL_ObjectType = t;
 	type = ObjectType::GL_OBJECT;
 
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(3));
-	GetPosition(this->start_x, this->start_y);
+	this->start_x = position.x;
+	this->start_y = position.y;
 
 	if (GetObjectType() == GUARD_OBJECT)
 	{
@@ -40,7 +41,7 @@ void GreenLandObject::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 	if (GetObjectType() == GUARD_OBJECT)
 	{
 		x += dx;
-		if (x > start_x + BRICK_BBOX_SIZE || x < start_x)
+		if (x > start_x + BRICK_BBOX_SIZE|| x < start_x)
 		{
 			if (x > start_x + BRICK_BBOX_SIZE)
 				x = start_x + BRICK_BBOX_SIZE;

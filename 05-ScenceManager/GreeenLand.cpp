@@ -186,7 +186,7 @@ void GreenLand::_ParseSection_OBJECTS(string line)
 	case OBJECT_GREEN_LAND:
 		{
 			int type = atoi(tokens[4].c_str());
-			obj = new GreenLandObject(type);
+			obj = new GreenLandObject({x,y}, type);
 
 			// General object setup
 			obj->SetPosition(x, y);

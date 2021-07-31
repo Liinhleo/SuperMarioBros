@@ -17,7 +17,7 @@ class GreenLandObject :
 {
 	int GL_ObjectType;
 public:
-	GreenLandObject(int t);
+	GreenLandObject(D3DXVECTOR2 position, int t);
 	~GreenLandObject() {}
 
 	int GetObjectType() { return GL_ObjectType; }

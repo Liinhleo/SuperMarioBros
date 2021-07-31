@@ -1193,7 +1193,7 @@ GREEN_LEFT_UP
 # MUSIC BRICK
 24	605
 # PIPE
-25	610	611	612
+25	610	611	612	-1
 
 #ITEMS	#leaf   leaf	#red 	#green
 30	505	506	503	504
@@ -1359,7 +1359,7 @@ GREEN_LEFT_UP
 #PIPE
 # type	x	y	ani_set_id	type	hasPortal	des_x	des_y	direction	t	b	l	r
 #HIDDEN PIPE
-3	544	254	25	2	1	2576	384	1	2	3	4	5
+3	544	254	25	3	1	2576	384	1	2	3	4	5
 
 #SHORT PIPE
 3	3408	368	25	1	1	2096	144	0	3	4	26	27
