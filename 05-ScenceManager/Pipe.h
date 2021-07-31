@@ -3,6 +3,7 @@
 
 #define PIPE_LONG   1
 #define PIPE_SHORT  2
+#define PIPE_HIDDEN	3
 
 #define PIPE_ANI_LONG		0
 #define PIPE_ANI_SHORT		1

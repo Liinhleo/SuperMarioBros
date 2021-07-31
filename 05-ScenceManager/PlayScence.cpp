@@ -881,23 +881,20 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->Reset();
 		break;
 	
-	case DIK_5:		
-		if (CGame::GetInstance()->current_scene != ID_SCENE_1) {
-			CGame::GetInstance()->SwitchScene(ID_SCENE_1);
-			mario->RefreshState();
-		}
+	// Vi tri glass brick
+	case DIK_5:	
+		CGame::GetInstance()->cam_x = 2112;
+		mario->SetPosition(2112, 0);
 		break;
 
 	case DIK_6:
-		if (CGame::GetInstance()->current_scene != ID_SCENE_3) {
-			CGame::GetInstance()->SwitchScene(ID_SCENE_3);
-			mario->RefreshState();
-		}
+		CGame::GetInstance()->cam_x = 2256;
+		mario->SetPosition(2256, 0);
 		break;
 
 	case DIK_7:
-		if (CGame::GetInstance()->current_scene != ID_SCENE_GREENLAND) {
-			CGame::GetInstance()->SwitchScene(ID_SCENE_GREENLAND);
+		if (CGame::GetInstance()->current_scene != ID_SCENE_3) {
+			CGame::GetInstance()->SwitchScene(ID_SCENE_3);
 			mario->RefreshState();
 		}
 		break;

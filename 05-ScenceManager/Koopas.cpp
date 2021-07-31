@@ -455,8 +455,8 @@ void CKoopas::SetState(int state)
 	// xu ly cac state khac
 	case KOOPAS_STATE_FLYING:
 		isWing = true;
-		vy = -KOOPAS_WALKING_SPEED;
-		vx = -0.008f;
+		vy = -0.15f;
+		vx = -0.08f;
 		break;
 	case KOOPAS_STATE_WALKING:
 		isWing = false;
