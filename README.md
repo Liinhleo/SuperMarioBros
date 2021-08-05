@@ -41,6 +41,39 @@ Truong Dieu Linh
 
 Clone this repo to your local machine using : `https://github.com/Liinhleo/SuperMarioBros.git`
 
+## Key Command
+### Operations (Greenland)
+|Key| Command|
+|--|--|
+|`←`| To left|
+|`→`| To right |
+|`↑`| To up|
+|`↓	`|To down|
+|`S`| Choose play scene|
+
+### Operations (PlayScene)
+|Key| Command|
+|--|--|
+|`←`| To left|
+|`→`| To right |
+|`X`| Jump lower|
+|`S`| Jump higher (PlayScene) |
+|`A`| Attack |
+|`A` + `←`|Run left|
+|`A` + `→`| Run right |
+|`A` + `S` + `←`| Fly left|
+|`A` + `S` + `→`| Fly right|
+|`↑`| Go up pipe (go change map) |
+|`↓	`|Sit / Go down pipe (go change map)|
+
+### Hot key
+|Key| Command|
+|--|--|
+|`F1`| Reset Mario (if Mario die)|
+|`NUMPAD 1`| Mario level Small|
+|`NUMPAD 2`| Mario level Big|
+|`NUMPAD 3`| Mario level Racoon|
+|`NUMPAD 4`| Mario level Fire|
 
 ## Bugs and Issues
 It's a small project at Beginning Game Programming subject and it still have some bugs or issues! Feel free to [Open a new issue](https://github.com/Liinhleo/SuperMarioBros/issues) here on GitHub.
